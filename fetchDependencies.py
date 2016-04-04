@@ -28,16 +28,19 @@ The latter behavior may be disabled by invoking the script with the
 --no_update flag.
 '''
 
-import argparse
-import subprocess
-import os
+try:
+  import argparse
+  import subprocess
+  import os
 
-''' 
-A happy recursive function to clone components once, only once, and
-with the expected composition
-'''
-def smart_clone( cloned_repositories,
-                 update_to_development ):
+  isWindows = (os.name == "nt")
+
+  def smart_clone( cloned_repositories,
+                   update_to_development ):
+    ''' 
+    A happy recursive function to clone components once, only once, and
+    with the expected composition
+    '''
     import re
 
     start_list_pattern = re.compile('\s*list\(\s*APPEND\s*subprojects.*\n',
@@ -74,54 +77,94 @@ def smart_clone( cloned_repositories,
                 print("Fetching " + subproject + "...")
                 print("----------------------------------------")
                 print("")
-                subprocess.call(["git",
-                                 "submodule",
-                                 "update",
-                                 "--init",
-                                 "--",
-                                 subproject])
+                if isWindows:
+                  subprocess.Popen(["powershell",
+                                    "git",
+                                    "submodule",
+                                    "update",
+                                    "-q",
+                                    "--init", 
+                                    "--",
+                                    subproject])
+
+                else:
+                  subprocess.call(["git",
+                                   "submodule",
+                                   "update",
+                                   "--init",
+                                   "--",
+                                   subproject])
                 
                 os.chdir(subproject)
                 print("")
                 if (update_to_development):
-                    print("Updating to development branch...")
+                    print("Updating to deploy-ready branch...")
                     print("")
-                    subprocess.call(["git",
-                                     "pull",
-                                     "origin",
-                                     "development"])
+                    if isWindows:
+                      subprocess.Popen(["powershell",
+                                        "git",
+                                        "pull",
+                                        "-q",
+                                        "origin",
+                                        "master"])
+                    else:
+                      subprocess.call(["git",
+                                       "pull",
+                                       "origin",
+                                       "master"])
                 cloned_repositories.add(subproject)
                 smart_clone( cloned_repositories,
                              update_to_development )
                 os.chdir("..")
                 
-# end smart_clone function
+  # end smart_clone function
                 
-parser = argparse.ArgumentParser()
-parser.add_argument('--no_update', action='store_true')
-update_to_development = not parser.parse_args().no_update
-cloned_repositories = set()
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--no_update', action='store_true')
+  update_to_development = not parser.parse_args().no_update
+  cloned_repositories = set()
 
-print("")
-print("----------------------------------------")
-print("Fetching CommonCMake...")
-print("----------------------------------------")
-print("")
-subprocess.call(["git",
-                 "submodule",
-                 "update",
-                 "--init",
-                 "--",
-                 "CommonCMake"])
-print("")
-if (update_to_development):
-    print("Updating to development branch...")
-    print("")
-    os.chdir("CommonCMake")
+  print("")
+  print("----------------------------------------")
+  print("Fetching commonCMakeScripts...")
+  print("----------------------------------------")
+  print("")
+  if isWindows:
+    subprocess.Popen(["powershell",
+                      "git",
+                      "submodule",
+                      "update",
+                      "-q",
+                      "--init",
+                      "--",
+                      "commonCMakeScripts"])
+  else:
     subprocess.call(["git",
-                     "pull",
-                     "origin",
-                     "development"])
-    os.chdir("..")
+                     "submodule",
+                     "update",
+                     "--init",
+                     "--",
+                     "commonCMakeScripts"])
+  print("")
+  if (update_to_development):
+      print("Updating to deploy-ready branch...")
+      print("")
+      os.chdir("commonCMakeScripts")
+      if isWindows:
+        subprocess.Popen(["powershell",
+                          "git",
+                          "pull",
+                          "-q",
+                          "origin",
+                          "master"])
+      else:
+        subprocess.call(["git",
+                         "pull",
+                         "origin",
+                         "master"])
+      os.chdir("..")
     
-smart_clone( cloned_repositories, update_to_development )
+  smart_clone( cloned_repositories, update_to_development )
+except:
+  import pdb
+  pdb.set_trace()
