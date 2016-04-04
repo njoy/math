@@ -42,9 +42,6 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then wget https://cmake.org/files/v3.5/cmake-3.5.0-Darwin-x86_64.tar.gz && tar xfz cmake-3.5.0-Darwin-x86_64.tar.gz; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export PATH="`pwd`/cmake-3.5.0-Darwin-x86_64/CMake.app/Contents/bin":$PATH ; fi
 
-before_script:
-  - sed -i.backup 's/git@github.com:/https:\/\/github.com\//' .gitmodules
-  
 script:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then if [ $CXX = "g++" ]; then export CXX="g++-5" CC="gcc-5"; AR="gcc-ar-5"; RANLIB="gcc-ranlib-5"; NM="gcc-nm-5"; fi; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then if [ $CXX = "clang++" ]; then export CXX="clang++-3.7" CC="clang-3.7"; AR="/usr/lib/llvm-3.7/bin/llvm-ar"; RANLIB="/usr/lib/llvm-3.7/bin/llvm-ranlib"; NM="/usr/lib/llvm-3.7/bin/llvm-nm"; fi; fi
