@@ -18,7 +18,7 @@ math::implementation::InterpolationRegionIntegral
 <std::vector<double>::iterator, math::interpolate::linLin>
 liir(x.begin(), x.end(), y.begin(), y.end(), false);
 
-int main( int argc, char* const argv[] ){
+int main( int argc, const char* argv[] ){
   LOG(INFO) << "";
   LOG(INFO) << "InterpolationRegionIntegral Tests";
   LOG(INFO) << "=================================";

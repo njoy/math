@@ -16,7 +16,7 @@ std::vector<double> yClone = y;
 math::implementation::VectorInterpolationRegion<math::interpolate::linLin>
 lvir(std::move(xClone), std::move(yClone), false);
 
-int main( int argc, char* const argv[] ){
+int main( int argc, const char* argv[] ){
   LOG(INFO) << "";
   LOG(INFO) << "VectorInterpolationRegion Tests";
   LOG(INFO) << "=================================";

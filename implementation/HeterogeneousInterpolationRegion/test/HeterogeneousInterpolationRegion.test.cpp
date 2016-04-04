@@ -18,7 +18,7 @@ std::vector<double> y0_ {f(x0[0]), f(x0[1]), f(x0[2]), f(x0[3]), f(x0[4])}; // c
 std::vector<double> y1_ {f(x1[0]), f(x1[1]), f(x1[2]), f(x1[3]), f(x1[4])};
 std::unique_ptr<math::API::InterpolationRegion> hir;
 
-int main( int argc, char* const argv[] ){
+int main( int argc, const char* argv[] ){
   {
     std::vector<std::unique_ptr<math::API::InterpolationRegion> >
       irv;

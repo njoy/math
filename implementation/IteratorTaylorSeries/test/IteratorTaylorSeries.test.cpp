@@ -46,7 +46,7 @@ its(coefficients.begin(), coefficients.end(), false);
 
 math::API::SeriesExpansion& ser = its;
 
-int main( int argc, char* const argv[] ){
+int main( int argc, const char* argv[] ){
   LOG(INFO) << "";
   LOG(INFO) << "IteratorTaylorSeries Tests";
   LOG(INFO) << "=================================";

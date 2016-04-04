@@ -6,7 +6,7 @@
 
 int testNumber = 0;
 
-int main( int argc, char* const argv[] ){
+int main( int argc, const char* argv[] ){
   LOG(INFO) << "";
   LOG(INFO) << "interpolate Tests";
   LOG(INFO) << "======================";

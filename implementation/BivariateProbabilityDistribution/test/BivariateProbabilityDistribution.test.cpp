@@ -58,7 +58,7 @@ std::unique_ptr
 < math::interpolate::linLin, math::interpolate::linLin > >
 bvpd;
 
-int main( int argc, char* const argv[] ){
+int main( int argc, const char* argv[] ){
   conditionedProbDist.push_back(std::move(probDist0));
   conditionedProbDist.push_back(std::move(probDist1));
   conditionedProbDist.push_back(std::move(probDist2));

@@ -316,7 +316,7 @@ ils = { math::implementation::IteratorLegendreSeries
         (coefficients[10].begin(), coefficients[10].end(), false)
 };
 
-int main( int argc, char* const argv[] ){
+int main( int argc, const char* argv[] ){
   LOG(INFO) << "";
   LOG(INFO) << "IteratorLegendreSeries Tests";
   LOG(INFO) << "=================================";

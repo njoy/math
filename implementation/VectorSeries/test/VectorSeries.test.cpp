@@ -286,7 +286,7 @@ clone(const std::vector<double>& v) {return v;}
 
 std::vector< math::implementation::VectorLegendreSeries > ils;
 
-int main( int argc, char* const argv[] ){
+int main( int argc, const char* argv[] ){
   ils.reserve(11);
   ils.push_back( math::implementation::VectorLegendreSeries
                  ( clone(coefficients[0]), false ) );
