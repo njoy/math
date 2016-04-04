@@ -1,0 +1,14 @@
+#ifndef MATH_API_PROBABILITYDISTRIBUTION_HPP
+#define MATH_API_PROBABILITYDISTRIBUTION_HPP
+
+#include "math/API.hpp"
+
+class math::API::ProbabilityDistribution{
+public:
+
+  virtual double probabilityDensity(const double event) const = 0;
+  virtual double cumulativeProbability(const double event)  const = 0;
+};
+
+#endif  // MATH_API_PROBABILITYDISTRIBUTION_HPP
+

@@ -1,0 +1,38 @@
+#ifndef MATH_INTERPOLATE_LOGLOG_HPP
+#define MATH_INTERPOLATE_LOGLOG_HPP
+
+#include "math/interpolate.hpp"
+
+/**
+ * @param x
+ * the independent variable value at which the interpolant ought be evaluated
+ * @param x1
+ * the nearest independent variable value less than @p x at which the function 
+ * value is known
+ * @param x2
+ * the nearest independent variable value greater than @p x at which the function
+ * value is known
+ * @param y1
+ * the function value at @p x1
+ * @param y2
+ * the function value at @p x2
+ *
+ * @result the value of a logarithmic-logarithmic interpolant at @p x
+ *
+ * @details 
+ * Renders a function value at x given function values y1 and y2 evaluated at x1 
+ * and x2, respectively, assuming the change in the logarithm of y is 
+ * proportional to the change in the logarithm of x. This is exact for functions
+ * of the form \f$ y = a~x^b \f$. 
+ */
+inline double
+math::interpolate::logLog
+( const double x,                   // assumed x1 <= x <= x2
+  const double x1, const double x2, // assumed x1 < x2
+  const double y1, const double y2 ){
+  if ((x1*x2 <= 0) || (y1*y2 <= 0.0)){ return linLin(x, x1, x2, y1, y2); }
+  const double ix = 1.0 / x1;
+  return y1 * pow(x * ix, log( y2 / y1 ) / log( x2 * ix ));
+}
+
+#endif

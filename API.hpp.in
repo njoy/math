@@ -1,0 +1,21 @@
+#ifndef MATH_API_HPP
+#define MATH_API_HPP
+
+#include "math.hpp"
+
+namespace math{
+namespace API{
+
+class InterpolationRegion;
+
+class InterpolationRegionIntegral;
+
+class SeriesExpansion;
+
+class ProbabilityDistribution;
+
+class BivariateProbabilityDistribution;
+
+}
+}
+#endif

@@ -1,0 +1,105 @@
+#ifndef MATH_IMPLEMENTATION_ITERATORINTERPOLATIONREGION_HPP
+#define MATH_IMPLEMENTATION_ITERATORINTERPOLATIONREGION_HPP
+
+#include "math/API/InterpolationRegion.hpp"
+#include "math/implementation.hpp"
+
+namespace math{
+namespace implementation{
+
+template<typename randomAccessIter,
+         double interpolation(const double x,
+                              const double x1, const double x2,
+                              const double y1, const double y2) >
+class IteratorInterpolationRegion : public math::API::InterpolationRegion {
+public:
+  /* convenience typedef */
+  typedef math::implementation::InterpolationRegionIntegral
+  < randomAccessIter, interpolation >
+  InterpolationRegionIntegral;
+  
+  /* fields */
+  randomAccessIter xBegin;
+  randomAccessIter xEnd;
+  randomAccessIter yBegin;
+
+  /* constructor and desctructor */
+  IteratorInterpolationRegion(
+  randomAccessIter xBegin,
+  randomAccessIter xEnd,
+  randomAccessIter yBegin,
+  randomAccessIter yEnd,
+  const bool trust = true);
+
+  IteratorInterpolationRegion( IteratorInterpolationRegion&& ) = default;
+  
+  ~IteratorInterpolationRegion() = default;
+  
+  /* methods */
+  double
+  xMin() const final { return *(this->xBegin); }
+  
+  double
+  xMax() const final { return this->xEnd[-1]; }
+
+  std::vector< utility::View<double> >
+  xGrid() final {
+    return
+      std::vector< utility::View<double> >
+      { utility::View<double>( this->xBegin, this->xEnd )};
+  }
+  
+  std::vector< utility::View<const double> >
+  xGrid() const final {
+    return
+      std::vector< utility::View<const double> >
+      { utility::View<const double>( this->xBegin, this->xEnd) };
+  }
+
+  std::vector< utility::View<double> >
+  yGrid() final {
+    return
+      std::vector< utility::View<double> >
+      { utility::View<double>( this->yBegin,
+                               this->yBegin + (this->xEnd - this->xBegin) ) };
+  }
+
+  std::vector< utility::View<const double> >
+  yGrid() const final {
+    return
+      std::vector< utility::View<const double> >
+      { utility::View<const double>(this->yBegin,
+                                    this->yBegin + (this->xEnd - this->xBegin))};
+  }
+
+  std::unique_ptr< math::API::InterpolationRegionIntegral >
+  integral(const double y0) const /* final */ {
+    return
+      std::make_unique
+      <InterpolationRegionIntegral>
+      (this->specifiedIntegral(y0));
+  }
+
+  InterpolationRegionIntegral
+  specifiedIntegral(const double y0) const {
+    return InterpolationRegionIntegral
+      ( this->xBegin, this->xEnd,
+        this->yBegin, this->yBegin + (this->xEnd - this->xBegin),
+        y0, true );
+  }
+  
+  double
+  interpolate(const double x) const final {
+    return
+      math::interpolate::withIterators< randomAccessIter, interpolation >
+      ( x, this->xBegin, this->xEnd, this->yBegin );
+  }
+};
+
+} // namespace implementation
+} // namespace math
+
+#include "math/implementation/IteratorInterpolationRegion/src/IteratorInterpolationRegion.hpp"
+#include "math/implementation/IteratorInterpolationRegion/src/integralGrid.hpp"
+
+#endif

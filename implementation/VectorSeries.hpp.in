@@ -1,0 +1,60 @@
+#ifndef MATH_IMPLEMENTATION_VECTORSERIES_HPP
+#define MATH_IMPLEMENTATION_VECTORSERIES_HPP
+
+#include <vector>
+
+#include "math/API/SeriesExpansion.hpp"
+#include "math/implementation.hpp"
+
+/**
+ * @brief 
+ * A class that to provide ownership of the coefficient data to a composed series
+ * expansion class that otherwise wouldn't. 
+ */
+namespace math{
+namespace implementation{
+
+template< template<typename> class iteratorSeries >
+class VectorSeries : public math::API::SeriesExpansion {
+public:
+  /* constructor and destructor */
+  VectorSeries( std::vector<double>&& coefficients,
+                const bool trust = true ) :
+    coefficients(std::move(coefficients)),
+    is(this->coefficients.begin(),
+       this->coefficients.end(),
+       trust){}
+  ~VectorSeries() = default;
+  VectorSeries( VectorSeries&& ) = default;
+  VectorSeries& operator=( VectorSeries&& ) = default;
+
+  /* methods */
+  double
+  operator()(const double x) const final { return this->is.eval(x); }
+  
+  double
+  eval(const double x) const final { return this->is.eval(x); }
+
+  double
+  integral( const double lowerBound,
+            const double upperBound ) const final {
+    return this->is.integral( lowerBound, upperBound );
+  }
+
+  double
+  derivative(const double x) const final { return this->is.derivative(x); }
+
+  std::vector<double>
+  integrate(const double boundary, const double boundaryValue) const {
+    return this->is.integrate(boundary, boundaryValue);
+  }
+  
+  /* fields */
+  mutable std::vector<double> coefficients;
+  iteratorSeries< std::vector<double>::iterator > is;
+};
+
+}
+}
+
+#endif

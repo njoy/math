@@ -1,0 +1,44 @@
+#ifndef MATH_IMPLEMENTATION_PROBABILITYDISTRIBUTION_HPP_XYZ
+#define MATH_IMPLEMENTATION_PROBABILITYDISTRIBUTION_HPP_XYZ
+
+#include "math/API/ProbabilityDistribution.hpp"
+#include "math/implementation.hpp"
+
+namespace math{
+namespace implementation{
+
+/**
+ * @tparam PDFFunctor 
+ * A univariate functor that describes the probability density function
+ * @tparam CDFFunctor 
+ * A univariate functor that describes the cumulative distribution function
+ */
+template<typename PDFFunctor, typename CDFFunctor>
+class ProbabilityDistribution : public math::API::ProbabilityDistribution {
+public:
+  /* constructor */
+  ProbabilityDistribution(PDFFunctor&& PDF, CDFFunctor&& CDF) :
+    pdf(std::move(PDF)), cdf(std::move(CDF)){}
+
+  /* methods */
+  /** @return The probability density at the @p event value */
+  double
+  probabilityDensity(const double event) const final {
+    return this->pdf(event);
+  }
+  
+  /** @return The cumulative probability at the @p event value*/
+  double
+  cumulativeProbability(const double event) const final {
+    return this->cdf(event);
+  }
+
+  /* fields */
+  PDFFunctor pdf;
+  CDFFunctor cdf;
+};
+
+}
+}
+#endif // MATH_IMPLEMENTATION_PROBABILITYDISTRIBUTION_HPP
+

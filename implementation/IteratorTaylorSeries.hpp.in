@@ -1,0 +1,81 @@
+#ifndef MATH_IMPLEMENTATION_ITERATORTAYLORSERIES_HPP
+#define MATH_IMPLEMENTATION_ITERATORTAYLORSERIES_HPP
+
+#include <array>
+
+#include "math/API/SeriesExpansion.hpp"
+#include "math/implementation.hpp"
+#include "math/implementation/VectorSeries.hpp"
+
+namespace math{
+namespace implementation{
+
+/**
+ * @brief 
+ * A class representing a Taylor expansion without owning the coefficient data
+ * @details
+ * This class provides efficient evaluation of Taylor series expansions by way
+ * of Horner's rule.\n \n
+ * Horner's rule is a means to efficiently (and stably) evaluated a polynomial.
+ * Consider the polynomial
+ \f[
+       a + b*x + c*x^2 + d*x^3
+ \f]
+ * Evaluated directly, this operation requires 6 multiplication operations, 
+ * (assuming the language in question supports special treatment for integer
+ * exponentation). In general, this amounts to \f$ (N^2 + N) / 2\f$ multiplication
+ * operations, where \f$N\f$ is the order of the polynomial.\n \n
+ * This expression could be recast as can be evaluated as
+ \f[
+       ((d*x + c)*x + b)*x + a
+ \f]
+ * reducing the number of multiplication operations per evaluation to 3. In 
+ * general, this amounts to N multiplication operations (where N is the order of 
+ * the polynomial).\n \n
+ * In addition to reducing the operation count, evaluation via Horner's rule is 
+ * less susceptible to floating point overflow or underflow than the intuitive 
+ * implementation.\n \n
+ * For more information, see http://mathworld.wolfram.com/HornersRule.html
+ */
+template< typename iterator >
+class IteratorTaylorSeries : public math::API::SeriesExpansion {
+public:
+  /* constructor and destructor */
+  IteratorTaylorSeries( const iterator coefficientsBegin,
+                        const iterator coefficientsEnd,
+                        const bool trust = true );
+  ~IteratorTaylorSeries() = default;
+  IteratorTaylorSeries( IteratorTaylorSeries&& ) = default;
+  IteratorTaylorSeries& operator=( IteratorTaylorSeries&& ) = default;
+
+  /* methods */
+  double
+  operator()(const double x) const final { return this->eval(x); }
+  
+  double
+  eval(const double x) const final;
+
+  double
+  integral(const double lowerBound, const double upperBound) const final;
+
+  double
+  derivative(const double x) const final;
+
+  std::vector<double>
+  integrate(const double boundary, const double boundaryValue) const;
+  
+  /* fields */
+  const iterator coefficientsBegin;
+  const iterator coefficientsEnd;
+};
+
+}
+}
+
+#include "math/implementation/IteratorTaylorSeries/src/IteratorTaylorSeries.hpp"
+#include "math/implementation/IteratorTaylorSeries/src/eval.hpp"
+#include "math/implementation/IteratorTaylorSeries/src/integral.hpp"
+#include "math/implementation/IteratorTaylorSeries/src/integrate.hpp"
+#include "math/implementation/IteratorTaylorSeries/src/derivative.hpp"
+
+#endif

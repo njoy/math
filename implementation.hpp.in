@@ -1,0 +1,70 @@
+#ifndef MATH_IMPLEMENTATION_HPP
+#define MATH_IMPLEMENTATION_HPP
+
+#include "math/API.hpp"
+
+namespace math{
+namespace implementation{
+
+/* class InterpolationRegion */
+template<typename randomAccessIter,
+         double interpolation( const double x,
+                               const double x1, const double x2,
+                               const double y1, const double y2 ) >
+class IteratorInterpolationRegion;
+
+template<double interpolation( const double x,
+                               const double x1, const double x2,
+                               const double y1, const double y2 ) >
+class VectorInterpolationRegion;
+
+class HeterogeneousInterpolationRegion;
+
+/* class InterpolationRegionIntegral */
+template<typename randomAccessIter,
+         double interpolation( const double x,
+                               const double x1, const double x2,
+                               const double y1, const double y2 ) >
+class InterpolationRegionIntegral;
+
+class HeterogeneousInterpolationRegionIntegral;
+
+/* class ProbabilityDistribution */
+template<typename PDFFunctor, typename CDFFunctor>
+class ProbabilityDistribution;
+
+/* class BivariateProbabilityDistribution */
+template< double pdfInterp( const double x,
+                            const double x1, const double x2,
+                            const double y1, const double y2 ),
+          double cdfInterp( const double x,
+                            const double x1, const double x2,
+                            const double y1, const double y2 ) >
+class BivariateProbabilityDistribution;
+
+/* class SeriesExpansion */
+template< typename iterator >
+class IteratorTaylorSeries;
+
+template< typename iterator >
+class IteratorLegendreSeries;
+
+template< template<typename> class iteratorSeries >
+class VectorSeries;
+
+typedef VectorSeries< IteratorTaylorSeries > VectorTaylorSeries;
+typedef VectorSeries< IteratorLegendreSeries > VectorLegendreSeries;
+
+}   // namespace implementation
+}   // namespace math
+
+#include "math/implementation/IteratorInterpolationRegion.hpp"
+#include "math/implementation/InterpolationRegionIntegral.hpp"
+#include "math/implementation/VectorInterpolationRegion.hpp"
+#include "math/implementation/VectorSeries.hpp"
+#include "math/implementation/IteratorTaylorSeries.hpp"
+#include "math/implementation/IteratorLegendreSeries.hpp"
+#include "math/implementation/ProbabilityDistribution.hpp"
+#include "math/implementation/BivariateProbabilityDistribution.hpp"
+
+#endif

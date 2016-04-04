@@ -1,0 +1,33 @@
+#ifndef MATH_IMPLEMENTATION_ITERATORINTERPOLATIONREGION_ASSEMBLEY_HPP
+#define MATH_IMPLEMENTATION_ITERATORINTERPOLATIONREGION_ASSEMBLEY_HPP
+
+#include "math/implementation/InterpolationRegionIntegral.hpp"
+
+namespace math{
+namespace implementation{
+
+template<typename randomAccessIter,
+         double interpolation(const double x,
+                              const double x1, const double x2,
+                              const double y1, const double y2) >
+std::vector<double>
+InterpolationRegionIntegral
+<randomAccessIter, interpolation>::assembleY( randomAccessIter xit,
+                                              randomAccessIter dyit,
+                                              std::size_t length,
+                                              const double y0 ){
+  std::vector<double> yGrid;
+  yGrid.reserve(length--);
+  yGrid.push_back(y0);
+  while( length-- ){
+    yGrid.push_back( yGrid.back() +
+                     math::interpolate::integrate<interpolation>
+                     (*xit, *(++xit), *dyit, *(++dyit)) );
+  }
+  return yGrid;
+}
+
+}
+}
+
+#endif

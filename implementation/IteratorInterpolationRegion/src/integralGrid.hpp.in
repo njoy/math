@@ -1,0 +1,35 @@
+#ifndef MATH_IMPLEMENTATION_ITERATORINTERPOLATIONREGION_INTEGRALGRID_HPP
+#define MATH_IMPLEMENTATION_ITERATORINTERPOLATIONREGION_INTEGRALGRID_HPP
+/*
+#include "math/implementation/IteratorInterpolationRegion.hpp"
+
+namespace math{
+namespace implementation{
+
+template<typename randomAccessIter,
+         double interpolation(const double x,
+                              const double x1, const double x2,
+                              const double y1, const double y2) >
+std::vector< std::vector<double> >
+IteratorInterpolationRegion
+< randomAccessIter, interpolation >::integralGrid() const {
+  std::vector< std::vector<double> > grids;
+  std::vector<double> grid;
+  auto length = this->xEnd - this->xBegin;
+  grid.reserve(length--);
+  grid.push_back(0.0);
+  auto xit = this->xBegin;
+  auto yit = this->yBegin;
+  while( length-- ){
+    grid.push_back( grid.back() +
+                    math::interpolate::integrate<interpolation>
+                    (*xit, *(++xit), *yit, *(++yit)) );
+  }
+  grids.push_back(std::move(grid));
+  return grids;
+}
+
+}
+}
+*/
+#endif

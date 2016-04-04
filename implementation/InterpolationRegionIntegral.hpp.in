@@ -1,0 +1,143 @@
+#ifndef MATH_IMPLEMENTATION_INTERPOLATIONREGIONINTEGRAL_HPP
+#define MATH_IMPLEMENTATION_INTERPOLATIONREGIONINTEGRAL_HPP
+
+#include "math/API/InterpolationRegionIntegral.hpp"
+#include "math/implementation.hpp"
+
+namespace math{
+namespace implementation{
+
+template<typename randomAccessIter,
+         double interpolation(const double x,
+                              const double x1, const double x2,
+                              const double y1, const double y2) >
+class InterpolationRegionIntegral :
+    public math::API::InterpolationRegionIntegral {
+public:
+  /* fields */
+  randomAccessIter xBegin;
+  randomAccessIter xEnd;
+  mutable std::vector<double> Y;
+  std::vector<double>::iterator yBegin;
+  randomAccessIter dyBegin;
+  
+  /* constructor and destructor */
+  InterpolationRegionIntegral(
+    randomAccessIter xBegin,
+    randomAccessIter xEnd,
+    randomAccessIter dyBegin,
+    randomAccessIter dyEnd,
+    const bool trust = true) :
+    InterpolationRegionIntegral(xBegin, xEnd, dyBegin, dyEnd, 0.0, trust){}
+
+  InterpolationRegionIntegral(
+    randomAccessIter xBegin,
+    randomAccessIter xEnd,
+    randomAccessIter dyBegin,
+    randomAccessIter dyEnd,
+    const double y0, 
+    const bool trust = true);
+
+  InterpolationRegionIntegral( InterpolationRegionIntegral&& ) = default;
+  
+  ~InterpolationRegionIntegral() = default;
+  
+  /* methods */
+  /** @result Minimum independent variable value represented on the grid */
+  double
+  xMin() const final { return *(this->xBegin); }
+
+  /** @result Maximum independent variable value represented on the grid */
+  double
+  xMax() const final { return this->xEnd[-1]; }
+
+  /** @result 
+   * A mutable view of the independent variable value grid used for interpolation
+   */
+  std::vector< utility::View<double> >
+  xGrid() final {
+    return
+      std::vector< utility::View<double> >
+      { utility::View<double>( this->xBegin, this->xEnd )};
+  }
+
+  /** @result 
+   * A immutable view of the independent variable value grid used for 
+   * interpolation */
+  std::vector< utility::View<const double> >
+  xGrid() const final {
+    return
+      std::vector< utility::View<const double> >
+      { utility::View<const double>( this->xBegin, this->xEnd) };
+  }
+
+  /** @result 
+   * A mutable view of the interpolant integral value grid used for interpolation
+   */
+  std::vector< utility::View<double> >
+  yGrid() final {
+    return
+      std::vector< utility::View<double> >
+      { utility::View<double>( this->yBegin,
+                               this->yBegin + (this->xEnd - this->xBegin) ) };
+  }
+
+  /** @result 
+   * A immutable view of the interpolant integral value grid used for 
+   * interpolation */
+  std::vector< utility::View<const double> >
+  yGrid() const final {
+    return
+      std::vector< utility::View<const double> >
+      { utility::View<const double>(this->yBegin,
+                                    this->yBegin + (this->xEnd - this->xBegin))};
+  }
+
+  /** @result 
+   * A mutable view of the function value grid used for interpolation */
+  std::vector< utility::View<double> >
+  dyGrid() final {
+    return
+      std::vector< utility::View<double> >
+      { utility::View<double>( this->dyBegin,
+                               this->dyBegin + (this->xEnd - this->xBegin) ) };
+  }
+
+  /** @result 
+   * A immutable view of the function value grid used for interpolation */
+  std::vector< utility::View<const double> >
+  dyGrid() const final {
+    return
+      std::vector< utility::View<const double> >
+      { utility::View<const double>
+          (this->dyBegin, this->dyBegin + (this->xEnd - this->xBegin))};
+  }
+
+  /** @result 
+   * The interpolant integral value at @p x */
+  double
+  interpolate(const double x) const final {
+    return
+      math::interpolate::withIterators
+      < randomAccessIter, std::vector<double>::iterator,
+        math::interpolate::integralInterpolate<interpolation> >
+      ( x, this->xBegin, this->xEnd, this->yBegin, this->dyBegin );
+    /* C++... where your one-liner spans 5 lines */
+  }
+
+  /** @brief 
+   * A static function called to at initialization to assemble the interpolant 
+   * integral grid  
+   */
+  static std::vector<double>
+  assembleY( randomAccessIter xit, randomAccessIter dyit,
+             std::size_t length,   const double y0 );
+};
+
+} // namespace implementation
+} // namespace math
+
+#include "math/implementation/InterpolationRegionIntegral/src/InterpolationRegionIntegral.hpp"
+#include "math/implementation/InterpolationRegionIntegral/src/assembleY.hpp"
+
+#endif

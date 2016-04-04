@@ -1,0 +1,197 @@
+#ifndef MATH_INTERPOLATE_CONSTRUCTLINEARLINEARINTERPOLATIONGRID_HPP
+#define MATH_INTERPOLATE_CONSTRUCTLINEARLINEARINTERPOLATIONGRID_HPP
+
+#include <array>
+#include <iterator>
+#include <type_traits>
+
+#include "math/interpolate.hpp"
+
+namespace math{
+namespace interpolate {
+
+/**
+ * @param f 
+ * A functor (such as function pointer, callable struct, or lambda) for which a 
+ * linear grid is desired.
+ *
+ * @param hasConverged 
+ * A functor (such as function pointer, callable struct, or lambda) that, given
+ * a reference value and a trial value, determines whether convergence has been 
+ * achieved.
+ *
+ * @param referenceXGridIterator
+ * An iterator defining the beginning of the existing grid over which function 
+ * evaluations already exist. This iterator returns x-values for the reference 
+ * grid.
+ *
+ * @param referenceXGridEnd
+ * An iterator defining the end of the existing grid over which function 
+ * evaluations already exist.
+ *
+ * @param referenceYGridIterator
+ * An iterator defining the beginning of the existing grid over which function 
+ * evaluations already exist. This iterator returns y-values for the reference 
+ * grid.
+ *
+ * @param linearizedXGrid
+ * A vector which the x-values of the linearized grid ought to be appended to.
+ *
+ * @param linearizedYGrid
+ * A vector which the y-values of the linearized grid ought to be appended to.
+ *
+ * @details
+ * This routine uses a bisection algorithm between each point of the reference
+ * grid to determine a sufficiently fine grid to satisfy the convergence 
+ * criterion. If an inflection point (that is, a change of sign in the second 
+ * derivative) exists between two points on the reference grid, this algorithm 
+ * can generate false positives for convergence. Care should taken to ensure that
+ * a point should exist on the reference grid at (or very nearby) all inflection
+ * points in the region of interest
+ *
+ */
+template<typename functor, typename convergenceCriterion,
+         typename xIterator, typename yIterator>
+void constructLinearLinearInterpolationGrid
+( const functor& f, const convergenceCriterion& hasConverged,
+  xIterator referenceXGridIterator, xIterator referenceXGridEnd,
+  yIterator referenceYGridIterator,
+  std::vector<double>& linearizedXGrid, std::vector<double>& linearizedYGrid ){
+  
+  static_assert(
+    std::is_same
+    < typename std::iterator_traits<xIterator>::value_type,
+    double >::value,
+    "linearize only defined for double precision" );
+
+  static_assert(
+    std::is_same
+    < typename std::iterator_traits<yIterator>::value_type,
+    double >::value,
+    "linearize only defined for double precision" );
+
+  /* edge cases and error checking */
+  if(not linearizedXGrid.empty()){
+    
+    /* Effectively requiring equality of (floating point) x-values at the grid 
+     * interfaces. This a difficult criterion to meet. A scheme to allow for 
+     * some tolerance should be devised, but accounting for the possibility
+     * that one of the two values may be zero makes that a bit difficult
+     */
+    double xDiscontinuity = linearizedXGrid.back() - *referenceXGridIterator;
+    if ( xDiscontinuity < 0 ){
+      LOG(ERROR) << "The left boundary of the reference grid is less than the "
+        "right boundary of the existing linearized grid.";
+      LOG(INFO) << "Overlapping regions are not permitted";
+      throw std::exception();
+    }
+
+    if (xDiscontinuity > 0){
+      LOG(ERROR) << "The left boundary of the reference grid is greater than the "
+        "right boundary of the existing linearized grid.";
+      LOG(INFO) << "Gaps between regions are not permitted";
+      throw std::exception();
+    }
+
+    /* Jump conditions are permitted */
+    if ( linearizedYGrid.back() != *referenceYGridIterator ){
+      linearizedXGrid.push_back( *referenceXGridIterator );
+      linearizedYGrid.push_back( *referenceYGridIterator );
+    }
+  } else {
+    linearizedXGrid.push_back( *referenceXGridIterator );
+    linearizedYGrid.push_back( *referenceYGridIterator );
+  }
+
+  /* the actual algorithm starts here */
+
+  double trialX; /* used to store the midpoint between the x-value of the right 
+                  * boundary of the linearized grid and the x-value of the 
+                  * left-most unconverged grid point. */
+  double trialY; /* used to store the midpoint between the y-value of the right 
+                  * boundary of the linearized grid and the y-value of the 
+                  * left-most unconverged grid point. */
+  double referenceY; /* used to store the function evaluation at the trialX
+                      * value. Serves as the basis of comparison for trialY
+                      * to determine whether the linearized grid has sufficiently
+                      * converged.
+                      */
+  auto nRemainingGridPointsToLinearize =
+    referenceXGridEnd - referenceXGridIterator;
+  std::vector<double> unconvergedXGridStack, unconvergedYGridStack;
+  bool Switch = false;
+  auto left = [&Switch](){return Switch;};
+  auto right = [&Switch](){return not Switch;};
+  std::array<double, 2> trialRegionBoundaries = {{*referenceXGridIterator,
+                                                  *(++referenceXGridIterator)}};
+  while(--nRemainingGridPointsToLinearize){
+    /* Jump conditions are permitted */
+    if( trialRegionBoundaries[ left() ] == trialRegionBoundaries[ right() ] ){
+      linearizedXGrid.push_back( trialRegionBoundaries[ right() ] );
+      linearizedYGrid.push_back( *(++referenceYGridIterator) );
+    } else {
+      unconvergedXGridStack.push_back( trialRegionBoundaries[ right() ] );
+      unconvergedYGridStack.push_back( *(++referenceYGridIterator) );
+      while(not unconvergedXGridStack.empty()){
+        trialX = 0.5 * ( unconvergedXGridStack.back() + linearizedXGrid.back() );
+        trialY = 0.5 * ( unconvergedYGridStack.back() + linearizedYGrid.back() );
+        referenceY = f(trialX);
+        if (hasConverged(referenceY, trialY)){
+          linearizedXGrid.push_back(unconvergedXGridStack.back());
+          unconvergedXGridStack.pop_back();
+          linearizedYGrid.push_back(unconvergedYGridStack.back());
+          unconvergedYGridStack.pop_back();
+        } else {
+          unconvergedXGridStack.push_back(trialX);
+          unconvergedYGridStack.push_back(referenceY);
+        }
+      }
+    }
+    Switch = not Switch;
+    trialRegionBoundaries[ right() ] = *(++referenceXGridIterator);
+  }
+}
+
+/**
+ * @param hasConverged 
+ * A functor (such as function pointer, callable struct, or lambda) that, given
+ * a reference value and a trial value, determines whether convergence has been 
+ * achieved.
+ *
+ * @param referenceXGridIterator
+ * An iterator defining the beginning of the existing grid over which function 
+ * evaluations already exist. This iterator returns x-values for the reference 
+ * grid.
+ *
+ * @param referenceXGridEnd
+ * An iterator defining the end of the existing grid over which function 
+ * evaluations already exist.
+ *
+ * @param referenceYGridIterator
+ * An iterator defining the beginning of the existing grid over which function 
+ * evaluations already exist. This iterator returns y-values for the reference 
+ * grid.
+ *
+ * @param linearizedXGrid
+ * A vector which the x-values of the linearized grid ought to be appended to.
+ *
+ * @param linearizedYGrid
+ * A vector which the y-values of the linearized grid ought to be appended to.
+ */
+template<double f(const double), typename convergenceCriterion,
+         typename xIterator, typename yIterator>
+void constructLinearLinearInterpolationGrid
+( const convergenceCriterion& hasConverged,
+  xIterator referenceXGridIterator, xIterator referenceXGridEnd,
+  yIterator referenceYGridIterator,
+  std::vector<double>& linearizedXGrid, std::vector<double>& linearizedYGrid ){
+  constructLinearLinearInterpolationGrid
+    ( [](const double x){return f(x);}, hasConverged,
+      referenceXGridIterator, referenceXGridEnd,
+      referenceYGridIterator, linearizedXGrid, linearizedYGrid );
+}
+
+} // namespace interpolate
+} // namespace math
+
+#endif

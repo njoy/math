@@ -1,0 +1,79 @@
+#ifndef MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_HPP
+#define MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_HPP
+
+#include "math/API/BivariateProbabilityDistribution.hpp"
+#include "math/API/ProbabilityDistribution.hpp"
+#include "math/implementation.hpp"
+
+namespace math{
+namespace implementation{
+
+/**
+ * @tparam pdfInterp 
+ * A function defining the interpolation scheme between the conditioned PDFs
+ * @tparam cdfInterp 
+ * A function defining the interpolation scheme between the conditioned CDFs
+ */
+template< double pdfInterp( const double x,
+                            const double x1, const double x2,
+                            const double y1, const double y2 ),
+          double cdfInterp( const double x,
+                            const double x1, const double x2,
+                            const double y1, const double y2 ) >
+class BivariateProbabilityDistribution :
+  math::API::BivariateProbabilityDistribution
+{
+public:
+
+  /* constructor and destructor */
+  BivariateProbabilityDistribution
+  ( std::vector<double>&& specifiedVariates,
+    std::vector
+    < std::unique_ptr<math::API::ProbabilityDistribution> >&&
+    conditionedProbabilityDistributions,
+    const bool trust = true);
+
+  ~BivariateProbabilityDistribution() = default;
+  
+  /* methods */
+  /** 
+   * @returns 
+   * The probability distribution *given* a @p condition
+   */
+  math::API::ProbabilityDistribution 
+  given( double condition ) const;
+
+  double 
+  conditionalProbabilityDensity( const double event, 
+                                 const double condition ) const final;
+  double 
+  conditionalCumulativeProbability( const double event, 
+                                    const double condition ) const final;
+
+  /* fields */
+  /** 
+   * @brief 
+   * Variant values (conditions) for which the conditional probability 
+   * distribution is explicitly specified
+   */
+  std::vector<double> conditions;
+
+  /** 
+   * @brief 
+   * The probability distributions given a condition value in the conditions
+   * vector.
+   */
+  std::vector< std::unique_ptr<math::API::ProbabilityDistribution> > 
+  conditionedProbabilityDistributions;
+
+};
+
+}
+}
+
+#include "math/implementation/BivariateProbabilityDistribution/src/BivariateProbabilityDistribution.hpp"
+#include "math/implementation/BivariateProbabilityDistribution/src/conditionalProbabilityDensity.hpp"
+#include "math/implementation/BivariateProbabilityDistribution/src/conditionalCumulativeProbability.hpp"
+
+#endif // MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_HPP
+

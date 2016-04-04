@@ -1,0 +1,52 @@
+#ifndef MATH_INTERPOLATE_INTEGRALINTERPOLATE_HPP
+#define MATH_INTERPOLATE_INTEGRALINTERPOLATE_HPP
+
+#include <type_traits>
+
+#include "math/interpolate.hpp"
+
+namespace math{
+namespace interpolate {
+
+/**
+ * @param x
+ * the upper bound at which the interpolant integral ought be evaluated
+ * @param x1
+ * the nearest independent variable value less than @p x at which the function
+ * value is known
+ * @param x2
+ * the nearest independent variable value greater than @p x at which the function
+ * value is known
+ * @param y1
+ * the interpolant integral value at @p x1
+ * @param y2
+ * the interpolant integral value at @p x2
+ * @param dy1
+ * the function value at @p x1
+ * @param dy2
+ * the function value at @p x2
+ *
+ * @result the value of a logarithmic-linear interpolant intergral at @p x
+ *
+ * @details 
+ * The @p y2 parameter will be ignored, but using this signature allows hermite 
+ * interpolation routines to be substituted in those cases in which the 
+ * interpolation scheme cannot be determined.
+ */
+template< double interpolation(const double x,
+                               const double x1, const double x2,
+                               const double y1, const double y2) >
+inline double
+integralInterpolate(const double x,
+                    const double x1,  const double x2,
+                    const double y1,  const double y2,
+                    const double dy1, const double dy2){
+  ignore(y2);
+  return y1 + integrate<interpolation>(x1, x,
+                                       dy1, interpolation(x, x1, x2, dy1, dy2));
+}
+
+}
+}
+
+#endif

@@ -1,0 +1,66 @@
+#ifndef MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_SRC_CUMULATIVEPROBABILITYDENSITY
+#define MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_SRC_CUMULATIVEPROBABILITYDENSITY
+
+namespace math{
+namespace implementation{
+
+/** @brief The conditional cumulative probability or \f$P(x > x'| y)\f$
+ *
+ * @returns the probability of @p event given the @p condition
+ *
+ * @details It is the responsibility of the whoever calls this method to verify
+ * that the event is valid.
+ *
+ */
+template< double pdfInterp( const double x,
+                            const double x1, const double x2,
+                            const double y1, const double y2 ),
+          double cdfInterp( const double x,
+                            const double x1, const double x2,
+                            const double y1, const double y2 ) >
+double 
+BivariateProbabilityDistribution < pdfInterp, cdfInterp >::
+conditionalCumulativeProbability( const double event, 
+                                  const double condition ) const{
+
+  const auto itCondition =  std::lower_bound(this->conditions.begin(),
+                                             this->conditions.end(),
+                                             condition);
+  try{
+
+    if( itCondition == this->conditions.end() ){
+      LOG(ERROR) << "condition is outside the bounds of the distribution";
+      LOG(INFO) << "condition: " << condition;
+      LOG(INFO) << "Upper boundary of distribution: " 
+                << this->conditions.back();
+      throw std::exception();
+    }
+
+    if( itCondition == this->conditions.begin() ){
+      const auto& PDF = *(this->conditionedProbabilityDistributions).begin();
+      return PDF->cumulativeProbability(event);
+    }
+    int conditionIterDistance = itCondition - conditions.begin();
+    const auto& distIter = this->conditionedProbabilityDistributions.begin() + 
+                          conditionIterDistance;
+    const auto& lowerDist= *(distIter[-1]);
+    const auto& upperDist= *(distIter[0]);
+
+    return cdfInterp(condition, 
+                     itCondition[-1], itCondition[0],
+                     lowerDist.cumulativeProbability(event),
+                     upperDist.cumulativeProbability(event)
+                     );
+  } catch (std::exception& e){
+    LOG(INFO) << "Error while computing conditional cumulative probability "
+              << "in BivariateProbabilityDistribution.";
+    throw e;
+  }
+
+
+}
+
+} // namespace implementation
+} // namespace math
+#endif // MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_SRC_CUMULATIVEPROBABILITYDENSITY
+

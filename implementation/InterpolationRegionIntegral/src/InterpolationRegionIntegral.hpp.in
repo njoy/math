@@ -1,0 +1,66 @@
+#ifndef MATH_IMPLEMENTATION_ITERATORINTERPOLATIONREGION_ITERATORINTERPOLATIONREGION_HPP
+#define MATH_IMPLEMENTATION_ITERATORINTERPOLATIONREGION_ITERATORINTERPOLATIONREGION_HPP
+
+#include "math/implementation/InterpolationRegionIntegral.hpp"
+
+namespace math{
+namespace implementation{
+
+template<typename randomAccessIter,
+         double interpolation(const double x,
+                              const double x1, const double x2,
+                              const double y1, const double y2) >
+InterpolationRegionIntegral
+<randomAccessIter, interpolation>::InterpolationRegionIntegral
+( randomAccessIter xBegin,
+  randomAccessIter xEnd,
+  randomAccessIter dyBegin,
+  randomAccessIter dyEnd,
+  const double y0, 
+  const bool trust ) : xBegin(xBegin),
+                              xEnd(xEnd),
+                              Y(InterpolationRegionIntegral
+                                <randomAccessIter, interpolation>::assembleY
+                                (xBegin, dyBegin, xEnd - xBegin, y0)),
+                              yBegin(this->Y.begin()),
+                              dyBegin(dyBegin){
+  static_assert(std::is_same
+                < typename std::iterator_traits<randomAccessIter>::value_type,
+                  double >::value,
+                "Iterpolation is only defined for double precision" );
+
+  static_assert( std::is_same
+                 < typename std::iterator_traits
+                            <randomAccessIter>::iterator_category,
+                   std::random_access_iterator_tag >::value,
+                 "Iteration only defined for random access iterators" );
+  
+  if ( not trust ){
+    {
+      const auto xLength = xEnd - xBegin;
+      const auto dyLength = dyEnd - dyBegin;
+      if ( xLength != dyLength){
+        LOG(ERROR) << "Mismatched grid lengths";
+        LOG(INFO) << "The X-grid and the dY-grid must be the same length";
+        LOG(INFO) << "X-gird length: " << xLength;
+        LOG(INFO) << "dY-gird length: " << dyLength;
+        throw std::exception();    
+      }
+    }
+    
+    auto it = std::is_sorted_until(xBegin, xEnd);
+    if ( it != xEnd){
+      LOG(ERROR) << "Independent variable is not ordered.";
+      LOG(INFO) <<
+        "Each value in the X-grid must less than or equal to its successor";
+      auto position = (it - xBegin) - 1;
+      LOG(INFO) << "Element " << position++ << ": " << it[-1];
+      LOG(INFO) << "Element " << position   << ": " << it[0];
+      throw std::exception();
+    }
+  }
+}
+
+}
+}
+#endif

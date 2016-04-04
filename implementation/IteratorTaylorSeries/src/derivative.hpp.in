@@ -1,0 +1,27 @@
+#include "math/implementation/IteratorTaylorSeries.hpp"
+
+namespace math {
+namespace implementation {
+
+/**
+ * @brief Evaluated via Horner's rule
+ * @result The value of the derivative of Taylor series at @p x
+ */
+template< typename iterator >
+inline double
+IteratorTaylorSeries<iterator>::derivative(const double x) const {
+  double accumulator;
+  accumulator = 0;
+  auto power = this->coefficientsEnd - this->coefficientsBegin;
+  if (power < 2){ return accumulator; }
+  for (std::reverse_iterator<iterator>
+         it(this->coefficientsEnd),
+         P1(this->coefficientsBegin + 2); it != P1; ++it){
+    accumulator = (accumulator + (*it) * double(--power)) * x;
+  }
+  accumulator += this->coefficientsBegin[1];
+  return accumulator;
+}
+
+} // implementation
+} // math

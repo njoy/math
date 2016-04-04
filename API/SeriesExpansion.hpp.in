@@ -1,0 +1,29 @@
+#ifndef MATH_API_SERIESEXPANSION_HPP
+#define MATH_API_SERIESEXPANSION_HPP
+
+#include "math/API.hpp"
+
+/**
+ * @brief
+ * Classes implementing this API provide function series expansion evaluation.
+ */
+class math::API::SeriesExpansion {
+public:
+  /* constructor and destructor */
+  virtual ~SeriesExpansion(){}
+
+  /* methods */
+  virtual double
+  operator()(const double x) const = 0;
+  
+  virtual double
+  eval(const double x) const = 0;
+
+  virtual double
+  integral(const double lowerBound, const double upperBound) const = 0;
+
+  virtual double
+  derivative(const double x) const = 0;
+};
+
+#endif

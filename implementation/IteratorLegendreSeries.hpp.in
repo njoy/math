@@ -1,0 +1,74 @@
+#ifndef MATH_IMPLEMENTATION_ITERATORLEGENDRESERIES_HPP
+#define MATH_IMPLEMENTATION_ITERATORLEGENDRESERIES_HPP
+
+#include <array>
+
+#include "math/API/SeriesExpansion.hpp"
+#include "math/implementation.hpp"
+
+namespace math{
+namespace implementation{
+
+/**
+ * @brief 
+ * A class representing a Legendre expansion without owning the coefficient data
+ * @details
+ * This class provides efficient evaluation of Legendre series expansions by way
+ * of various recursion relationships. The Bonnet Recusion is used extensively
+ \f[
+       (n+1) P_{n+1} = (2n + 1) x P_n - n P_{n-1}
+ \f]
+ * or equivalently
+ \f[
+       n P_n = (2n - 1) x P_{n-1} - (n - 1) P_{n-2}
+ \f]
+ * \n
+ * Evaluating via recusion this way has the advantages of 
+ * 1. generality\n legendre polynomials of order greater than 1 need not be coded
+ * 2. efficiency\n the operation count goes as N rather than N^2 where N is the 
+ *                 order of the series
+ */
+template< typename iterator >
+class IteratorLegendreSeries : public math::API::SeriesExpansion {
+public:
+  /* constructor and destructor */
+  IteratorLegendreSeries(const iterator coefficientsBegin,
+                         const iterator coefficientsEnd,
+                         const bool trust = true);
+  ~IteratorLegendreSeries() = default;
+  IteratorLegendreSeries( const IteratorLegendreSeries& ) = default;
+  IteratorLegendreSeries( IteratorLegendreSeries&& ) = default;
+  IteratorLegendreSeries& operator=( IteratorLegendreSeries&& ) = default;
+  IteratorLegendreSeries& operator=( const IteratorLegendreSeries& ) = default;
+
+  /* methods */
+  double
+  operator()(const double x) const final { return this->eval(x); }
+  
+  double
+  eval(const double x) const final;
+  
+  double
+  integral(const double lowerBound, const double upperBound) const final;
+
+  double
+  derivative(const double x) const final;
+
+  std::vector<double>
+  integrate(const double boundary, const double boundaryValue) const;
+  
+  /* fields */
+  const iterator coefficientsBegin;
+  const iterator coefficientsEnd;
+};
+
+}
+}
+
+#include "math/implementation/IteratorLegendreSeries/src/IteratorLegendreSeries.hpp"
+#include "math/implementation/IteratorLegendreSeries/src/eval.hpp"
+#include "math/implementation/IteratorLegendreSeries/src/integral.hpp"
+#include "math/implementation/IteratorLegendreSeries/src/integrate.hpp"
+#include "math/implementation/IteratorLegendreSeries/src/derivative.hpp"
+
+#endif

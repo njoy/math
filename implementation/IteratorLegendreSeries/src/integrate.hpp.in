@@ -1,0 +1,80 @@
+#include "math/implementation/IteratorLegendreSeries.hpp"
+
+namespace math {
+namespace implementation {
+
+/**
+ * @brief Generate a new series representing the series integral
+ * @param boundary The x-value for which the boundary condition exists
+ * @param boundaryValue The y-value specified by the boundary condition
+ * @result 
+ * A vector of the coeffcients which can be use to construct a legendre series
+ * representation of the indefinite integral of the calling series.
+ */
+template< typename iterator >
+inline std::vector<double>
+IteratorLegendreSeries<iterator>::integrate
+(const double boundary, const double boundaryValue) const {
+
+  std::vector<double> integralCoefficients;
+  int integralOrder = (this->coefficientsEnd - this->coefficientsBegin);
+  integralCoefficients.resize(integralOrder + 1, 0);
+
+  auto integrandCoefficientIter = this->coefficientsEnd - 1;
+  auto integralCoefficientIter = integralCoefficients.end() - 1;
+
+  double factor;
+  int integrandOrder = integralOrder - 1;  
+  while (integrandOrder){
+    factor = 1.0 / (2.0 * integrandOrder + 1.0);
+    *integralCoefficientIter += *integrandCoefficientIter * factor;
+    integralCoefficientIter[-2] -= *integrandCoefficientIter * factor;
+    --integralCoefficientIter;
+    --integrandCoefficientIter;
+    --integrandOrder;
+  }
+  *integralCoefficientIter += *integrandCoefficientIter;
+  integralCoefficients.front() = 0.0;
+
+  /* evaluate the integral at the boundary */
+  double adjustment;
+  if (integralOrder > 1){
+    auto integralCoefficientsBegin = integralCoefficients.begin();
+    auto integralCoefficientsEnd = integralCoefficients.end();
+    std::array<double,2> collapsedCoefs = {{ integralCoefficientsEnd[-2],
+                                             integralCoefficientsEnd[-1] }};
+    bool currentCoef = true;
+    /* returns the index associated with the (n-1)th coefficient */
+    auto firstPredecessorCoef = [&currentCoef](){return !currentCoef;};
+    /* returns the index associated with the (n-2)th coefficient */
+    auto secondPredecessorCoef = [&currentCoef](){return currentCoef;};
+    
+    /* variable storing repeatedly used division intermediate calculation. */
+    double inverseOrder;
+    for (std::reverse_iterator<iterator>
+           it(integralCoefficientsEnd),        
+           L1(integralCoefficientsBegin + 2);  
+         it != L1; 
+         ++it ){
+      inverseOrder = 1.0 / double(integralOrder--);
+      collapsedCoefs[ firstPredecessorCoef() ] +=
+        collapsedCoefs[currentCoef] * (2.0 - inverseOrder) * boundary;
+      collapsedCoefs[ secondPredecessorCoef() ] =
+        it[2] - collapsedCoefs[ currentCoef ] * (1.0 - inverseOrder);
+      currentCoef = !currentCoef;
+    }
+    
+    adjustment =
+      collapsedCoefs[ firstPredecessorCoef() ] +
+      collapsedCoefs[ currentCoef ] * boundary;
+  } else {
+    adjustment = integralCoefficients.back() * boundary;
+  }
+  
+  /* use boundary evaluation to determine constant of integration */
+  integralCoefficients.front() = boundaryValue - adjustment;
+  return integralCoefficients;
+}
+
+} // implementation
+} // math

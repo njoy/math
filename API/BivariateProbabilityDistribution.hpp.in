@@ -1,0 +1,18 @@
+#ifndef MATH_API_BIVARIATEPROBABILITYDISTRIBUTION
+#define MATH_API_BIVARIATEPROBABILITYDISTRIBUTION
+
+#include "math/API.hpp"
+
+class math::API::BivariateProbabilityDistribution{
+public:
+
+  virtual double 
+  conditionalProbabilityDensity(const double event, 
+                                const double condition) const = 0;
+  virtual double 
+  conditionalCumulativeProbability(const double event, 
+                                   const double condition) const = 0;
+};
+
+#endif  // MATH_API_BIVARIATEPROBABILITYDISTRIBUTION
+

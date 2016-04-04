@@ -1,0 +1,23 @@
+#ifndef MATH_HPP
+#define MATH_HPP
+
+#include "easylogging++.h"
+
+/**
+ * @namespace math
+ *
+ * @brief 
+ * A namespace collecting operations and structures that can be sufficiently 
+ * described without requiring reference their applicatible to physical systems.
+ *
+ * @details
+ * 
+ */
+namespace math{
+/* faux forward declaration of nested namespaces */
+namespace API{}
+namespace implementation{}
+namespace interpolate{}
+}
+
+#endif
