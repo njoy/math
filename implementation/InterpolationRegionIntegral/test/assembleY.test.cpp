@@ -26,6 +26,7 @@ SCENARIO("The interpolation region integral's assembleY functions correctly",
                   << ": [assembleY] No Errors Expected";
         auto grid = linLinIntegral::assembleY(x.begin(), y.begin(), 5, 0.0);
         for (int i = 0; i < 5; ++i){
+          LOG(INFO) << "i ="  << i;
           REQUIRE(Y[i] == Approx(grid[i]));
         }
       }

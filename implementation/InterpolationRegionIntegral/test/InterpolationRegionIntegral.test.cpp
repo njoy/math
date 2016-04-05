@@ -7,7 +7,7 @@
 #include "math/implementation/InterpolationRegionIntegral.hpp"
 
 int testNumber = 0;
-std::vector<double> x {0, 1.0, 2.0, 3.0, 4.0};
+std::vector<double> x {0.0, 1.0, 2.0, 3.0, 4.0};
 std::function<double(double)> f = [](const double x){return 5.0 + 2.0 * x;};
 std::function<double(double)> F =
   [](const double x){return 5.0 * x + pow(x, 2);};

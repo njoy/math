@@ -21,6 +21,7 @@ SCENARIO("The interpolation region integral's yGrid functions correctly",
         LOG(INFO) << "Test " << ++testNumber << ": [yGrid] No Errors Expected";
         auto grid = liir.yGrid()[0];
         for (std::size_t i = 0; i < grid.size(); ++i){
+          LOG(INFO) << "i ="  << i;
           REQUIRE(Y[i] == Approx(grid[i]));
         }
         REQUIRE(Y.size() == grid.size());
@@ -41,6 +42,7 @@ SCENARIO("The constant interpolation region integral's yGrid functions correctly
         LOG(INFO) << "Test " << ++testNumber << ": [yGrid] No Errors Expected";
         auto grid = cliir.yGrid()[0];
         for (std::size_t i = 0; i < grid.size(); ++i){
+          LOG(INFO) << "i ="  << i;
           REQUIRE(Y[i] == Approx(grid[i]));
         }
         REQUIRE(Y.size() == grid.size());

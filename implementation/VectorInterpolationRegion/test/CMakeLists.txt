@@ -1,1 +1,1 @@
-setupTest(VectorIteratorRegion)
+setupTest(VectorInterpolationRegion)
