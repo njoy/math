@@ -36,13 +36,6 @@ public:
   ~BivariateProbabilityDistribution() = default;
   
   /* methods */
-  /** 
-   * @returns 
-   * The probability distribution *given* a @p condition
-   */
-  math::API::ProbabilityDistribution 
-  given( double condition ) const;
-
   double 
   conditionalProbabilityDensity( const double event, 
                                  const double condition ) const final;

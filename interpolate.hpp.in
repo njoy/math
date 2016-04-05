@@ -249,7 +249,7 @@ withIterators( const double x,
     withIterators
     <randomAccessIter, randomAccessIter, integralInterpolation>
     (x, Xit1, Xit2, Yit, dYit);
-};
+}
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /*         Grid generation utilities  */

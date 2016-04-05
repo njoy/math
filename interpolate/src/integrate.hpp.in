@@ -44,6 +44,7 @@ integrate(const double x1, const double x2,
     not std::is_member_function_pointer<decltype(interpolation)>::value,
     "The math::interpolate::integrate function is"
     " not defined for this interpolation scheme");
+  return 0.0;
 }
 
 template<>
