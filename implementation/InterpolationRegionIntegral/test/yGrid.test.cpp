@@ -20,8 +20,10 @@ SCENARIO("The interpolation region integral's yGrid functions correctly",
       THEN("the returned value will return be equal to the vector"){
         LOG(INFO) << "Test " << ++testNumber << ": [yGrid] No Errors Expected";
         auto grid = liir.yGrid()[0];
-        REQUIRE(true == std::equal(grid.begin(), grid.end(),
-                                   Y.begin(), Y.end()));
+        for (std::size_t i = 0; i < grid.size(); ++i){
+          REQUIRE(Y[i] == Approx(grid[i]));
+        }
+        REQUIRE(Y.size() == grid.size());
       }
     }
   }
@@ -38,8 +40,10 @@ SCENARIO("The constant interpolation region integral's yGrid functions correctly
       THEN("the returned value will return be equal to the vector"){
         LOG(INFO) << "Test " << ++testNumber << ": [yGrid] No Errors Expected";
         auto grid = cliir.yGrid()[0];
-        REQUIRE(true == std::equal(grid.begin(), grid.end(),
-                                   Y.begin(), Y.end()));
+        for (std::size_t i = 0; i < grid.size(); ++i){
+          REQUIRE(Y[i] == Approx(grid[i]));
+        }
+        REQUIRE(Y.size() == grid.size());
       }
     }
   }
