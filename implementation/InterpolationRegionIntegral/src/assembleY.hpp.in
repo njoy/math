@@ -23,6 +23,7 @@ InterpolationRegionIntegral
     yGrid.push_back( yGrid.back() +
                      math::interpolate::integrate<interpolation>
                      (*xit, *(++xit), *dyit, *(++dyit)) );
+    LOG(INFO) << yGrid.back();
   }
   return yGrid;
 }
