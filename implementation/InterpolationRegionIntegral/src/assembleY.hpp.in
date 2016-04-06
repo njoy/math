@@ -22,8 +22,10 @@ InterpolationRegionIntegral
   while( length-- ){
     yGrid.push_back( yGrid.back() +
                      math::interpolate::integrate<interpolation>
-                     (*xit, *(++xit), *dyit, *(++dyit)) );
+                     (xit[0], xit[1], dyit[0], dyit[1]) );
+    ++xit; ++dyit;
   }
+
   return yGrid;
 }
 

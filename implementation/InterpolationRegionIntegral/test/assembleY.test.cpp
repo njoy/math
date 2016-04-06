@@ -23,7 +23,6 @@ SCENARIO("The interpolation region integral's assembleY functions correctly",
         std::vector<double> Y {0.0, 6.0, 14.0, 24.0, 36.0};
         auto grid = linLinIntegral::assembleY(x.begin(), y.begin(), 5, 0.0);
         for (int i = 0; i < 5; ++i){
-          LOG(INFO) << "i ="  << i;
           REQUIRE(Y[i] == Approx(grid[i]));
         }
       }
