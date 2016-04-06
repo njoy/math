@@ -29,14 +29,24 @@ addons:
       - cmake
       - cmake-data
 
+  coverity_scan:
+    project:
+      name: "njoy/math"
+      description: "a repository providing interfaces and implementations of mathematical abstraction used in nuclear data processing"
+    notification_email: apmccartney@lanl.gov
+    branch_pattern: coverity_scan
+      
 git:
   submodules: false
 
 env:
-  - build_type="release" static_libraries="TRUE"
-  - build_type="release" static_libraries="FALSE"
-  - build_type="debug" static_libraries="TRUE"
-  - build_type="debug" static_libraries="FALSE"
+  matrix:
+    - build_type="release" static_libraries="TRUE"
+    - build_type="release" static_libraries="FALSE"
+    - build_type="debug" static_libraries="TRUE"
+    - build_type="debug" static_libraries="FALSE"
+  global:
+    - secure: "RoRamqA2dOX0DUDGOlHpNEw6rm6QpftdKQ/5ZwgF87yYrWIqS8B+9aMpyIjpOX0QZE5GvLuHFSiPEoAI7AkjERP0ZrPJ9Ot7dZ2DGVjiEFQlv8QJk8BnOiEmRo/OFFcZSYwEkw/Py5gQ3sKNbCHH8Vuyd1k0h940DHvHWQLcaTMbdu957uAUd7JteCWqgFbUeLhoWVa+7rpWM80e4cGv5l5S5RvuzZECUcpHSwOOGZXNGbGP5VXveQM4/pItne6MVQBWGVp75w+saxlF3e/jwbewxPLmq4aCpjnEe5DgfNvgzuiWkjO/YF4aLJeUwL+W+feZotW4OVrRIpTBHgDAvdepgrsgJrbOu7frfBm4sdwl9UV64Zqdbirf5jq1jv2wmabAfdCfRGEm+zMddHtrzmRqbTnqXuRhy+IvY7VqPbfxG1WwUTTeibH37xYpPBZ/6njWD3MHp+fymGyJxa8VCkjcGGsu3799l25HBfiXU8/+WBcWpB7EwReUyut6Mc72K466m/96/VKLKJ20eEjLDq6EJwzm27oobimUtv4+F9RYuyXBZRENUw6ArMNqK1Y28etXfp3h/+JxYDXwyLyG2tu70RFywap0diEdcKQsC5i+IZfOtF6TGlw0tRmKpvwaiKvYGuy6UUYXrwGiSgv0iSFm0YAmzlfiYnDoH1SOLf4="
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then wget https://cmake.org/files/v3.5/cmake-3.5.0-Darwin-x86_64.tar.gz && tar xfz cmake-3.5.0-Darwin-x86_64.tar.gz; fi
@@ -51,7 +61,7 @@ script:
   - cmake -D build_type=$build_type -D static_libraries=$static_libraries ..
   - make -j 2
   - ctest --output-on-failure -j 2
-  - if [ "$build_type" = "coverage" ]; then pip install --user cpp-coveralls; echo "loading coverage information"; coveralls --exclude Catch --exclude easylogging --exclude commonCMakeScripts --exclude utility --gcov-options '\-lp'; fi
+  - if [ "$build_type" = "coverage" ]; then pip install --user cpp-coveralls; echo "loading coverage information"; coveralls  --exclude "/usr/include" --exclude-pattern ".*CMake.*|.*Catch.*|.*catch.*|.*utility.*|.*easylogging.*|.*test\.cpp" --root ".." --build-root "." --gcov-options '\-lp'; fi
 
 matrix:
   exclude:
@@ -84,10 +94,3 @@ matrix:
   - os: linux
     compiler: gcc
     env: build_type="coverage"
- 
-  #- os: linux
-  #  compiler: clang
-  #  env: build_type="release" static_libraries="FALSE"
-
-  #sudo rm "/usr/bin/ar"; sudo ln -s "/ "/usr/bin/ar"; sudo rm "/usr/bin/ranlib"; sudo ln -s "usr/lib/llvm-3.7/bin/llvm-ranlib" "/usr/bin/ranlib"; sudo rm "/usr/bin/nm"; sudo ln -s "usr/lib/llvm-3.7/bin/llvm-nm" "/usr/bin/nm";
-  #if [ "$TRAVIS_OS_NAME" = "linux" ] && [ $CXX = "g++-5" ] && [ $static_libraries = "TRUE" ] && [ $build_type = "release" ]; then cmake -D build_type="release" -D static_libraries="TRUE" -D CMAKE_AR="/usr/bin/gcc-ar-5" -D CMAKE_RANLIB="/usr/bin/gcc-ranlib-5" -D CMAKE_NM="/usr/bin/gcc-nm-5" -D appended_flags="-fuse-linker-plugin" ..; else ; fi;
