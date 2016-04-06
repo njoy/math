@@ -21,7 +21,7 @@ template< double pdfInterp( const double x,
                             const double x1, const double x2,
                             const double y1, const double y2 ) >
 class BivariateProbabilityDistribution :
-  math::API::BivariateProbabilityDistribution
+  public math::API::BivariateProbabilityDistribution
 {
 public:
 

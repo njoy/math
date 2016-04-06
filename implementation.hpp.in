@@ -33,6 +33,8 @@ class HeterogeneousInterpolationRegionIntegral;
 template<typename PDFFunctor, typename CDFFunctor>
 class ProbabilityDistribution;
 
+class SplicedProbabilityDistribution;
+
 /* class BivariateProbabilityDistribution */
 template< double pdfInterp( const double x,
                             const double x1, const double x2,
