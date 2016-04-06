@@ -5,12 +5,6 @@
 #include "math/implementation/InterpolationRegionIntegral.hpp"
 
 extern int testNumber;
-extern std::vector<double> x;
-extern std::vector<double> y;
-extern std::vector<double> Y;
-extern math::implementation::IteratorInterpolationRegion
-<std::vector<double>::iterator, math::interpolate::linLin>
-liir;
 
 SCENARIO("The interpolation region integral's assembleY functions correctly",
          "[math], [InterpolationRegionIntegral], [assembleY]"){
@@ -24,6 +18,9 @@ SCENARIO("The interpolation region integral's assembleY functions correctly",
           linLinIntegral;
         LOG(INFO) << "Test " << ++testNumber
                   << ": [assembleY] No Errors Expected";
+        std::vector<double> x {0.0, 1.0, 2.0, 3.0, 4.0};
+        std::vector<double> y {5.0, 7.0, 9.0, 11.0, 13.0};
+        std::vector<double> Y {0.0, 6.0, 14.0, 24.0, 36.0};
         auto grid = linLinIntegral::assembleY(x.begin(), y.begin(), 5, 0.0);
         for (int i = 0; i < 5; ++i){
           LOG(INFO) << "i ="  << i;

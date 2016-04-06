@@ -6,8 +6,9 @@
 
 extern int testNumber;
 extern std::vector<double> x;
-extern math::implementation::InterpolationRegionIntegral
-<std::vector<double>::iterator, math::interpolate::linLin>
+extern std::unique_ptr
+< math::implementation::InterpolationRegionIntegral
+  <std::vector<double>::iterator, math::interpolate::linLin> >
 liir;
 
 SCENARIO("The interpolation region integrals's xMax functions correctly",
@@ -17,7 +18,7 @@ SCENARIO("The interpolation region integrals's xMax functions correctly",
     WHEN("queried for the maximum x-value"){
       THEN("the returned value will return the last value of the vector"){
         LOG(INFO) << "Test " << ++testNumber << ": [xMax] No Errors Expected";
-        REQUIRE(x.back() == liir.xMax());
+        REQUIRE(x.back() == liir->xMax());
       }
     }
   }

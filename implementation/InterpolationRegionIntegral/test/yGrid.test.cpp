@@ -7,9 +7,11 @@
 extern int testNumber;
 extern std::vector<double> x;
 extern std::vector<double> y;
-extern std::vector<double> Y;
-extern math::implementation::InterpolationRegionIntegral
-<std::vector<double>::iterator, math::interpolate::linLin>
+
+extern
+std::unique_ptr
+< math::implementation::InterpolationRegionIntegral
+  < std::vector<double>::iterator, math::interpolate::linLin > >
 liir;
 
 SCENARIO("The interpolation region integral's yGrid functions correctly",
@@ -19,9 +21,9 @@ SCENARIO("The interpolation region integral's yGrid functions correctly",
     WHEN("queried for the yGrid"){
       THEN("the returned value will return be equal to the vector"){
         LOG(INFO) << "Test " << ++testNumber << ": [yGrid] No Errors Expected";
-        auto grid = liir.yGrid()[0];
+        std::vector<double> Y {0.0, 6.0, 14.0, 24.0, 36.0};
+        auto grid = liir->yGrid()[0];
         for (std::size_t i = 0; i < grid.size(); ++i){
-          LOG(INFO) << "i ="  << i;
           REQUIRE(Y[i] == Approx(grid[i]));
         }
         REQUIRE(Y.size() == grid.size());
@@ -40,9 +42,9 @@ SCENARIO("The constant interpolation region integral's yGrid functions correctly
     WHEN("queried for the yGrid"){
       THEN("the returned value will return be equal to the vector"){
         LOG(INFO) << "Test " << ++testNumber << ": [yGrid] No Errors Expected";
+        std::vector<double> Y {0.0, 6.0, 14.0, 24.0, 36.0};
         auto grid = cliir.yGrid()[0];
         for (std::size_t i = 0; i < grid.size(); ++i){
-          LOG(INFO) << "i ="  << i;
           REQUIRE(Y[i] == Approx(grid[i]));
         }
         REQUIRE(Y.size() == grid.size());

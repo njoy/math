@@ -7,8 +7,9 @@
 extern int testNumber;
 extern std::vector<double> x;
 extern std::vector<double> y;
-extern math::implementation::InterpolationRegionIntegral
-<std::vector<double>::iterator, math::interpolate::linLin>
+extern std::unique_ptr
+< math::implementation::InterpolationRegionIntegral
+  < std::vector<double>::iterator, math::interpolate::linLin > >
 liir;
 
 SCENARIO("The interpolation region integral's dyGrid functions correctly",
@@ -18,7 +19,7 @@ SCENARIO("The interpolation region integral's dyGrid functions correctly",
     WHEN("queried for the dyGrid"){
       THEN("the returned value will return be equal to the vector"){
         LOG(INFO) << "Test " << ++testNumber << ": [dyGrid] No Errors Expected";
-        auto grid = liir.dyGrid()[0];
+        auto grid = liir->dyGrid()[0];
         REQUIRE(true == std::equal(grid.begin(), grid.end(),
                                    y.begin(), y.end()));
       }

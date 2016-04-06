@@ -6,8 +6,9 @@
 
 extern int testNumber;
 extern std::vector<double> x;
-extern math::implementation::InterpolationRegionIntegral
-<std::vector<double>::iterator, math::interpolate::linLin>
+extern std::unique_ptr
+< math::implementation::InterpolationRegionIntegral
+  <std::vector<double>::iterator, math::interpolate::linLin> >
 liir;
 
 SCENARIO("The interpolation region integral's xMin functions correctly",
@@ -17,7 +18,7 @@ SCENARIO("The interpolation region integral's xMin functions correctly",
     WHEN("queried for the minimum x-value"){
       THEN("the returned value will return the first value of the vector"){
         LOG(INFO) << "Test " << ++testNumber << ": [xMin] No Errors Expected";
-        REQUIRE(x.front() == liir.xMin());
+        REQUIRE(x.front() == liir->xMin());
       }
     }
   }

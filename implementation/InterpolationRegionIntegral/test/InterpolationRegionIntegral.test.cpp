@@ -7,18 +7,22 @@
 #include "math/implementation/InterpolationRegionIntegral.hpp"
 
 int testNumber = 0;
-std::vector<double> x {0.0, 1.0, 2.0, 3.0, 4.0};
-std::function<double(double)> f = [](const double x){return 5.0 + 2.0 * x;};
-std::function<double(double)> F =
-  [](const double x){return 5.0 * x + pow(x, 2);};
-std::vector<double> y {5.0, 7.0, 9.0, 11.0, 13.0};
-std::vector<double> Y {0.0, 6.0, 14.0, 24.0, 36.0};
 
-math::implementation::InterpolationRegionIntegral
-<std::vector<double>::iterator, math::interpolate::linLin>
-liir(x.begin(), x.end(), y.begin(), y.end(), false);
+std::vector<double> x  = {0.0, 1.0, 2.0, 3.0, 4.0};
+std::vector<double> y  = {5.0, 7.0, 9.0, 11.0, 13.0};
+std::vector<double> Y  = {0.0, 6.0, 14.0, 24.0, 36.0};
+
+std::unique_ptr
+<math::implementation::InterpolationRegionIntegral
+ <std::vector<double>::iterator, math::interpolate::linLin> >
+liir;
 
 int main( int argc, const char* argv[] ){
+  liir = 
+  std::make_unique
+    <math::implementation::InterpolationRegionIntegral
+     <std::vector<double>::iterator, math::interpolate::linLin> >
+    (x.begin(), x.end(), y.begin(), y.end(), false);
   LOG(INFO) << "";
   LOG(INFO) << "InterpolationRegionIntegral Tests";
   LOG(INFO) << "=================================";
@@ -26,7 +30,6 @@ int main( int argc, const char* argv[] ){
   LOG(INFO) << "InterpolationRegionIntegral Tests Complete!";
   return result;
 }
-
 
 SCENARIO("The ctor will throw for invalid grids",
          "[math], [InterpolationRegionIntegral], [ctor]"){
@@ -46,6 +49,7 @@ SCENARIO("The ctor will throw for invalid grids",
       }
     }
   }
+  
   GIVEN("an out of order x grid"){
     std::vector<double> x0 = { 1.0, 3.0, 2.0 };
     std::vector<double> y0 = { 1.0, 2.0, 3.0 };
