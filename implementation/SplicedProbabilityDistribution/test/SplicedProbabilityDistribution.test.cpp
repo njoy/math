@@ -2,7 +2,7 @@
 
 #include "catch.hpp"
 
-#include "math/implementation/probabilityDistribution.hpp"
+#include "math/implementation/ProbabilityDistribution.hpp"
 #include "math/implementation/SplicedProbabilityDistribution.hpp"
 
 namespace {
