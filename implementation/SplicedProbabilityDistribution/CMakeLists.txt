@@ -2,9 +2,32 @@ if(${verbose_traversal})
   message(STATUS "Entered SplicedProbabilityDistribution directory")
 endif(${verbose_traversal})
 
-list(APPEND math_src
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/SplicedProbabilityDistribution.cpp"
+set(long_path "${math_HEADER_DIR}/implementation/SplicedProbabilityDistribution/src")
+
+if(NOT(EXISTS "${long_path}"))
+  file(MAKE_DIRECTORY "${long_path}")
+endif(NOT(EXISTS "${long_path}"))
+
+set(headers "")
+list(APPEND headers
+  "SplicedProbabilityDistribution"
+  "probabilityDensity"
+  "cumulativeProbability"
   )
+
+foreach(header ${headers})
+  configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/${header}.hpp.in"
+    "${long_path}/${header}.hpp"
+    COPYONLY
+    )
+  list(APPEND math_src_headers
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/${header}.hpp.in"
+    )
+  list(APPEND math_bin_headers
+    "${long_path}/${header}.hpp"
+    )
+endforeach(header)
 
 # traverse subdirectories
 if(${local_testing})

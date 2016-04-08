@@ -6,42 +6,52 @@
 #include "math/API/ProbabilityDistribution.hpp"
 #include "math/implementation.hpp"
 
-class math::implementation::SplicedProbabilityDistribution :
+namespace math{
+namespace implementation{
+
+template< double pdfInterp( const double x,
+                            const double x1, const double x2,
+                            const double y1, const double y2 ),
+          double cdfInterp( const double x,
+                            const double x1, const double x2,
+                            const double y1, const double y2 ) >
+class SplicedProbabilityDistribution :
   public math::API::ProbabilityDistribution {
 public:
   /* constructor and destructor */
   SplicedProbabilityDistribution
-  ( const math::API::ProbabilityDistribution& pd0,
+  ( const double condition,
+    const math::API::ProbabilityDistribution& pd0,
     const math::API::ProbabilityDistribution& pd1,
-    const std::array<double, 2>& pdfWeights,
-    const std::array<double, 2>& cdfWeights);
+    const std::array<double, 2>& associatedConditions );
 
   SplicedProbabilityDistribution
   ( const SplicedProbabilityDistribution& ) = default;
   SplicedProbabilityDistribution( SplicedProbabilityDistribution&& ) = default;
+
   ~SplicedProbabilityDistribution() = default;
 
   /* method */
   /** @return The probability density at the @p event value */
   double
-  probabilityDensity(const double event) const final {
-    return
-      this->pdfWeights.front() * this->pd0.probabilityDensity(event) +
-      this->pdfWeights.back() * this->pd1.probabilityDensity(event);
-  }
+  probabilityDensity( const double event ) const final;
 
   /** @return The cumulative probability at the @p event value*/
   double
-  cumulativeProbability(const double event) const final {
-     return
-       this->cdfWeights.front() * this->pd0.cumulativeProbability(event) +
-       this->cdfWeights.back() * this->pd1.cumulativeProbability(event); }
+  cumulativeProbability( const double event ) const final;
 
   /* fields */
+  const double condition;
   const math::API::ProbabilityDistribution& pd0;
   const math::API::ProbabilityDistribution& pd1;
-  std::array<double, 2> pdfWeights;
-  std::array<double, 2> cdfWeights;
+  const std::array<double, 2> associatedConditions;
 };
+
+}
+}
+
+#include "math/implementation/SplicedProbabilityDistribution/src/SplicedProbabilityDistribution.hpp"
+#include "math/implementation/SplicedProbabilityDistribution/src/probabilityDensity.hpp"
+#include "math/implementation/SplicedProbabilityDistribution/src/cumulativeProbability.hpp"
 
 #endif

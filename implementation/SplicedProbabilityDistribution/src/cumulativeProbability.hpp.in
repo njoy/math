@@ -1,0 +1,30 @@
+#ifndef MATH_IMPLEMENTATION_SPLICEDPROBABILITYDISTRIBUTION_SRC_CUMULATIVEPROBABILITY_HPP
+#define MATH_IMPLEMENTATION_SPLICEDPROBABILITYDISTRIBUTION_SRC_CUMULATIVEPROBABILITY_HPP
+
+#include "math/implementation/SplicedProbabilityDistribution.hpp"
+
+namespace math{
+namespace implementation{
+
+template< double pdfInterp( const double x,
+                            const double x1, const double x2,
+                            const double y1, const double y2 ),
+          double cdfInterp( const double x,
+                            const double x1, const double x2,
+                            const double y1, const double y2 ) >
+double
+SplicedProbabilityDistribution< pdfInterp, cdfInterp >::cumulativeProbability
+( const double event ) const {
+  const auto& leftCondition = this->associatedConditions.front();
+  const auto& rightCondition = this->associatedConditions.back();
+  const double leftEvent = this->pd0.cumulativeProbability(event);
+  const double rightEvent = this->pd1.cumulativeProbability(event);
+  return pdfInterp(this->condition,
+                   leftCondition, rightCondition,
+                   leftEvent, rightEvent);
+}
+
+}
+}
+
+#endif

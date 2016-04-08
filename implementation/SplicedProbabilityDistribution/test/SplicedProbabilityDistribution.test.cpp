@@ -2,6 +2,7 @@
 
 #include "catch.hpp"
 
+#include "math/interpolate.hpp"
 #include "math/implementation/ProbabilityDistribution.hpp"
 #include "math/implementation/SplicedProbabilityDistribution.hpp"
 
@@ -30,22 +31,24 @@ math::implementation::ProbabilityDistribution
 probabilityDistribution1
 ( std::move(PDF1_), std::move(CDF1_) );
 
-std::array<double, 2> pdfweights = {{0.25, 0.75}};
-std::array<double, 2> cdfweights = {{0.50, 0.50}};
+std::array<double, 2> associatedConditions = {{0.0, 1.0}};
 
 auto pdfRef  = [](double x){
-  return pdfweights.front() * pdf0(x) + pdfweights.back() * pdf1(x);
+  return 0.5 * ( pdf0(x) +  pdf1(x) );
 };
 
 auto cdfRef  = [](double x){
-  return cdfweights.front() * cdf0(x) + cdfweights.back() * cdf1(x);
+  return 0.5 * ( cdf0(x) +  cdf1(x) );
 };
 
 }
 
 math::implementation::SplicedProbabilityDistribution
-splicedDistribution( probabilityDistribution0, probabilityDistribution1,
-                     pdfweights, cdfweights);
+< math::interpolate::linLin, math::interpolate::linLin >
+splicedDistribution( 0.5,
+                     probabilityDistribution0,
+                     probabilityDistribution1,
+                     associatedConditions);
 
 std::function<double(double)> PDFRef = pdfRef;
 std::function<double(double)> CDFRef = cdfRef;
@@ -60,64 +63,41 @@ int main( int argc, const char* argv[]){
   return result;
 }
 
-SCENARIO("Illegal weight combinations will cause the ctor to throw",
+typedef math::implementation::SplicedProbabilityDistribution
+                        < math::interpolate::linLin, math::interpolate::linLin >
+spliced;
+
+SCENARIO("Illegal condition combinations will cause the ctor to throw",
          "[math], [SplicedProbabilityDistribution], [ctor]"){
-  GIVEN("Two (valid) probability distributions and (valid) cdfweights"){
-
-    std::array<double, 2> cdfweights = {{0.50, 0.50}};
+  GIVEN("Two (valid) probability distributions and an out-of-order"
+        " specified conditions"){
     
-    WHEN("when the pdf weights are greater than 1"){
-
-      std::array<double, 2> pdfweights = {{0.50, 0.51}};
-      
+    std::array<double, 2> conditions = {{0.50, 0.25}};
+    
+    WHEN("passed to the ctor"){
       THEN("the ctor will throw"){
         LOG(INFO) << "Test " << ++testNumber << ": [ctor] Errors Expected";
-        REQUIRE_THROWS( math::implementation::SplicedProbabilityDistribution
-                        ( probabilityDistribution0,
-                          probabilityDistribution1,
-                          pdfweights, cdfweights ) );
+        REQUIRE_THROWS( spliced ( 0.375,
+                                  probabilityDistribution0,
+                                  probabilityDistribution1,
+                                  conditions ) );
       }   
-    }
-    WHEN("when the pdf weights are less than 1"){
-
-      std::array<double, 2> pdfweights = {{0.50, 0.49}};
-      
-      THEN("the ctor will throw"){
-        LOG(INFO) << "Test " << ++testNumber << ": [ctor] Errors Expected";
-        REQUIRE_THROWS( math::implementation::SplicedProbabilityDistribution
-                        ( probabilityDistribution0,
-                          probabilityDistribution1,
-                          pdfweights, cdfweights ) );
-      }     
     }
   }
-  GIVEN("Two (valid) probability distributions and (valid) pdfweights"){
+  GIVEN("a queried condition outside the range of the specified conditions"){
 
-    std::array<double, 2> pdfweights = {{0.50, 0.50}};
-    
-    WHEN("when the cdf weights are greater than 1"){
+    double condition = 0.75;
+    std::array<double, 2> conditions = {{0.25, 0.50}};
 
-      std::array<double, 2> cdfweights = {{0.50, 0.51}};
-      
+    WHEN("passed to the ctor"){
       THEN("the ctor will throw"){
         LOG(INFO) << "Test " << ++testNumber << ": [ctor] Errors Expected";
-        REQUIRE_THROWS( math::implementation::SplicedProbabilityDistribution
-                        ( probabilityDistribution0,
-                          probabilityDistribution1,
-                          pdfweights, cdfweights ) );
+        REQUIRE_THROWS( spliced ( condition,
+                                  probabilityDistribution0,
+                                  probabilityDistribution1,
+                                  conditions ) );
+
       }   
-    }
-    WHEN("when the cdf weights are less than 1"){
-
-      std::array<double, 2> cdfweights = {{0.50, 0.49}};
-      
-      THEN("the ctor will throw"){
-        LOG(INFO) << "Test " << ++testNumber << ": [ctor] Errors Expected";
-        REQUIRE_THROWS( math::implementation::SplicedProbabilityDistribution
-                        ( probabilityDistribution0,
-                          probabilityDistribution1,
-                          pdfweights, cdfweights ) );
-      }
     }
   }
 }

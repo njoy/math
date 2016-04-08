@@ -11,13 +11,13 @@ list(APPEND header_only_subdirs
   "IteratorLegendreSeries"
   "ProbabilityDistribution"
   "BivariateProbabilityDistribution"
+  "SplicedProbabilityDistribution"
   )
 set(subdirs "")
 list(APPEND subdirs
   ${header_only_subdirs}
   "HeterogeneousInterpolationRegion"
   "VectorSeries"
-  "SplicedProbabilityDistribution"
   )
   
 foreach (subdir ${header_only_subdirs})
