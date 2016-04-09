@@ -4,12 +4,14 @@
 namespace math{
 namespace implementation{
 
-/** @brief The conditional probability density or \f$P(x | y)\f$
+/** 
+ * @brief The conditional probability density ie \f$P(@p event | @p condition)\f$
  *
- * @returns the probability of @p event given the @p condition
+ * @returns 
+ * The probability density function given the @p condition evalauted at @p event 
  *
- * @details It is the responsibility of the whoever calls this method to verify
- * that the event is valid.
+ * @details 
+ * It is the responsibility of the method caller to validate that the event value
  *
  */
 template< double pdfInterp( const double x,
@@ -19,45 +21,53 @@ template< double pdfInterp( const double x,
                             const double x1, const double x2,
                             const double y1, const double y2 ) >
 double 
-BivariateProbabilityDistribution < pdfInterp, cdfInterp >::
-conditionalProbabilityDensity( const double event, 
-                               const double condition ) const{
-
-  const auto itCondition =  std::lower_bound(this->conditions.begin(),
-                                             this->conditions.end(),
-                                             condition);
+BivariateProbabilityDistribution
+< pdfInterp, cdfInterp >::conditionalProbabilityDensity
+( const double event, const double condition ) const {
+  
+  const auto conditionIter = std::lower_bound( this->conditions.begin(),
+                                               this->conditions.end(),
+                                               condition );
   try{
 
-    if( itCondition == this->conditions.end() ){
-      LOG(ERROR) << "condition is outside the bounds of the distribution";
-      LOG(INFO) << "condition: " << condition;
+    if( conditionIter == this->conditions.end() ){
+      LOG(ERROR) <<
+        "Queried condition value is outside the bounds of the distribution";
+      LOG(INFO) << "Condition value: " << condition;
       LOG(INFO) << "Upper boundary of distribution: " 
                 << this->conditions.back();
       throw std::exception();
     }
 
-    if( itCondition == this->conditions.begin() ){
-      const auto& PDF = *(this->conditionedProbabilityDistributions).begin();
-      return PDF->probabilityDensity(event);
+    if( condition < this->conditions.front() ){
+      LOG(ERROR) <<
+        "Queried condition value is outside the bounds of the distribution";
+      LOG(INFO) << "Condition value: " << condition;
+      LOG(INFO) << "Lower boundary of distribution: " 
+                << this->conditions.front();
+      throw std::exception();
     }
-    int conditionIterDistance = itCondition - conditions.begin();
-    const auto& distIter = this->conditionedProbabilityDistributions.begin() + 
-                          conditionIterDistance;
-    const auto& lowerDist= *(distIter[-1]);
-    const auto& upperDist= *(distIter[0]);
+      
+    const auto conditionIterDistance = conditionIter - this->conditions.begin();
+    const auto& distributionIter =
+      this->conditionedProbabilityDistributions.begin() + conditionIterDistance;
+    const auto& rightDistribution = *(distributionIter[0]);
 
-    return pdfInterp(condition, 
-                     itCondition[-1], itCondition[0],
-                     lowerDist.probabilityDensity(event),
-                     upperDist.probabilityDensity(event)
-                     );
-  } catch (std::exception& e){
+    if( conditionIter == this->conditions.begin() ){
+      return rightDistribution.probabilityDensity(event);
+    }
+    
+    const auto& leftDistribution = *(distributionIter[-1]);
+
+    return pdfInterp( condition, 
+                      conditionIter[-1], conditionIter[0],
+                      leftDistribution.probabilityDensity( event ),
+                      rightDistribution.probabilityDensity( event ) );
+  } catch ( std::exception& e ){
     LOG(INFO) << "Error while computing conditional probability density "
               << "in BivariateProbabilityDistribution.";
     throw e;
   }
-
-
 }
 
 } // namespace implementation

@@ -13,6 +13,7 @@ list(APPEND headers
   "src/BivariateProbabilityDistribution"
   "src/conditionalProbabilityDensity"
   "src/conditionalCumulativeProbability"
+  "src/givenCondition"
   )
 
 foreach(header ${headers})

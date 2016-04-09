@@ -1,19 +1,19 @@
-#ifndef MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_SRC_CUMULATIVEPROBABILITYDENSITY
-#define MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_SRC_CUMULATIVEPROBABILITYDENSITY
+#ifndef MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_SRC_GIVENCONDITION_HPP
+#define MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_SRC_GIVENCONDITION_HPP
+
+#include <memory>
+
+#include "math/implementation/SplicedProbabilityDistribution.hpp"
 
 namespace math{
 namespace implementation{
 
-/** 
- * @brief 
- * The conditional cumulative probability ie 
- * \f$\int_{-\infty}^{\mathrm{event}}P(mathrm{event'} | mathrm{condition])~d mathrm{event'}\f$
+/** @brief The conditional probability density or \f$P(x | y)\f$
  *
- * @returns 
- * The cumulative probability function given the @p condition evalauted at @p event 
+ * @returns the probability of @p event given the @p condition
  *
- * @details
- * It is the responsibility of the method caller to validate that the event value
+ * @details It is the responsibility of the whoever calls this method to verify
+ * that the event is valid.
  *
  */
 template< double pdfInterp( const double x,
@@ -22,10 +22,9 @@ template< double pdfInterp( const double x,
           double cdfInterp( const double x,
                             const double x1, const double x2,
                             const double y1, const double y2 ) >
-double 
+std::unique_ptr< math::API::ProbabilityDistribution >
 BivariateProbabilityDistribution
-< pdfInterp, cdfInterp >::conditionalCumulativeProbability
-( const double event, const double condition ) const {
+< pdfInterp, cdfInterp >::givenCondition( const double condition ) const {
 
   const auto conditionIter = std::lower_bound( this->conditions.begin(),
                                                this->conditions.end(),
@@ -55,23 +54,36 @@ BivariateProbabilityDistribution
     const auto& rightDistribution = *(distributionIter[0]);
 
     if( conditionIter == this->conditions.begin() ){
-      return rightDistribution.cumulativeProbability( event );
+      std::array<double, 2> conditions =
+        {{ conditionIter[0], 0.0 }};
+      
+      return
+        std::make_unique
+        < math::implementation::SplicedProbabilityDistribution
+          < pdfInterp, cdfInterp> >
+        ( condition, &rightDistribution, nullptr, conditions );
     }
-    
-    const auto& leftDistribution = *(distributionIter[-1]);
 
-    return cdfInterp( condition, 
-                      conditionIter[-1], conditionIter[0],
-                      leftDistribution.cumulativeProbability( event ),
-                      rightDistribution.cumulativeProbability( event ) );
-  } catch ( std::exception& e ){
-    LOG(INFO) << "Error while computing conditional cumulative probability"
-              << " in BivariateProbabilityDistribution.";
+    const auto& leftDistribution = *(distributionIter[-1]); 
+
+    std::array<double, 2> conditions =
+        {{ conditionIter[-1], conditionIter[0] }};
+    
+    return
+      std::make_unique
+      < math::implementation::SplicedProbabilityDistribution
+        < pdfInterp, cdfInterp > >
+      ( condition, &leftDistribution, &rightDistribution, conditions );
+
+
+  } catch (std::exception& e){
+    LOG(INFO) << "Error while generating probability distribution "
+              << "in BivariateProbabilityDistribution givenCondition method.";
     throw e;
   }
 }
 
 } // namespace implementation
 } // namespace math
-#endif // MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_SRC_CUMULATIVEPROBABILITYDENSITY
 
+#endif //  MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_SRC_CONDITIONALPROBABILITYDENSITY_HPP

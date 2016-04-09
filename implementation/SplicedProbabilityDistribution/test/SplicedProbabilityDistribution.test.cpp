@@ -46,8 +46,8 @@ auto cdfRef  = [](double x){
 math::implementation::SplicedProbabilityDistribution
 < math::interpolate::linLin, math::interpolate::linLin >
 splicedDistribution( 0.5,
-                     probabilityDistribution0,
-                     probabilityDistribution1,
+                     &probabilityDistribution0,
+                     &probabilityDistribution1,
                      associatedConditions);
 
 std::function<double(double)> PDFRef = pdfRef;
@@ -78,8 +78,8 @@ SCENARIO("Illegal condition combinations will cause the ctor to throw",
       THEN("the ctor will throw"){
         LOG(INFO) << "Test " << ++testNumber << ": [ctor] Errors Expected";
         REQUIRE_THROWS( spliced ( 0.375,
-                                  probabilityDistribution0,
-                                  probabilityDistribution1,
+                                  &probabilityDistribution0,
+                                  &probabilityDistribution1,
                                   conditions ) );
       }   
     }
@@ -93,8 +93,8 @@ SCENARIO("Illegal condition combinations will cause the ctor to throw",
       THEN("the ctor will throw"){
         LOG(INFO) << "Test " << ++testNumber << ": [ctor] Errors Expected";
         REQUIRE_THROWS( spliced ( condition,
-                                  probabilityDistribution0,
-                                  probabilityDistribution1,
+                                  &probabilityDistribution0,
+                                  &probabilityDistribution1,
                                   conditions ) );
 
       }   

@@ -16,12 +16,13 @@ double
 SplicedProbabilityDistribution< pdfInterp, cdfInterp >::probabilityDensity
 ( const double event ) const {
   const auto& leftCondition = this->associatedConditions.front();
+  const auto leftProbabilityDensity = this->pd0->probabilityDensity( event );
+  if (not this->pd1){ return leftProbabilityDensity; }
   const auto& rightCondition = this->associatedConditions.back();
-  const double leftEvent = this->pd0.probabilityDensity(event);
-  const double rightEvent = this->pd1.probabilityDensity(event);
-  return pdfInterp(this->condition,
-                   leftCondition, rightCondition,
-                   leftEvent, rightEvent);
+  const auto rightProbabilityDensity = this->pd1->probabilityDensity( event );
+  return pdfInterp( this->condition,
+                    leftCondition, rightCondition,
+                    leftProbabilityDensity, rightProbabilityDensity );
 }
 
 }

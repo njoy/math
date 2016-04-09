@@ -12,34 +12,54 @@
 namespace ma = math::API;
 namespace mi = math::implementation;
 
-namespace{
-  std::vector<double> specifiedVariates = {0.0, 1.0, 2.0};
-  
+namespace{  
   /* considering a domain spanning from -1 to 1 */  
-  std::function<double(double)> pdf0 = [](double x){return 0.5 * x + 0.5;};
-  std::function<double(double)> pdf1 = [](double x){return -0.5 * x + 0.5;};
-  std::function<double(double)> pdf2 = [](double){return 0.5;};
+  auto pdf0_ = [](double x){return 0.5 * x + 0.5;};
+  auto pdf1_ = [](double x){return -0.5 * x + 0.5;};
+  auto pdf2_ = [](double){return 0.5;};
   
-  std::function<double(double)> cdf0 =
-    [](double x){return 0.25*std::pow(x,2) + 0.5 * x + 0.25;};
-  std::function<double(double)> cdf1 =
-    [](double x){return -0.25*std::pow(x,2) + 0.5 * x + 0.75;};
-  std::function<double(double)> cdf2 =
-    [](double x){return 0.5 * x + 0.5;};
+  auto cdf0_ = [](double x){return 0.25*std::pow(x,2) + 0.5 * x + 0.25;};
+  auto cdf1_ = [](double x){return -0.25*std::pow(x,2) + 0.5 * x + 0.75;};
+  auto cdf2_ = [](double x){return 0.5 * x + 0.5;};
 
+  template< typename T > T clone(const T& t){return t;}
+}
 
+int testNumber = 0;
+
+std::vector<double> conditions = {0.0, 1.0, 2.0};
+
+std::function<double(double)> pdf0 = pdf0_;
+std::function<double(double)> pdf1 = pdf1_;
+std::function<double(double)> pdf2 = pdf2_;
+std::function<double(double)> cdf0 = cdf0_;  
+std::function<double(double)> cdf1 = cdf1_;  
+std::function<double(double)> cdf2 = cdf2_;  
+
+std::unique_ptr
+< math::implementation::BivariateProbabilityDistribution
+< math::interpolate::linLin, math::interpolate::linLin > >
+bvpd;
+
+int main( int argc, const char* argv[] ){
+  std::function<double(double)> pdf0 = pdf0_;
+  std::function<double(double)> cdf0 = cdf0_;  
   std::unique_ptr<ma::ProbabilityDistribution> probDist0 =
     std::make_unique
     < mi::ProbabilityDistribution
       < std::function<double(double)>, std::function<double(double) > > >
     ( std::move(pdf0), std::move(cdf0) );
 
+  std::function<double(double)> pdf1 = pdf1_;
+  std::function<double(double)> cdf1 = cdf1_;  
   std::unique_ptr<ma::ProbabilityDistribution> probDist1 =
     std::make_unique
     < mi::ProbabilityDistribution
       < std::function<double(double)>, std::function<double(double) > > >
     ( std::move(pdf1), std::move(cdf1) );
 
+  std::function<double(double)> pdf2 = pdf2_;
+  std::function<double(double)> cdf2 = cdf2_;  
   std::unique_ptr<ma::ProbabilityDistribution> probDist2 =
     std::make_unique
     < mi::ProbabilityDistribution
@@ -48,24 +68,16 @@ namespace{
 
   std::vector< std::unique_ptr< ma::ProbabilityDistribution > >
     conditionedProbDist;
-
-}
-
-int testNumber = 0;
-
-std::unique_ptr
-< math::implementation::BivariateProbabilityDistribution
-< math::interpolate::linLin, math::interpolate::linLin > >
-bvpd;
-
-int main( int argc, const char* argv[] ){
+  
   conditionedProbDist.push_back(std::move(probDist0));
   conditionedProbDist.push_back(std::move(probDist1));
   conditionedProbDist.push_back(std::move(probDist2));
+
   bvpd = std::make_unique
     < math::implementation::BivariateProbabilityDistribution
       < math::interpolate::linLin, math::interpolate::linLin > >
-    ( std::move(specifiedVariates), std::move(conditionedProbDist) );
+    ( clone(conditions), std::move(conditionedProbDist) );
+  
   LOG(INFO) << "";
   LOG(INFO) << "BivariateProbabilityDistribution Tests";
   LOG(INFO) << "=================================";

@@ -20,7 +20,7 @@ template< double pdfInterp( const double x,
           double cdfInterp( const double x,
                             const double x1, const double x2,
                             const double y1, const double y2 ) >
-class BivariateProbabilityDistribution :
+class BivariateProbabilityDistribution final :
   public math::API::BivariateProbabilityDistribution
 {
 public:
@@ -38,10 +38,14 @@ public:
   /* methods */
   double 
   conditionalProbabilityDensity( const double event, 
-                                 const double condition ) const final;
+                                 const double condition ) const;
+
   double 
   conditionalCumulativeProbability( const double event, 
-                                    const double condition ) const final;
+                                    const double condition ) const;
+
+  std::unique_ptr< math::API::ProbabilityDistribution >
+  givenCondition( const double condition ) const;
 
   /* fields */
   /** 
@@ -67,6 +71,7 @@ public:
 #include "math/implementation/BivariateProbabilityDistribution/src/BivariateProbabilityDistribution.hpp"
 #include "math/implementation/BivariateProbabilityDistribution/src/conditionalProbabilityDensity.hpp"
 #include "math/implementation/BivariateProbabilityDistribution/src/conditionalCumulativeProbability.hpp"
+#include "math/implementation/BivariateProbabilityDistribution/src/givenCondition.hpp"
 
 #endif // MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_HPP
 

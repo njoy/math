@@ -16,8 +16,8 @@ template< double pdfInterp( const double x,
 SplicedProbabilityDistribution
 < pdfInterp, cdfInterp >::SplicedProbabilityDistribution
 ( const double queriedCondition,
-  const math::API::ProbabilityDistribution& pd0,
-  const math::API::ProbabilityDistribution& pd1,
+  const math::API::ProbabilityDistribution* pd0,
+  const math::API::ProbabilityDistribution* pd1,
   const std::array<double, 2>& associatedConditions ) :
   condition( queriedCondition ),
   pd0( pd0 ),
