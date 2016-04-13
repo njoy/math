@@ -8,7 +8,7 @@ list(APPEND math_src
   "${CMAKE_CURRENT_SOURCE_DIR}/src/interpolate.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/xGrid.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/yGrid.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/integralGrid.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/integral.cpp"
   )
 
 # traverse subdirectories

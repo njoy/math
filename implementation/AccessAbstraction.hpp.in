@@ -25,9 +25,7 @@ struct AccessAbstraction
                               end( this->container.end() ){}
 
   AccessAbstraction( AccessAbstraction&& other ) :
-    container( std::move(other.container) ),
-    begin( this->container.begin() ),
-    end( this->container.end() ){}
+    AccessAbstraction( std::move(other.container) ){}
 
   AccessAbstraction( const AccessAbstraction& other) :
     container( other.container ),

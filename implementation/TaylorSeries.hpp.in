@@ -41,7 +41,6 @@ template< typename OwnershipPolicy, typename T >
 class TaylorSeries : public math::API::SeriesExpansion {
 public:
   /* fields */
-  //using kludge = AccessAbstraction< TransferPolicy, std::vector<double> >;
   using SelfAccessAbstraction = AccessAbstraction< OwnershipPolicy, T >;
   SelfAccessAbstraction coefficientData;
   
@@ -104,7 +103,7 @@ public:
     return
       std::make_unique
       < TaylorSeries< TransferPolicy, std::vector<double> > >
-      ( this->integrate_(boundary, boundaryValue));
+      ( this->integrate_(boundary, boundaryValue) );
   }
   
   double
