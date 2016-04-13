@@ -23,13 +23,12 @@ namespace interpolate {
 template< Interpolant interpolant >
 double
 integrate( const double, const double,
-           const double, const double ){}
-
-//   static_assert( std::is_same<Interpolant, void>::value,
-//                  "The math::interpolate::integrate function is"
-//                  " not defined for this interpolation scheme" );
-//   return 0.0;
-// }
+           const double, const double ){
+   static_assert( interpolant == nullptr,
+                  "The math::interpolate::integrate function is"
+                  " not defined for this interpolation scheme" );
+   return 0.0;
+}
 
 template<>
 inline double

@@ -20,7 +20,7 @@ public:
   SelfAccessAbstraction yData;
 
   using Iterator = decltype( xData.begin );
-  using InterpolationTableIntegral =
+  using Integral =
     InterpolationTableIntegral< Iterator, interpolant >;
 
   /* constructor and destructor */
@@ -113,12 +113,12 @@ public:
   std::unique_ptr< math::API::InterpolationTableIntegral >
   integral( const double y0 ) const {
     auto temp = this->integral_(y0);
-    return std::make_unique< InterpolationTableIntegral >( std::move(temp) );
+    return std::make_unique< Integral >( std::move(temp) );
   }
 
-  InterpolationTableIntegral
+  Integral
   integral_( const double y0 ) const {
-    return InterpolationTableIntegral
+    return Integral
       ( this->xData.begin, this->xData.end,
         this->yData.begin, this->yData.end,
         y0, true );
