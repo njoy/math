@@ -1,0 +1,29 @@
+#ifndef MATH_IMPLEMENTATION_INTERPOLATIONTABLEINTEGRAL_ASSEMBLEYGRID_HPP
+#define MATH_IMPLEMENTATION_INTERPOLATIONTABLEINTEGRAL_ASSEMBLEYGRID_HPP
+
+#include "math/implementation/InterpolationTableIntegral.hpp"
+
+namespace math{
+namespace implementation{
+
+template<typename Iterator, Interpolant interpolant >
+std::vector<double>
+InterpolationTableIntegral<Iterator, interpolant>::assembleY
+( Iterator xit, Iterator dyit, std::size_t length, const double y0 ){
+  std::vector<double> yGrid;
+  yGrid.reserve(length--);
+  yGrid.push_back(y0);
+  while( length-- ){
+    yGrid.push_back( yGrid.back() +
+                     math::interpolate::integrate<interpolant>
+                     ( xit[0], xit[1], dyit[0], dyit[1] ) );
+    ++xit; ++dyit;
+  }
+
+  return yGrid;
+}
+
+}
+}
+
+#endif

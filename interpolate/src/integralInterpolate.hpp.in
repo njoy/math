@@ -33,17 +33,14 @@ namespace interpolate {
  * interpolation routines to be substituted in those cases in which the 
  * interpolation scheme cannot be determined.
  */
-template< double interpolation(const double x,
-                               const double x1, const double x2,
-                               const double y1, const double y2) >
-inline double
+template< Interpolant interpolant >
+double
 integralInterpolate(const double x,
                     const double x1,  const double x2,
-                    const double y1,  const double y2,
+                    const double y1,  const double,
                     const double dy1, const double dy2){
-  ignore(y2);
-  return y1 + integrate<interpolation>(x1, x,
-                                       dy1, interpolation(x, x1, x2, dy1, dy2));
+  return y1 + integrate<interpolant>(x1, x,
+                                     dy1, interpolant(x, x1, x2, dy1, dy2));
 }
 
 }

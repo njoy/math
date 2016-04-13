@@ -4,20 +4,18 @@ endif(${verbose_traversal})
 
 set(header_only_subdirs "")
 list(APPEND header_only_subdirs
-  "IteratorInterpolationRegion"
-  "InterpolationRegionIntegral"
-  "VectorInterpolationRegion"
-  "IteratorTaylorSeries"
-  "IteratorLegendreSeries"
-  "ProbabilityDistribution"
-  "BivariateProbabilityDistribution"
-  "SplicedProbabilityDistribution"
+  "InterpolationTable"
+  "InterpolationTableIntegral"
+  "TaylorSeries"
+#  "LegendreSeries"
+#  "SplicedProbabilityDistribution"
+#  "ProbabilityDistribution"
+#  "BivariateProbabilityDistribution"
   )
 set(subdirs "")
 list(APPEND subdirs
   ${header_only_subdirs}
-  "HeterogeneousInterpolationRegion"
-  "VectorSeries"
+  "CompositeInterpolationTable"
   )
   
 foreach (subdir ${header_only_subdirs})
@@ -28,6 +26,7 @@ endforeach (subdir)
 
 set(headers "")
 list(APPEND headers
+  "AccessAbstraction"
   ${subdirs}
   )
 
@@ -37,12 +36,6 @@ foreach(header ${headers})
     "${math_HEADER_DIR}/implementation/${header}.hpp"
     COPYONLY
     )
-  list(APPEND math_src_headers
-    "${CMAKE_CURRENT_SOURCE_DIR}/${header}.hpp.in"
-    )
-  list(APPEND math_bin_headers
-    "${math_HEADER_DIR}/implementation/${header}.hpp"
-    )
 endforeach(header)
 
 foreach (subdir ${subdirs})
@@ -50,8 +43,6 @@ foreach (subdir ${subdirs})
 endforeach (subdir)
 
 set(math_src "${math_src}" PARENT_SCOPE)
-set(math_src_headers "${math_src_headers}" PARENT_SCOPE)
-set(math_bin_headers "${math_bin_headers}" PARENT_SCOPE)
 
 if(${verbose_traversal})
   message(STATUS "Exiting implementation directory")

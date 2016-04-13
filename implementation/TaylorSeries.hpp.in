@@ -1,0 +1,131 @@
+#ifndef MATH_IMPLEMENTATION_TAYLORSERIES_HPP
+#define MATH_IMPLEMENTATION_TAYLORSERIES_HPP
+
+#include <array>
+
+#include "math/API/SeriesExpansion.hpp"
+
+#include "math/implementation.hpp"
+
+namespace math{
+namespace implementation{
+
+/**
+ * @brief 
+ * A class representing a Taylor expansion without owning the coefficient data
+ * @details
+ * This class provides efficient evaluation of Taylor series expansions by way
+ * of Horner's rule.\n \n
+ * Horner's rule is a means to efficiently (and stably) evaluated a polynomial.
+ * Consider the polynomial
+ \f[
+       a + b*x + c*x^2 + d*x^3
+ \f]
+ * Evaluated directly, this operation requires 6 multiplication operations, 
+ * (assuming the language in question supports special treatment for integer
+ * exponentation). In general, this amounts to \f$ (N^2 + N) / 2\f$ multiplication
+ * operations, where \f$N\f$ is the order of the polynomial.\n \n
+ * This expression could be recast as can be evaluated as
+ \f[
+       ((d*x + c)*x + b)*x + a
+ \f]
+ * reducing the number of multiplication operations per evaluation to 3. In 
+ * general, this amounts to N multiplication operations (where N is the order of 
+ * the polynomial).\n \n
+ * In addition to reducing the operation count, evaluation via Horner's rule is 
+ * less susceptible to floating point overflow or underflow than the intuitive 
+ * implementation.\n \n
+ * For more information, see http://mathworld.wolfram.com/HornersRule.html
+ */
+template< typename OwnershipPolicy, typename T >
+class TaylorSeries : public math::API::SeriesExpansion {
+public:
+  /* fields */
+  //using kludge = AccessAbstraction< TransferPolicy, std::vector<double> >;
+  using SelfAccessAbstraction = AccessAbstraction< OwnershipPolicy, T >;
+  SelfAccessAbstraction coefficientData;
+  
+  /* constructor and destructor */
+  TaylorSeries( SelfAccessAbstraction&& coefficientData, const bool trust );
+
+  /**
+   * @brief  The transfer policy ctor. 
+   *
+   * @details
+   * This template can only be instantiated when the function template parameter
+   * `U` and the class template `T` are matching types and the OwnershipPolicy 
+   * class template parameter is set to TransferPolicy.
+   */ 
+  template< typename U >
+  TaylorSeries( U&& container, const bool trust = true ) :
+  TaylorSeries( SelfAccessAbstraction( std::move(container) ), trust ) {}
+
+  /**
+   * @brief  The reference policy ctor. 
+   *
+   * @details
+   * This template can only be instantiated when the function template parameter
+   * `U` and the class template `T` are matching types and the OwnershipPolicy 
+   * class template parameter is set to ReferencePolicy.
+   */ 
+  template< typename U >
+  TaylorSeries( const U begin, const U end,
+                const bool trust = true ) :
+  TaylorSeries( SelfAccessAbstraction( begin, end ), trust ) {}
+
+  TaylorSeries( const TaylorSeries& ) = default;
+
+  TaylorSeries( TaylorSeries&& ) = default;
+
+  ~TaylorSeries() = default;
+
+  /* operator overloads */
+  TaylorSeries&
+  operator=( TaylorSeries&& ) = default;
+
+  TaylorSeries&
+  operator=( const TaylorSeries& ) = default;
+
+  double
+  operator()( const double x ) const { return this->evaluate(x); }
+  
+  /* methods */  
+  double
+  evaluate( const double x ) const;
+
+  double
+  integral( const double lowerBound, const double upperBound ) const;
+
+  TaylorSeries< TransferPolicy, std::vector<double> >
+  integrate_( const double boundary, const double boundaryValue ) const;
+  
+  std::unique_ptr< math::API::SeriesExpansion >
+  integrate( const double boundary, const double boundaryValue ) const {
+    return
+      std::make_unique
+      < TaylorSeries< TransferPolicy, std::vector<double> > >
+      ( this->integrate_(boundary, boundaryValue));
+  }
+  
+  double
+  derivative( const double x ) const;
+
+/*
+  std::unique_ptr< math::API::Series >
+  differentiate() const;
+  
+  TaylorSeries< TransferPolicy, std::vector<double> >
+  differentiate_() const;
+*/  
+};
+
+}
+}
+
+#include "math/implementation/TaylorSeries/src/TaylorSeries.hpp"
+#include "math/implementation/TaylorSeries/src/evaluate.hpp"
+#include "math/implementation/TaylorSeries/src/integral.hpp"
+#include "math/implementation/TaylorSeries/src/integrate.hpp"
+#include "math/implementation/TaylorSeries/src/derivative.hpp"
+
+#endif

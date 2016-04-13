@@ -1,0 +1,139 @@
+#ifndef MATH_IMPLEMENTATION_INTERPOLATIONTABLE_HPP
+#define MATH_IMPLEMENTATION_INTERPOLATIONTABLE_HPP
+
+#include "utility/View.hpp"
+
+#include "math/API/InterpolationTable.hpp"
+#include "math/implementation/AccessAbstraction.hpp"
+#include "math/implementation/InterpolationTableIntegral.hpp"
+
+namespace math{
+namespace implementation{
+
+template< Interpolant interpolant, typename OwnershipPolicy, typename T >
+class InterpolationTable final : public math::API::InterpolationTable {
+public:
+
+  /* fields */
+  using SelfAccessAbstraction = AccessAbstraction< OwnershipPolicy, T >;
+  SelfAccessAbstraction xData;
+  SelfAccessAbstraction yData;
+
+  using Iterator = decltype( xData.begin );
+  using InterpolationTableIntegral =
+    InterpolationTableIntegral< Iterator, interpolant >;
+
+  /* constructor and destructor */
+  /**
+   * @brief A base ctor to capture common functionality (namely verification)
+   */
+  InterpolationTable( SelfAccessAbstraction&& xData,
+                      SelfAccessAbstraction&& yData,
+                      const bool trust );
+  
+  /**
+   * @brief  The transfer policy ctor. 
+   *
+   * @details
+   * This template can only be instantiated when the function template parameter
+   * `U` and the class template `T` are matching types and the OwnershipPolicy 
+   * class template parameter is set to TransferPolicy.
+   */ 
+  template< typename U >
+  InterpolationTable( U&& xContainer, U&& yContainer, const bool trust = true ) :
+  InterpolationTable
+  ( SelfAccessAbstraction( std::move(xContainer) ),
+    SelfAccessAbstraction( std::move(yContainer) ),
+    trust ) {}
+
+  /**
+   * @brief  The reference policy ctor. 
+   *
+   * @details
+   * This template can only be instantiated when the function template parameter
+   * `U` and the class template `T` are matching types and the OwnershipPolicy 
+   * class template parameter is set to ReferencePolicy.
+   */ 
+  template< typename U >
+  InterpolationTable( const U xBegin, const U xEnd,
+                      const U yBegin, const U yEnd,
+                      const bool trust = true ) :
+  InterpolationTable
+  ( SelfAccessAbstraction( xBegin, xEnd ),
+    SelfAccessAbstraction( yBegin, yEnd ),
+    trust ) {}
+  
+  InterpolationTable( InterpolationTable&& ) = default;
+
+  InterpolationTable( const InterpolationTable& ) = default;
+
+  ~InterpolationTable( ) = default;
+  
+  /* operator overloads */
+  InterpolationTable&
+  operator=( InterpolationTable&& ) = default;
+  
+  InterpolationTable&
+  operator=( const InterpolationTable& ) = default;
+
+  double
+  operator()( const double x ) const { return this->interpolate(x); }
+
+  /* methods */
+  double
+  xMin() const { return *(this->xData.begin); }
+
+  double
+  xMax() const { return this->xData.end[-1]; }
+
+  std::vector< utility::View<double> >
+  xGrid() {
+    return std::vector< utility::View<double> >
+    { utility::View<double>( this->xData.begin, this->xData.end ) };
+  }
+
+  std::vector< utility::View<const double> >
+  xGrid() const {
+    return std::vector< utility::View<const double> >
+    { utility::View<const double>( this->xData.begin, this->xData.end ) };
+  }
+
+  std::vector< utility::View<double> >
+  yGrid() {
+    return std::vector< utility::View<double> >
+    { utility::View<double>( this->yData.begin, this->yData.end ) };
+  }
+
+  std::vector< utility::View<const double> >
+  yGrid() const {
+    return std::vector< utility::View<const double> >
+    { utility::View<const double>( this->yData.begin, this->yData.end ) };
+  }
+
+  std::unique_ptr< math::API::InterpolationTableIntegral >
+  integral( const double y0 ) const {
+    auto temp = this->integral_(y0);
+    return std::make_unique< InterpolationTableIntegral >( std::move(temp) );
+  }
+
+  InterpolationTableIntegral
+  integral_( const double y0 ) const {
+    return InterpolationTableIntegral
+      ( this->xData.begin, this->xData.end,
+        this->yData.begin, this->yData.end,
+        y0, true );
+  }
+  
+  double
+  interpolate( const double x ) const {
+    return math::interpolate::withIterators< Iterator, interpolant >
+      ( x, this->xData.begin, this->xData.end, this->yData.begin );
+  }
+};
+
+}
+}
+
+#include "math/implementation/InterpolationTable/src/InterpolationTable.hpp"
+
+#endif

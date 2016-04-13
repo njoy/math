@@ -1,0 +1,39 @@
+#ifndef MATH_IMPLEMENTATION_INTERPOLATIONTABLE_CTOR_HPP
+#define MATH_IMPLEMENTATION_INTERPOLATIONTABLE_CTOR_HPP
+
+#include "math/implementation/InterpolationTable.hpp"
+
+namespace math{
+namespace implementation{
+
+template< Interpolant interpolant, typename OwnershipPolicy, typename T >
+InterpolationTable<interpolant, OwnershipPolicy, T>::InterpolationTable
+( SelfAccessAbstraction&& xData,
+  SelfAccessAbstraction&& yData, const bool trust ) : xData( std::move(xData) ),
+                                                      yData( std::move(yData) ){
+  if ( not trust ){
+    const auto xWidth = this->xData.end - this->xData.begin;
+    const auto yWidth = this->yData.end - this->yData.begin;
+    if ( xWidth != yWidth){
+      LOG(ERROR) << "The independent and dependent variable interpolation grids "
+                 << "do not contain the same number of elements";
+      LOG(INFO) << "X-grid size: " << xWidth;
+      LOG(INFO) << "Y-grid size: " << yWidth;      
+      throw std::exception();
+    }
+    const auto it = std::is_sorted_until(this->xData.begin, this->xData.end);
+    if ( it != this->xData.end ){
+      LOG(ERROR) << "Independent variable grid is not ordered.";
+      LOG(INFO) <<
+        "Each value in the X-grid must less than or equal to its successor";
+      LOG(INFO) << "Element " << it - this->xData.begin - 1 << ": " << it[-1];
+      LOG(INFO) << "Element " << it - this->xData.begin << ": " << it[0];
+      throw std::exception();
+    }
+  }
+}
+
+} // namespace implementation 
+} // namespace math
+
+#endif

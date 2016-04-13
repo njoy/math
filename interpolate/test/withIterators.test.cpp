@@ -202,8 +202,9 @@ SCENARIO("The integral interpolation withIterators function with one"
                   Approx(
                     math::interpolate::withIterators
                     < std::vector<double>::iterator,
-                     math::interpolate::integralInterpolate
-                    <math::interpolate::linLin> >
+                      std::vector<double>::iterator,
+                      math::interpolate::integralInterpolate
+                      <math::interpolate::linLin> >
                     (x, Xbegin, Xend, integralYlinBegin, YlinBegin)));
         }
         for (unsigned int i = 1; i < X.size(); ++i){
@@ -214,6 +215,7 @@ SCENARIO("The integral interpolation withIterators function with one"
                   Approx(
                     math::interpolate::withIterators
                     < std::vector<double>::iterator,
+                      std::vector<double>::iterator,
                        linLinIntegral >
                     (x, Xbegin, Xend, integralYlinBegin, YlinBegin)));
           
@@ -225,7 +227,8 @@ SCENARIO("The integral interpolation withIterators function with one"
                   Approx(
                     math::interpolate::withIterators
                     < std::vector<double>::iterator,
-                       logLogIntegral>
+                      std::vector<double>::iterator,
+                      logLogIntegral >
                     (x, Xbegin, Xend, integralYlogBegin, YlogBegin)));
         }
         for (unsigned int i = 1; i < X.size(); ++i){
@@ -236,6 +239,7 @@ SCENARIO("The integral interpolation withIterators function with one"
                   Approx(
                     math::interpolate::withIterators
                     < std::vector<double>::iterator,
+                      std::vector<double>::iterator,
                        logLogIntegral >
                     (x, Xbegin, Xend, integralYlogBegin, YlogBegin)));
           

@@ -9,12 +9,7 @@
 namespace math{
 namespace implementation{
 
-template< double pdfInterp( const double x,
-                            const double x1, const double x2,
-                            const double y1, const double y2 ),
-          double cdfInterp( const double x,
-                            const double x1, const double x2,
-                            const double y1, const double y2 ) >
+template< Interpolant pdfInterpolant, Interpolant cdfInterpolant >
 class SplicedProbabilityDistribution final :
   public math::API::ProbabilityDistribution {
 public:
@@ -27,16 +22,16 @@ public:
 
   SplicedProbabilityDistribution
   ( const SplicedProbabilityDistribution& ) = default;
-  SplicedProbabilityDistribution( SplicedProbabilityDistribution&& ) = default;
+  
+  SplicedProbabilityDistribution
+  ( SplicedProbabilityDistribution&& ) = default;
 
   ~SplicedProbabilityDistribution() = default;
 
   /* method */
-  /** @return The probability density at the @p event value */
   double
   probabilityDensity( const double event ) const;
 
-  /** @return The cumulative probability at the @p event value*/
   double
   cumulativeProbability( const double event ) const;
 

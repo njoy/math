@@ -20,67 +20,52 @@ namespace interpolate {
  *
  * @result the definite integral value from @p x1 to @ p x2
  */
-template< double interpolation(const double x,
-                               const double x1, const double x2,
-                               const double y1, const double y2) >
+template< Interpolant interpolant >
 double
-integrate(const double x1, const double x2,
-          const double y1, const double y2){
-  ignore(x1);
-  ignore(x2);
-  ignore(y1);
-  ignore(y2);
+integrate( const double, const double,
+           const double, const double ){}
 
-  /* Damned if you do, damned if you don't */
-  /* Both asserts cannot simultaneously pass. In other words, this
-   * function template should never be permitted to be instantiated
-   * without deferring to a specialization.
-   */
-  static_assert(
-    std::is_member_function_pointer<decltype(interpolation)>::value,
-    "The math::interpolate::integrate function is"
-    " not defined for this interpolation scheme");
-  static_assert(
-    not std::is_member_function_pointer<decltype(interpolation)>::value,
-    "The math::interpolate::integrate function is"
-    " not defined for this interpolation scheme");
-  return 0.0;
-}
+//   static_assert( std::is_same<Interpolant, void>::value,
+//                  "The math::interpolate::integrate function is"
+//                  " not defined for this interpolation scheme" );
+//   return 0.0;
+// }
 
 template<>
 inline double
-integrate< math::interpolate::histogram >(const double x1, const double x2,
-                                          const double y1, const double y2){
-  ignore(y2);
+integrate< math::interpolate::histogram >( const double x1, const double x2,
+                                           const double y1, const double ){
   return (x2 - x1) * y1;
 }
 
 template<>
 inline double
-integrate< math::interpolate::linLin >(const double x1, const double x2,
-                                       const double y1, const double y2){
-  return (x2 - x1) * (y1 + y2) * 0.5;
+integrate< math::interpolate::linLin >( const double x1, const double x2,
+                                        const double y1, const double y2 ){
+  return 0.5 * (x2 - x1) * (y1 + y2);
 }
 
 template<>
 inline double
-integrate< math::interpolate::linLog >(const double x1, const double x2,
-                                       const double y1, const double y2){
-  return x2 * y2 - x1 * y1 +  (x2 - x1) * (y1 - y2) / log(x2/x1);
+integrate< math::interpolate::linLog >( const double x1, const double x2,
+                                        const double y1, const double y2 ){
+  return (x2 * y2) - (x1 * y1) + (x2 - x1) * (y1 - y2) / log(x2/x1);
 }
 
 template<>
 inline double
-integrate< math::interpolate::logLin >(const double x1, const double x2,
-                                       const double y1, const double y2){
+integrate< math::interpolate::logLin >( const double x1, const double x2,
+                                        const double y1, const double y2 ){
   return (y2 - y1) * (x2 - x1) / log(y2 / y1);
 }
 
 template<>
 inline double
-integrate< math::interpolate::logLog >(const double x1, const double x2,
-                                       const double y1, const double y2){
-  if (std::abs(x2 - x1)/std::max(std::abs(x1), std::abs(x2)) < 1E-14 ){return 0;}
+integrate< math::interpolate::logLog >( const double x1, const double x2,
+                                        const double y1, const double y2 ){
+  if ( std::abs(x2 - x1) / std::max(std::abs(x1), std::abs(x2) ) < 1E-14 ){
+    return 0;
+  }
   const double ix = 1.0 / x1;
   const double c = log( y2 / y1 ) / log( x2 * ix ) + 1.0;
   return (y1 * x1) / c * ( pow( x2 * ix, c ) - 1.0 );

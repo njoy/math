@@ -14,14 +14,16 @@ namespace implementation{
  * A univariate functor that describes the cumulative distribution function
  */
 template<typename PDFFunctor, typename CDFFunctor>
-class ProbabilityDistribution : public math::API::ProbabilityDistribution {
+class ProbabilityDistribution final : public math::API::ProbabilityDistribution {
 public:
   /* constructor and destructor*/
   ProbabilityDistribution(PDFFunctor&& PDF, CDFFunctor&& CDF) :
-    pdf(std::move(PDF)), cdf(std::move(CDF)){}
+    pdf( std::move(PDF) ), cdf( std::move(CDF) ){}
 
-  ProbabilityDistribution(const ProbabilityDistribution&) = default;
-  ProbabilityDistribution(ProbabilityDistribution&&) = default;
+  ProbabilityDistribution( const ProbabilityDistribution& ) = default;
+
+  ProbabilityDistribution( ProbabilityDistribution&& ) = default;
+
   ~ProbabilityDistribution() = default;  
 
   /* methods */

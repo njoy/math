@@ -14,34 +14,39 @@ namespace math{
  * @namespace interpolate
  *
  * @brief 
- * A collection procedural routines related to interpolation.
+ * A collection routines related to interpolation.
  */
 namespace interpolate {
 
-/** 
- * @brief A function to expressly ignore a function parameter 
- *
- * @details
- * It's sometimes desirable that functions share a signature. However this can
- * require accepting parameters extraneous to execution. Most compilers (wisely)
- * emit a warning when declared variables go unused before going out of scope.
- * This function acts to 
- * 1. acknowledge to other developers that such a variable is intentionally 
- *    unused.
- * 2. suppresses the compiler warning regarding that variable. 
- */
-template<class T> void ignore( const T& ) { }
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/* Convenience definitions to reduce template verbosity */
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+using Interpolant = double (*)( const double,
+                                const double, const double,
+                                const double, const double );
+
+using IntegralInterpolant = double (*)( const double,
+                                        const double, const double,
+                                        const double, const double,
+                                        const double, const double );
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /* two-point 2D-interpolation schemes */
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /**
  * @brief Evaluate a histogram interpolant given two grid points.
+ *
+ * @param y1
+ * the function value at @p x1
+ *
+ * @result the value of a histogram interpolant at x
  */
 inline double
-histogram( const double x,                   // assumed x1 <= x < x2
-           const double x1, const double x2, // assumed x1 < x2
-           const double y1, const double y2 );
+histogram( const double,
+           const double, const double,
+           const double y1, const double ){
+  return y1;
+};
 
 /**
  * @brief Evaluate a linear-linear interpolant given two grid points.
@@ -75,15 +80,39 @@ linLin( const double x,                   // assumed x1 <= x <= x2
         const double x1, const double x2, // assumed x1 < x2
         const double y1, const double y2 ){
   return (y1 + (y2 - y1)*(x - x1)/(x2 - x1));
-} 
+};
 
 /**
  * @brief Evaluate a linear-logarithmic interpolant given two grid points.
+ *
+ * @param x
+ * the independent variable value at which the interpolant ought be evaluated
+ * @param x1
+ * the nearest independent variable value less than @p x at which the function 
+ * value is known
+ * @param x2
+ * the nearest independent variable value greater than @p x at which the function
+ * value is known
+ * @param y1
+ * the function value at @p x1
+ * @param y2
+ * the function value at @p x2
+ *
+ * @result the value of a linear-logarithmic interpolant at @p x
+ *
+ * @details 
+ * Renders a function value at @p x given function values @p y1 and @p y2 
+ * evaluated at @p x1 and @p x2, respectively, assuming the change in y is 
+ * proportional to the change in the logarithm of x. This is exact for functions 
+ * of the form \f$ y = a~log_b(x)\f$.
  */
 inline double
 linLog( const double x,                   // assumed x1 <= x <= x2
         const double x1, const double x2, // assumed x1 < x2
-        const double y1, const double y2 );
+        const double y1, const double y2 ){
+  const double ix1 = 1.0/x1;
+  return y1 + (y2 - y1) * log(x * ix1) / log(x2 * ix1);
+};
 
 /**
  * @brief Evaluate a logarithmic-linear interpolant given two grid points.
@@ -118,63 +147,90 @@ logLin( const double x,                   // assumed x1 <= x <= x2
         const double x1, const double x2, // assumed x1 < x2
         const double y1, const double y2 ){
   return y1 * std::pow((y2 / y1), (x - x1) / (x2 - x1));
-}
+};
 
 /**
  * @brief Evaluate a logarithmic-logarithmic interpolant given two grid points.
+ *
+ * @param x
+ * the independent variable value at which the interpolant ought be evaluated
+ * @param x1
+ * the nearest independent variable value less than @p x at which the function 
+ * value is known
+ * @param x2
+ * the nearest independent variable value greater than @p x at which the function
+ * value is known
+ * @param y1
+ * the function value at @p x1
+ * @param y2
+ * the function value at @p x2
+ *
+ * @result the value of a logarithmic-logarithmic interpolant at @p x
+ *
+ * @details 
+ * Renders a function value at x given function values y1 and y2 evaluated at x1 
+ * and x2, respectively, assuming the change in the logarithm of y is 
+ * proportional to the change in the logarithm of x. This is exact for functions
+ * of the form \f$ y = a~x^b \f$. 
  */
 inline double
 logLog( const double x,                   // assumed x1 <= x <= x2
         const double x1, const double x2, // assumed x1 < x2
-        const double y1, const double y2 );
+        const double y1, const double y2 ){
+  if ((x1*x2 <= 0) || (y1*y2 <= 0.0)){ return linLin(x, x1, x2, y1, y2); }
+  const double ix = 1.0 / x1;
+  return y1 * pow(x * ix, log( y2 / y1 ) / log( x2 * ix ));
+};
 
-//=========================================//
-/* An anticipated criticism and a rebuttal */
-//=========================================//
-/* These are (frequently) used as template parameters. According to Effective STL
- * (Meyers, 2001), as template parameters, these functions will likely NOT be 
- * inlined, thereby degregating performance. Why not use a functor (which the 
- * the compiler will be guaranteed to inline)?
- */
-/* Perhaps unsurprisingly, C++ compilers have come a long way between 2001 (when 
- * Meyers published his oft-cited qsort benchmark) and 2016 (when this response 
- * was written). Compilers now readily inline calls to function parameters.
- * This claim may be readily verified by examining the assembly emitted for the 
- * IteratorInterpolationRegion class. For those faint of heart, see 
- * http://stackoverflow.com/questions/4860762/c-can-compilers-inline-a-function-pointer  
- */
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/* interpolation-scheme-specific interpolation */
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-/* integration based on interpolation scheme */
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /**
- * @brief Evaluate the definite integral of a parameter interpolant between 
- * @p x1 and @p x2, given function values @p y1 and @p y2, evaluated at @p x1 and
- * @p x2, repectively.
+ * @brief 
+ * Evaluate the definite integral of a parameter interpolant between @p x1 and 
+ * @p x2, given function values @p y1 and @p y2, evaluated at @p x1 and @p x2, 
+ * repectively.
  */
-template< double interpolation(const double x,
-                               const double x1, const double x2,
-                               const double y1, const double y2) >
+template< Interpolant interpolant >
 double
-integrate( const double x1, const double x2,
-           // assumed x1 < x2
+integrate( const double x1, const double x2,  // assumed x1 < x2
            const double y1, const double y2 );
 
 /**
- * @brief Evaluate the definite integral of a parameter interpolant between 
- * @p x1 and @p x, given function values @p dy1 and @p dy2, evaluated at @p x1 
- * and @p x2, repectively, and assuming y equals @p y1 at @p x1. 
+ * @brief 
+ * Evaluate the definite integral of a parameter interpolant between @p x1 and 
+ * @p x, given function values @p dy1 and @p dy2, evaluated at @p x1 and @p x2, 
+ * repectively, and assuming y equals @p y1 at @p x1. 
+ *
+ * @param x
+ * the upper bound at which the interpolant integral ought be evaluated
+ * @param x1
+ * the nearest independent variable value less than @p x at which the function
+ * value is known
+ * @param x2
+ * the nearest independent variable value greater than @p x at which the function
+ * value is known
+ * @param y1
+ * the interpolant integral value at @p x1
+ * @param y2
+ * the interpolant integral value at @p x2
+ * @param dy1
+ * the function value at @p x1
+ * @param dy2
+ * the function value at @p x2
+ *
+ * @result the value of a logarithmic-linear interpolant intergral at @p x
  */
-template< double interpolation(const double x,
-                               const double x1, const double x2,
-                               const double y1, const double y2) >
+template< Interpolant interpolant >
 double
-integralInterpolate( const double x,
-                     // assumed x1 <= x <= x2
-                     const double x1,  const double x2,
-                     // assumed x1 < x2
-                     const double y1,  const double y2,
-                     const double dy1, const double dy2 );
+integralInterpolate(const double x,                    // assumed x1 <= x <= x2
+                    const double x1,  const double x2, // assumed x1 < x2
+                    const double y1,  const double,
+                    const double dy1, const double dy2){
+  return y1 + integrate<interpolant>(x1, x,
+                                     dy1, interpolant(x, x1, x2, dy1, dy2));
+}
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /*             splines                */
@@ -183,10 +239,8 @@ integralInterpolate( const double x,
  * @brief A cubic spline interpolant for data known to be monotonic
  */
 double
-monotoneCubicSpline( const double x,
-                     // assumed x1 <= x <= x2
-                     const double x1,  const double x2,
-                     // assumed x1 < x2
+monotoneCubicSpline( const double x,                    // assumed x1 <= x <= x2
+                     const double x1,  const double x2, // assumed x1 < x2
                      const double y1,  const double y2,
                      const double dy1, const double dy2 );
 
@@ -194,111 +248,75 @@ monotoneCubicSpline( const double x,
 /* two-point 2D-interpolation over containers */
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /**
- * @brief Computes the value of an interpolant given iterators to a 
- *        containers specifying the x-grid and y-grid (function values 
- *        computed at each entry of the x-grid)
+ * @brief 
+ * Computes the value of an interpolant given iterators to a containers 
+ * specifying the x-grid and y-grid (function values computed at each entry of 
+ * the x-grid)
  */
-template< typename randomAccessIter,
-          double interpolation( const double x,
-                                const double x1, const double x2,
-                                const double y1, const double y2 ) >
+template< typename Iterator, Interpolant interpolant >
 double
-withIterators( const double x,
-               /* assumed *Xit1 <= x <= *Xit2 */
-               randomAccessIter Xit1, randomAccessIter Xit2,
-               /* assumed *Xit1 < *Xit2 */
-               randomAccessIter Yit );
+withIterators( const double x,      /* assumed *Xit1 <= x <= *Xit2 */
+               const Iterator Xit1,
+               const Iterator Xit2, /* assumed *Xit1 < *Xit2 */
+               const Iterator Yit );               
 
 /**
- * @brief Computes the definite integral of an interpolant given iterators to a 
- *        containers specifying the x-grid, dy-grid (function values computed at
- *        each entry of the x-grid), and y-grid (function integral values 
- *        evaluated at each entry of the x-grid)          
+ * @brief 
+ * Computes the definite integral of an interpolant given iterators to a 
+ * containers specifying the x-grid, dy-grid (function values computed at each 
+ * entry of the x-grid), and y-grid (function integral values evaluated at each 
+ * entry of the x-grid)          
  */
-template< typename randomAccessIter1,
-          typename randomAccessIter2,
-          double integralInterpolation( const double x,
-                                        const double x1,  const double x2,
-                                        const double y1,  const double y2,
-                                        const double dy1, const double dy2 ) >
+template< typename InterpolationTableIterator,
+          typename Iterator,
+          IntegralInterpolant integralInterpolant > 
 double
-withIterators( const double x,
-               /* assumed *Xit1 <= x <= *Xit2 */
-               randomAccessIter1 Xit1, randomAccessIter1 Xit2,
-               /* assumed *Xit1 < *Xit2 */
-               randomAccessIter2 Yit, randomAccessIter1 dYit );
-
-/**
- * @brief A function template overload for those cases in whcih the iterator
- *        type over the y-grid is the same as the iterator type for the x- and 
- *        dy-grids 
- */
-template< typename randomAccessIter,
-          double integralInterpolation( const double x,
-                                        const double x1,  const double x2,
-                                        const double y1,  const double y2,
-                                        const double dy1, const double dy2 ) >
-double
-withIterators( const double x,
-               /* assumed *Xit1 <= x <= *Xit2 */
-               randomAccessIter Xit1, randomAccessIter Xit2,
-               /* assumed *Xit1 < *Xit2 */
-               randomAccessIter Yit,
-               randomAccessIter dYit ){
-  return
-    withIterators
-    <randomAccessIter, randomAccessIter, integralInterpolation>
-    (x, Xit1, Xit2, Yit, dYit);
-}
+withIterators( const double x, /* assumed *Xit1 <= x <= *Xit2 && assumed *Xit1 < *Xit2 */
+               const InterpolationTableIterator Xit1,
+               const InterpolationTableIterator Xit2,               
+               const Iterator Yit,
+               const InterpolationTableIterator dYit );
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /*         Grid generation utilities  */
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /**
- * @brief A routine to determine, for a given function, a series of x-values 
- *        such that linear interpolation will be accurate to within a specified 
- *        convergence criterion.
+ * @brief 
+ * A routine to determine, for a given function, a series of x-values such that 
+ * linear interpolation will be accurate to within a specified convergence 
+ * criterion.
  */
-template<typename functor, typename convergenceCriterion,
-         typename xIterator, typename yIterator>
+template< typename functor, typename convergenceCriterion,
+          typename xIterator, typename yIterator >
 void constructLinearLinearInterpolationGrid
-( const functor& f, const convergenceCriterion& hasConverged,
-  xIterator referenceXGridIterator, xIterator referenceXGridEnd,
+( const functor& f,
+  const convergenceCriterion& hasConverged,
+  xIterator referenceXGridIterator,
+  const xIterator referenceXGridEnd,
   yIterator referenceYGridIterator,
-  std::vector<double>& linearizedXGrid, std::vector<double>& linearizedYGrid );
+  std::vector<double>& linearizedXGrid,
+  std::vector<double>& linearizedYGrid );
 
 /**
- * @brief A convenience overload to allow for the linearization of functions 
- *        without constructing a functor definition on client-side code. 
- *        Effectively syntactic sugar.
+ * @brief 
+ * A convenience overload to allow for the linearization of functions without 
+ * constructing a functor definition on client-side code. Effectively syntactic 
+ * sugar.
  */
-template<double f(const double), typename convergenceCriterion,
-         typename xIterator, typename yIterator>
+template< double f(const double), typename convergenceCriterion,
+          typename xIterator, typename yIterator >
 void constructLinearLinearInterpolationGrid
 ( const convergenceCriterion& hasConverged,
-  xIterator referenceXGridIterator, xIterator referenceXGridEnd,
+  xIterator referenceXGridIterator,
+  const xIterator referenceXGridEnd,
   yIterator referenceYGridIterator,
-  std::vector<double>& linearizedXGrid, std::vector<double>& linearizedYGrid );
+  std::vector<double>& linearizedXGrid,
+  std::vector<double>& linearizedYGrid );
 
 } // namespace interpolate
 } // namespace math
 
-/* Why are these functions specified in headers and included in headers rather
- * than foward declared here and specified in implementation files? */
-/* These routines: 
- * 1) are small and 
- * 2) are used within the context of tight loops
- * and as such benefit significantly from function inlining. Were the function 
- * definitions seperated from the header, compiler support for interprocedural 
- * optimization and link-time optimization is necessary to achieve this result,
- * which, as of the time this was written, cannot be assumed to be universally
- * available
- */
-#include "math/interpolate/src/histogram.hpp"
-#include "math/interpolate/src/linLog.hpp"
-#include "math/interpolate/src/logLog.hpp"
 #include "math/interpolate/src/integrate.hpp"
-#include "math/interpolate/src/integralInterpolate.hpp"
 #include "math/interpolate/src/withIterators.hpp"
 #include "math/interpolate/src/constructLinearLinearInterpolationGrid.hpp"
 

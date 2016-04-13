@@ -23,38 +23,35 @@ namespace interpolate {
  * An ordered-container iterator to the element specifying the function value  
  * evaluated at the independent variable value reference by @p Xit1
  */
-template<typename randomAccessIter,
-         double interpolation(const double x,
-                              const double x1, const double x2,
-                              const double y1, const double y2) >
-inline double
-withIterators( const double x,
-              /* assumed *Xit1 <= x <= *Xit2 */
-               randomAccessIter Xit1, randomAccessIter Xit2,
-              /* assumed *Xit1 < *Xit2 */
-               randomAccessIter Yit ){ 
+template<typename Iterator, Interpolant interpolant >
+double
+withIterators( const double x,      // assumed *Xit1 <= x <= *Xit2
+               const Iterator Xit1,
+               const Iterator Xit2, // assumed *Xit1 < *Xit2
+               const Iterator Yit ){ 
   /* the iterator types must reference double precision data */
   static_assert(
     std::is_same
-    < typename std::iterator_traits<randomAccessIter>::value_type,
+    < typename std::iterator_traits<Iterator>::value_type,
       double >::value,
     "Iterpolation is only defined for double precision" );
   
   /* binary search requires random access to be efficient */
   static_assert(
     std::is_same
-    < typename std::iterator_traits<randomAccessIter>::iterator_category,
+    < typename std::iterator_traits<Iterator>::iterator_category,
     std::random_access_iterator_tag >::value,
     "Iteration only defined for random access iterators" );
   
-  auto Xit = std::lower_bound(Xit1, Xit2, x);
+  const auto Xit = std::lower_bound(Xit1, Xit2, x);
+  const auto offset = Xit - Xit1;
   if (*Xit == x){
     return ( Xit == Xit1 || *Xit != Xit[1] ) ?
-      Yit[Xit - Xit1] :
-      (Yit[Xit - Xit1] + Yit[(Xit - Xit1) + 1]) * 0.5;
+      Yit[offset] :
+      0.5 * ( Yit[offset] + Yit[offset + 1] );
   }
-  auto yit = Yit + (Xit - Xit1);
-  return interpolation(x, Xit[-1], *Xit, yit[-1], *yit);
+  const auto yit = Yit + offset;
+  return interpolant(x, Xit[-1], Xit[0], yit[-1], yit[0]);
 }
 
 /** 
@@ -79,53 +76,52 @@ withIterators( const double x,
  * An ordered-container iterator to the element specifying the function value 
  * evaluated at the independent variable value reference by @p Xit1
  */
-template< typename randomAccessIter1,
-          typename randomAccessIter2,
-          double integralInterpolation(const double x,
-                                       const double x1,  const double x2,
-                                       const double y1,  const double y2,
-                                       const double dy1, const double dy2) >
+template< typename InterpolationTableIterator,
+          typename Iterator,
+          IntegralInterpolant integralInterpolant >
 double
-withIterators(const double x,
-              /* assumed *Xit1 <= x <= *Xit2 */
-              randomAccessIter1 Xit1, randomAccessIter1 Xit2,
-              /* assumed *Xit1 < *Xit2 */
-              randomAccessIter2 Yit,
-              randomAccessIter1 dYit){
+withIterators( const double x, /* assumed *Xit1 <= x <= *Xit2 && assumed *Xit1 < *Xit2 */
+               const InterpolationTableIterator Xit1,
+               const InterpolationTableIterator Xit2,               
+               const Iterator Yit,
+               const InterpolationTableIterator dYit ){
   /* the iterator types must reference double precision data */
   static_assert(
     std::is_same
-    < typename std::iterator_traits<randomAccessIter1>::value_type,
+    < typename std::iterator_traits<InterpolationTableIterator>::value_type,
       double >::value,
     "Iterpolation is only defined for double precision" );
   static_assert(
     std::is_same
-    < typename std::iterator_traits<randomAccessIter2>::value_type,
+    < typename std::iterator_traits<Iterator>::value_type,
       double >::value,
     "Iterpolation is only defined for double precision" );
   
   /* binary search requires random access to be efficient */
   static_assert(
     std::is_same
-    < typename std::iterator_traits<randomAccessIter1>::iterator_category,
+    < typename std::iterator_traits<InterpolationTableIterator>::iterator_category,
     std::random_access_iterator_tag >::value,
     "Iteration only defined for random access iterators" );
   static_assert(
     std::is_same
-    < typename std::iterator_traits<randomAccessIter2>::iterator_category,
+    < typename std::iterator_traits<Iterator>::iterator_category,
     std::random_access_iterator_tag >::value,
     "Iteration only defined for random access iterators" );
   
   auto Xit = std::lower_bound(Xit1, Xit2, x);
+  const auto offset = Xit - Xit1;
   if (*Xit == x){
     return ( Xit == Xit1 || *Xit != Xit[1] ) ?
-      Yit[Xit - Xit1] :
-      (Yit[Xit - Xit1] + Yit[(Xit - Xit1) + 1]) * 0.5;
+      Yit[offset] :
+      0.5 * (Yit[offset] + Yit[offset + 1]);
   }
-  auto diff = Xit - Xit1;
-  auto yit = Yit + diff;
-  auto dyit = dYit + diff;
-  return integralInterpolation(x, Xit[-1], *Xit, yit[-1], *yit, dyit[-1], *dyit);
+  const auto yit  = Yit + offset;
+  const auto dyit = dYit + offset;
+  return integralInterpolant( x,
+                              Xit[-1], Xit[0],
+                              yit[-1], yit[0],
+                              dyit[-1], dyit[0] );
 }
 
 }

@@ -8,9 +8,6 @@ endif(NOT(EXISTS "${math_HEADER_DIR}/interpolate/src"))
 
 set(headers "")
 list(APPEND headers
-  "src/histogram"
-  "src/linLog"
-  "src/logLog"
   "src/integrate"
   "src/integralInterpolate"
   "src/withIterators"
