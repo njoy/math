@@ -109,8 +109,8 @@ class SplicedProbabilityDistribution;
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /* class BivariateProbabilityDistribution */
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-// template< Interpolant pdfInterpolant, Interpolant cdfInterpolant >
-// class BivariateProbabilityDistribution;
+template< Interpolant pdfInterpolant, Interpolant cdfInterpolant >
+class BivariateProbabilityDistribution;
 
 }   // namespace implementation
 }   // namespace math
@@ -129,6 +129,6 @@ class SplicedProbabilityDistribution;
 
 #include "math/implementation/SplicedProbabilityDistribution.hpp"
 
-// #include "math/implementation/BivariateProbabilityDistribution.hpp"
+#include "math/implementation/BivariateProbabilityDistribution.hpp"
 
 #endif

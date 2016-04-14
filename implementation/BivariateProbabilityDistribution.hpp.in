@@ -44,8 +44,14 @@ public:
                                     const double condition ) const;
 
   std::unique_ptr< math::API::ProbabilityDistribution >
-  givenCondition( const double condition ) const;
+  conditionalProbabilityDistribution( const double condition ) const;
 
+  double
+  lowerConditionLimit(){ return this->conditions.front(); }
+
+  double
+  upperConditionLimit(){ return this->conditions.back(); }
+  
   /* fields */
   /** 
    * @brief 
@@ -70,7 +76,7 @@ public:
 #include "math/implementation/BivariateProbabilityDistribution/src/BivariateProbabilityDistribution.hpp"
 #include "math/implementation/BivariateProbabilityDistribution/src/conditionalProbabilityDensity.hpp"
 #include "math/implementation/BivariateProbabilityDistribution/src/conditionalCumulativeProbability.hpp"
-#include "math/implementation/BivariateProbabilityDistribution/src/givenCondition.hpp"
+#include "math/implementation/BivariateProbabilityDistribution/src/conditionalProbabilityDistribution.hpp"
 
-#endif // MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_HPP
+#endif
 

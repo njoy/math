@@ -11,9 +11,9 @@ extern std::unique_ptr
   < math::interpolate::linLin, math::interpolate::linLin > > bvpd;
 
 SCENARIO(
-  "The givenConditional method returns the a probability distribution consistant"
+  "The conditionalProbabilityDistributional method returns the a probability distribution consistant"
   " with the bivariate distribution", 
-  "[math], [BivariateProbabilityDistribution], [givenCondition]"){
+  "[math], [BivariateProbabilityDistribution], [conditionalProbabilityDistribution]"){
   GIVEN( "a conditioned probability distribution" ){
     WHEN( "the condition falls on a boundary" ){
       THEN( "the probability density values will be consistent" ){
@@ -23,7 +23,7 @@ SCENARIO(
 
         for( auto condition : conditions ){
           auto probabilityDistributionPointer =
-            bvpd->givenCondition( condition );
+            bvpd->conditionalProbabilityDistribution( condition );
           auto& probabilityDistribution = *probabilityDistributionPointer;
           for( auto event : events ){
             REQUIRE( probabilityDistribution.probabilityDensity(event) ==
@@ -43,7 +43,7 @@ SCENARIO(
              ++conditionsIter ){
           auto condition = 0.5*(conditionsIter[0] + conditionsIter[-1]);
           auto probabilityDistributionPointer =
-            bvpd->givenCondition( condition );
+            bvpd->conditionalProbabilityDistribution( condition );
           auto& probabilityDistribution = *probabilityDistributionPointer;
           std::vector<double> events = {-1.0, -0.5, 0.0, 0.5, 1.0};
           for( auto event : events ){
@@ -53,7 +53,7 @@ SCENARIO(
         }
       }
     }
-  }   // GIVEN
+  }
 
   GIVEN( "invalid conditions" ){
     LOG(INFO) << "Test " << ++testNumber
@@ -62,10 +62,10 @@ SCENARIO(
     GIVEN( "valid events" ){
       THEN( "exceptions will be thrown" ){
         for ( double c : conditions ){
-          REQUIRE_THROWS( bvpd->givenCondition( c ) );
+          REQUIRE_THROWS( bvpd->conditionalProbabilityDistribution( c ) );
         }
       }
     }
-  } // GIVEN---invalid conditions
-}   // SCENARIO
+  }
+}  
 
