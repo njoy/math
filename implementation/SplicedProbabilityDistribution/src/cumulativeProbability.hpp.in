@@ -6,14 +6,10 @@
 namespace math{
 namespace implementation{
 
-template< double pdfInterp( const double x,
-                            const double x1, const double x2,
-                            const double y1, const double y2 ),
-          double cdfInterp( const double x,
-                            const double x1, const double x2,
-                            const double y1, const double y2 ) >
+template< Interpolant pdfInterpolant, Interpolant cdfInterpolant >
 double
-SplicedProbabilityDistribution< pdfInterp, cdfInterp >::cumulativeProbability
+SplicedProbabilityDistribution
+< pdfInterpolant, cdfInterpolant >::cumulativeProbability
 ( const double event ) const {
   const auto& leftCondition = this->associatedConditions.front();
   const auto leftCumulativeProbability =
@@ -22,9 +18,9 @@ SplicedProbabilityDistribution< pdfInterp, cdfInterp >::cumulativeProbability
   const auto& rightCondition = this->associatedConditions.back();
   const auto rightCumulativeProbability =
     this->pd1->cumulativeProbability( event );
-  return pdfInterp( this->condition,
-                    leftCondition, rightCondition,
-                    leftCumulativeProbability, rightCumulativeProbability );
+  return cdfInterpolant( this->condition,
+                         leftCondition, rightCondition,
+                         leftCumulativeProbability, rightCumulativeProbability );
 }
 
 }

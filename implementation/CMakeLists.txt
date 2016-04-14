@@ -8,8 +8,8 @@ list(APPEND header_only_subdirs
   "InterpolationTableIntegral"
   "TaylorSeries"
   "LegendreSeries"
-#  "SplicedProbabilityDistribution"
-#  "ProbabilityDistribution"
+  "SplicedProbabilityDistribution"
+  "ParametricProbabilityDistribution"
 #  "BivariateProbabilityDistribution"
   )
 

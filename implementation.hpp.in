@@ -87,28 +87,28 @@ template< typename Iterator >
 using DataReferencingTaylorSeries = 
    TaylorSeries< ReferencePolicy, Iterator >;
 
-// template< typename OwnershipPolicy, typename T >
-// class LegendreSeries;
+template< typename OwnershipPolicy, typename T >
+class LegendreSeries;
 
-// using DataOwningTaylorSeries =
-//   LegendreSeries< TransferPolicy, std::vector<double> >;
+using DataOwningLegendreSeries =
+  LegendreSeries< TransferPolicy, std::vector<double> >;
 
-// template< typename Iterator >
-// using DataReferencingTaylorSeries = 
-//   LegendreSeries< ReferencePolicy, Iterator >;
+template< typename Iterator >
+using DataReferencingLegendreSeries = 
+  LegendreSeries< ReferencePolicy, Iterator >;
 
-// /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-// /* class ProbabilityDistribution */
-// /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-// template< typename pdfFunctor, typename cdfFunctor >
-// class ProbabilityDistribution;
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/* class ProbabilityDistribution */
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+template< typename pdfFunctor, typename cdfFunctor >
+class ParametricProbabilityDistribution;
 
-// template< Interpolant pdfInterpolant, Interpolant cdfInterpolant >
-// class SplicedProbabilityDistribution;
+template< Interpolant pdfInterpolant, Interpolant cdfInterpolant >
+class SplicedProbabilityDistribution;
 
-// /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-// /* class BivariateProbabilityDistribution */
-// /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/* class BivariateProbabilityDistribution */
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 // template< Interpolant pdfInterpolant, Interpolant cdfInterpolant >
 // class BivariateProbabilityDistribution;
 
@@ -125,8 +125,9 @@ using DataReferencingTaylorSeries =
 
 #include "math/implementation/LegendreSeries.hpp"
 
-// #include "math/implementation/ProbabilityDistribution.hpp"
-// #include "math/implementation/SplicedProbabilityDistribution.hpp"
+#include "math/implementation/ParametricProbabilityDistribution.hpp"
+
+#include "math/implementation/SplicedProbabilityDistribution.hpp"
 
 // #include "math/implementation/BivariateProbabilityDistribution.hpp"
 

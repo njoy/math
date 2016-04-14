@@ -1,0 +1,55 @@
+#ifndef MATH_IMPLEMENTATION_PARAMETRICPROBABILITYDISTRIBUTION_CTOR_HPP
+#define MATH_IMPLEMENTATION_PARAMETRICPROBABILITYDISTRIBUTION_CTOR_HPP
+
+#include <algorithm>
+
+#include "math/implementation/ParametricProbabilityDistribution.hpp"
+
+namespace math {
+namespace implementation {
+
+/* forgive me... */
+// template< Interpolant interpolant, typename OwnershipPolicy, typename T >
+// ParametricProbabilityDistribution
+// < InterpolationTable < interpolant, OwnershipPolicy, T >,
+//   InterpolationTableIntegral
+//   < decltype( AccessAbstraction< OwnershipPolicy, T >.begin ),
+//     interpolant > >::ParametricProbabilityDistribution
+// ( InterpolationTable< interpolant, OwnershipPolicy, T >&& PDF,
+//   InterpolationTableIntegral
+//   < decltype( AccessAbstraction< OwnershipPolicy, T >.begin ),
+//   interpolant >&& CDF, const bool trust ) :
+// ParametricProbabilityDistribution( std::move(PDF), std::move(CDF) ){
+//   if (not trust){
+//     try{
+//       auto isNegative( const double x ){ return x < 0; };
+//       const auto yit =
+//         std::find_if( this->pdf.yData.begin, this->pdf.yData.end, isNegative );
+//       if ( yit != this->pdf.yData.end ){
+//         LOG(ERROR) << "Probability density values must be non-negative";
+//         LOG(INFO)  << "Negative y-value encountered in pdf interpolation table";
+//         LOG(INFO)  << "Negative y-grid entry position: "
+//                    << yit - this->pdf.yData.begin;
+//         LOG(INFO)  << "Negative y-grid entry value: " << *yit;
+//         throw std::exception();
+//       }
+//       const auto Yit =
+//         std::is_sorted_until( this->cdf.yData.begin, this->cdf.yData.end );
+//       if ( Yit != this->cdf.yData.end ){
+//         LOG(ERROR) << "Cumulative probability values must be monotonically increasing";
+//         LOG(INFO)  << "Unsorted y-value encountered in cdf interpolation table";
+//         LOG(INFO)  << "Unsorted y-grid entry position: "
+//                    << Yit - this->cdf.yData.begin;
+//         LOG(INFO)  << "Negative y-grid entry value: " << *Yit;
+//         LOG(INFO)  << "Previous y-grid entry value: " << Yit[-1];
+//         throw std::exception();
+//       }
+//     } catch (std::exception& e){
+//       LOG(INFO) << "Error constructing probability distribution from "
+//                 << "InterpolationTable/InterpolationTableIntegral pair";
+//       throw e;
+//     }
+//   }
+// }
+
+#endif

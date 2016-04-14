@@ -5,7 +5,7 @@
 
 #include "catch.hpp"
 
-#include "math/implementation/ProbabilityDistribution.hpp"
+#include "math/implementation/ParametricProbabilityDistribution.hpp"
 
 namespace {
 auto pdf = [](double x){return 0.5*x + 0.5;};
@@ -19,15 +19,15 @@ int testNumber = 0;
 std::function<double(double)> PDF = pdf;
 std::function<double(double)> CDF = cdf;
 
-math::implementation::ProbabilityDistribution
+math::implementation::ParametricProbabilityDistribution
 < std::function<double(double)>, std::function<double(double)> >
 probabilityDistribution
 ( std::move(PDF_), std::move(CDF_) );
 
 int main( int argc, const char* argv[]){
-  LOG(INFO) << "ProbabilityDistribution Tests";
+  LOG(INFO) << "ParametricProbabilityDistribution Tests";
   LOG(INFO) << "=================================";
   int result = Catch::Session().run( argc, argv );
-  LOG(INFO) << "ProbabilityDistribution Tests Complete!";
+  LOG(INFO) << "ParametricProbabilityDistribution Tests Complete!";
   return result;
 }

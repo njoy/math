@@ -1,18 +1,17 @@
 #include "catch.hpp"
 
-#include "math/implementation/ProbabilityDistribution.hpp"
+#include "math/implementation/ParametricProbabilityDistribution.hpp"
 
 extern int testNumber;
 extern std::function<double(double)> PDF;
 
-extern math::implementation::ProbabilityDistribution
+extern math::implementation::ParametricProbabilityDistribution
 < std::function<double(double)>, std::function<double(double)> >
 probabilityDistribution;
 
-SCENARIO("The probability distribution implementation's probability density "
-         "method will return a value that matches the composed PDF",
-         "[math], [implementation], "
-         "[ProbabilityDistribution], [probabilityDensity]"){
+SCENARIO("The parametric probability distribution implementation's probability "
+         " density method will return a value that matches the composed PDF",
+         "[math], [ParametricProbabilityDistribution], [probabilityDensity]"){
   GIVEN("a probability distribution"){
     WHEN("queried for a probability density"){
       THEN("the value returned will match the composed PDF"){

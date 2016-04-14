@@ -15,10 +15,11 @@ class SplicedProbabilityDistribution final :
 public:
   /* constructor and destructor */
   SplicedProbabilityDistribution
-  ( const double condition,
+  ( const double queriedCondition,
     const math::API::ProbabilityDistribution* pd0,
     const math::API::ProbabilityDistribution* pd1,
-    const std::array<double, 2>& associatedConditions );
+    const std::array<double, 2>& associatedConditions,
+    const bool trust = true );
 
   SplicedProbabilityDistribution
   ( const SplicedProbabilityDistribution& ) = default;

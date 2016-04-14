@@ -5,16 +5,44 @@
 
 class math::API::BivariateProbabilityDistribution{
 public:
-
+  /**
+   * @result 
+   * The probability density evaluated at @p event given a specified @p condition
+   */
   virtual double 
   conditionalProbabilityDensity( const double event, 
                                  const double condition ) const = 0;
+
+  /**
+   * @result 
+   * The cumulative probability evaluated at @p event given a specified 
+   * @p condition
+   */
   virtual double 
   conditionalCumulativeProbability( const double event,
                                     const double condition ) const = 0;
 
+  /**
+   * @result 
+   * the conditional probability distribution of events given a @p condition
+   * value
+   */
   virtual std::unique_ptr< math::API::ProbabilityDistribution >
-  givenCondition( const double condition ) const = 0;
+  conditionalProbabilityDistribution( const double condition ) const = 0;
+
+  /**
+   * @result
+   * the lower limit on queriable condition values
+   */
+  virtual double
+  lowerConditionLimit() = 0;
+
+  /**
+   * @result
+   * the upper limit on queriable condition values
+   */
+  virtual double
+  upperConditionLimit() = 0;
 };
 
 #endif  // MATH_API_BIVARIATEPROBABILITYDISTRIBUTION
