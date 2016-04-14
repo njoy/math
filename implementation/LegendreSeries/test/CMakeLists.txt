@@ -1,0 +1,1 @@
+setupTest(LegendreSeries)

@@ -29,7 +29,7 @@ namespace implementation{
  * 2. efficiency\n the operation count goes as N rather than N^2 where N is the 
  *                 order of the series
  */
-template< typename OwnershipPolicy, typename T >
+template< typename OwnershipPolicy, typename T > 
 class LegendreSeries final : public math::API::SeriesExpansion {
 public:
   /* fields */

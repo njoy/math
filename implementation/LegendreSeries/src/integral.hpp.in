@@ -1,0 +1,92 @@
+#ifndef MATH_IMPLEMENTATION_LEGENDRESERIES_INTEGRAL_HPP
+#define MATH_IMPLEMENTATION_LEGENDRESERIES_INTEGRAL_HPP
+
+#include "math/implementation/LegendreSeries.hpp"
+
+namespace math {
+namespace implementation {
+
+/**
+ * @brief Evaluated via recursion relation
+ * @result The value of the integral of a Legendre series at @p x
+ * @details 
+ * This routine eschews evaluation of Legendre polynomials of order greater than
+ * one. The definite integral of a Legendre Polynomial can be expressed as
+ * \f[
+          \int_a^b P_n = \bigg[\frac{x P_n - P_{n-1}}{n+1}\bigg]_a^b
+ * \f]
+ * \n
+ * The Bonnet recursion can in turn be applied to reduce the expression to a 
+ * monomial. Rather doing so for each term of the sum (requiring order \f$N^2\f$ 
+ * operations), like terms are collected from each term following each Bonnet
+ * recursion step.
+ */
+template< typename OwnershipPolicy, typename T >
+double
+LegendreSeries< OwnershipPolicy, T >::integral( const double lowerBound,
+                                                const double upperBound ) const {
+  auto n = this->coefficientData.end - this->coefficientData.begin;
+  if (n == 1) {return this->coefficientData.begin[0]*(upperBound - lowerBound);}
+  n--;
+  
+  /* integral up to P1 computed directly to avoid to a LOT of extra loop logic */
+  double base =
+    ( this->coefficientData.begin[0] +
+      this->coefficientData.begin[1] * upperBound / 2.0) * upperBound -
+    ( this->coefficientData.begin[0] +
+      this->coefficientData.begin[1] * lowerBound / 2.0) * lowerBound; 
+
+  /* As the series coefficients are collapsed, only two coefficients need be 
+   * to carried forward between recursion applications. This is done using a
+   * 2-array, which represents the n-th coefficient and (n-1)th coefficient.
+   *
+   * Over a given iteration, one coefficient is eliminated, one coefficient is
+   * modified, and one new coefficient is generated. Rather than than shift the 
+   * data between variables to ensure the nth and (n-1)th coefficient remain
+   * in the same order, a switch is used to indicate the ordering. Two helper
+   * lambdas are defined to improve readability of the array accesses. 
+   */
+  std::array<double,2> leftCollapsedCoefs = {{ 0, 0 }};
+  std::array<double,2> rightCollapsedCoefs = {{ 0, 0 }};
+  bool currentCoef = true;
+  
+  /* returns the index associated with the (n-1)th coefficient */
+  auto firstPredecessorCoef = [&currentCoef](){return !currentCoef;};
+  /* returns the index associated with the (n-2)th coefficient */
+  auto secondPredecessorCoef = [&currentCoef](){return currentCoef;};
+
+  /* variables storing repeatedly used division intermediate calculation. */
+  double inverseN;
+  double orderCoef;
+  for ( std::reverse_iterator
+          < typename std::remove_const
+          < decltype(this->coefficientData.begin) >::type >
+          it( this->coefficientData.end ), 
+          L1( this->coefficientData.begin + 2 ); it != L1; ++it ){
+    orderCoef = it[0] / double(n+1);
+    inverseN = 1.0/double(n--);
+    leftCollapsedCoefs[ currentCoef ] += lowerBound * orderCoef; 
+    leftCollapsedCoefs[ firstPredecessorCoef() ] += -orderCoef +
+      leftCollapsedCoefs[currentCoef] * (2.0 - inverseN) * lowerBound;
+    leftCollapsedCoefs[ secondPredecessorCoef() ] =
+      -leftCollapsedCoefs[ currentCoef ] * (1.0 - inverseN);
+    rightCollapsedCoefs[ currentCoef ] += upperBound * orderCoef; 
+    rightCollapsedCoefs[ firstPredecessorCoef() ] += -orderCoef +
+      rightCollapsedCoefs[currentCoef] * (2.0 - inverseN) * upperBound;
+    rightCollapsedCoefs[ secondPredecessorCoef() ] =
+      -rightCollapsedCoefs[ currentCoef ] * (1.0 - inverseN);
+    currentCoef = !currentCoef;
+  }
+  
+  return
+    base +
+    rightCollapsedCoefs[ firstPredecessorCoef() ] -
+    leftCollapsedCoefs[ firstPredecessorCoef() ] +
+    rightCollapsedCoefs[ currentCoef ] * upperBound -
+    leftCollapsedCoefs[ currentCoef ] * lowerBound;
+}
+
+} // implementation
+} // math
+
+#endif

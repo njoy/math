@@ -1,0 +1,110 @@
+#ifndef MATH_IMPLEMENTATION_LEGENDRESERIES_DERIVATIVE_HPP
+#define MATH_IMPLEMENTATION_LEGENDRESERIES_DERIVATIVE_HPP
+
+#include "math/implementation/LegendreSeries.hpp"
+
+namespace math {
+namespace implementation {
+
+/**
+ * @brief Evaluated via Bonnet's recursion relation
+ * @result The value of the derivative of a Legendre series at @p x
+ * @details 
+ * The routine eschews evaluation of Legendre polynomials of order greater than
+ * one. To achieve this, this routine leverages the following recusion relation.
+ \f[
+         (2n\,-\,1)P_{n-1} = \frac{d}{dx}(\,P_{n}\,-\,P_{n-2}\,)
+ \f]
+ * Rearranging to isolate the derivative of \f$P_n\f$
+ \f[
+         \frac{dP_n}{dx}\,=\,(2n\,-\,1)P_{n-1}\,+\,\frac{dP_{n-2}}{dx} 
+ \f]
+ * This formulation has the advantage of being free of singularities, as opposed
+ * to the derivative-free recursion.
+ \f[
+         \frac{dP_n}{dx}\,=\, \frac{n}{x^2\,-\,1}\,(\,x\,P_n\,-\,n\,P_{n-1})
+ \f]
+ * Applying Bonnet's recursion formula, this expression can be expressed in terms
+ * of a three term recursion such that two terms are free of derivatives and 
+ * therefore may be evaluated using Clenshaw's algorithm. 
+ \f[
+         \frac{dP_n}{dx}\,=\,\frac{(2n\,-\,1)(2n\,-\,3)}{(n\,-\,1)}\,x\,P_{n-2} -
+         \frac{(2n\,-\,1)(n\,-\,2)}{(n\,-\,1)}\,P_{n-3}\,+\,\frac{dP_{n-2}}{dx} 
+ \f]
+ * This recusion can be applied until reaching order 2, at which point the 
+ * routine applies a single iteration of the original recusion relation and a
+ * base case is applied for order 1 and order 0.
+ */
+
+template< typename OwnershipPolicy, typename T > 
+double
+LegendreSeries< OwnershipPolicy, T >::derivative( const double x ) const {
+  auto n = this->coefficientData.end - this->coefficientData.begin;
+  if (n == 1) {return 0;}
+  if (n == 2) {return this->coefficientData.begin[1];}
+  --n;
+  
+  /* As the series coefficients are collapsed, only four coefficients need be 
+   * to carried forward between recursion applications; two for denoting the 
+   * (n-1)-th and (n-2)-th derivative coefficient and two denoting the 
+   * (n-2)-th and (n-3)-th collapsed series coefficient. This is done using a
+   * pair of 2-arrays.
+   */
+  std::array<double,2> derivativeCoefs = {{ 0.0, 0.0 }};
+  std::array<double,2> collapsedCoefs = {{ 0.0, 0.0 }};
+  
+  bool currentCoef = true;
+  /* returns the index associated with the (n-1)-th derivative coefficient 
+   * or the (n-2)-th collapsed coefficient
+   */
+  auto firstPredecessorCoef = [&currentCoef](){return !currentCoef;};
+  /* returns the index associated with the (n-2)-th derivative coefficient 
+   * or the (n-3)-th collapsed coefficient
+   */
+  auto secondPredecessorCoef = [&currentCoef](){return currentCoef;};
+
+  /* variables storing repeatedly used division intermediate calculation. */
+  double inverseN;
+  double orderCoef;
+  for ( std::reverse_iterator
+          < typename std::remove_const
+          < decltype( this->coefficientData.begin ) >::type >
+          it(this->coefficientData.end),        
+          L2(this->coefficientData.begin + 3); it != L2; ++it ){
+    derivativeCoefs[currentCoef] += it[0];
+    inverseN = 1.0/double(--n);
+    orderCoef = (2.0*n + 1.0)*inverseN;
+    collapsedCoefs[ firstPredecessorCoef() ] +=
+      derivativeCoefs[ currentCoef ] * x * (2.0*n-1.0) * orderCoef +
+      collapsedCoefs[ currentCoef ] * (2.0 - inverseN) * x;
+    collapsedCoefs[ secondPredecessorCoef() ] =
+      derivativeCoefs[ currentCoef ] * (n-1.0) * -orderCoef -
+      collapsedCoefs[ currentCoef ] * (1.0 - inverseN);
+    currentCoef = !currentCoef;
+  }
+  
+  /* at this point the series has been collapsed to a sum of P0 and P1, with
+   * dP2, dP1, and dP0 terms remaining. dP0 evaluates to zero and may be ignored.
+   * dP2 maybe evaluated as 3*P1 and dP1 may evaluated as P0. These terms are 
+   * added to the existing coefficients.
+   */ 
+  derivativeCoefs[ currentCoef ] +=
+    this->coefficientData.begin[2];
+  
+  derivativeCoefs[ firstPredecessorCoef() ] +=
+    this->coefficientData.begin[1];
+  
+  collapsedCoefs[ firstPredecessorCoef() ] +=
+    derivativeCoefs[ firstPredecessorCoef() ];
+  
+  collapsedCoefs[ currentCoef ] +=
+    3.0 * derivativeCoefs[ currentCoef ];
+
+  return
+    collapsedCoefs[ firstPredecessorCoef() ] + collapsedCoefs[ currentCoef ] * x;
+} 
+
+} // implementation
+} // math
+
+#endif

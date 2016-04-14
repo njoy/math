@@ -15,12 +15,12 @@ double
 TaylorSeries< OwnershipPolicy, T >::evaluate( const double x ) const {
   double accumulator;
   accumulator = 0;
-  for (std::reverse_iterator
-         < typename std::remove_const
-         < decltype(this->coefficientData.begin) >::type >
-         it(this->coefficientData.end),
-         P0(this->coefficientData.begin + 1); it != P0; ++it){
-    accumulator = (accumulator + (*it)) * x;
+  for ( std::reverse_iterator
+          < typename std::remove_const
+          < decltype(this->coefficientData.begin) >::type >
+          it( this->coefficientData.end ),
+          P0( this->coefficientData.begin + 1 ); it != P0; ++it ){
+    accumulator = ( accumulator + (*it) ) * x;
   }
   accumulator += *(this->coefficientData.begin);
   return accumulator;

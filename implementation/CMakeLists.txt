@@ -7,11 +7,12 @@ list(APPEND header_only_subdirs
   "InterpolationTable"
   "InterpolationTableIntegral"
   "TaylorSeries"
-#  "LegendreSeries"
+  "LegendreSeries"
 #  "SplicedProbabilityDistribution"
 #  "ProbabilityDistribution"
 #  "BivariateProbabilityDistribution"
   )
+
 set(subdirs "")
 list(APPEND subdirs
   ${header_only_subdirs}

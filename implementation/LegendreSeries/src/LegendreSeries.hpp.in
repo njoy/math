@@ -1,17 +1,20 @@
-#include "math/implementation/TaylorSeries.hpp"
+#ifndef MATH_IMPLEMENTATION_LEGENDRESERIES_CTOR_HPP
+#define MATH_IMPLEMENTATION_LEGENDRESERIES_CTOR_HPP
+
+#include "math/implementation/LegendreSeries.hpp"
 
 namespace math {
 namespace implementation {
 
 template< typename OwnershipPolicy, typename T>
-TaylorSeries< OwnershipPolicy, T >::TaylorSeries
+LegendreSeries< OwnershipPolicy, T >::LegendreSeries
 ( SelfAccessAbstraction&& coefficientData, const bool trust ) :
   coefficientData( std::move(coefficientData) ){
   
   if (not trust){
     if ((coefficientData.end - coefficientData.begin) < 1){
       LOG(ERROR) << "Ill-defined series";
-      LOG(INFO)  << "A Taylor series must specify one or more coefficient";
+      LOG(INFO)  << "A Legendre series must specify one or more coefficient";
       LOG(INFO)  << "Difference between beginning iterator and "
                  << "ending iterator is less than one";
       LOG(INFO) << "Difference: "
@@ -23,3 +26,5 @@ TaylorSeries< OwnershipPolicy, T >::TaylorSeries
 
 } // implementation
 } // math
+
+#endif

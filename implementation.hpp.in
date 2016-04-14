@@ -123,7 +123,7 @@ using DataReferencingTaylorSeries =
 
 #include "math/implementation/TaylorSeries.hpp"
 
-// #include "math/implementation/LegendreSeries.hpp"
+#include "math/implementation/LegendreSeries.hpp"
 
 // #include "math/implementation/ProbabilityDistribution.hpp"
 // #include "math/implementation/SplicedProbabilityDistribution.hpp"

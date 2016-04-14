@@ -2,18 +2,18 @@
 
 #include "catch.hpp"
 
-#include "math/implementation/IteratorLegendreSeries.hpp"
+#include "math/implementation/LegendreSeries.hpp"
 
 extern int testNumber;
 extern std::vector
-<math::implementation::IteratorLegendreSeries
- < std::vector<double>::iterator  > > ils;
+< math::implementation::LegendreSeries
+  < math::implementation::ReferencePolicy, std::vector<double>::iterator > > ils;
 extern std::vector< std::function< double(double) > > evalReferences;
 
 SCENARIO(
-  "The iterator legendre series evaluation function will return the correct value",
-  "[math], [IteratorLegendreSeries], [eval]"){
-  GIVEN("an IteratorLegendreSeries and a reference function"){
+  "The legendre series evaluation function will return the correct value",
+  "[math], [LegendreSeries], [evaluation]"){
+  GIVEN("an LegendreSeries and a reference function"){
     WHEN("queried for a function value"){
       THEN("the values will match"){
         double dx = 2.0/100.0;
@@ -25,7 +25,7 @@ SCENARIO(
           LOG(INFO) << "Test " << ++testNumber
                     << ": [eval] No Errors Expected";
           while (i--){
-            REQUIRE( ils[j].eval(x) == Approx(evalReferences[j](x)) );
+            REQUIRE( ils[j].evaluate(x) == Approx(evalReferences[j](x)) );
             REQUIRE( ils[j](x) == Approx(evalReferences[j](x)) );
             x+= dx;
           }
@@ -36,16 +36,18 @@ SCENARIO(
 }
 
 SCENARIO(
-  "The iterator legendre series evaluation function will evaluate efficiently",
-  "[math], [IteratorLegendreSeries], [eval], [benchmark], [hide]"){
-  GIVEN("an IteratorLegendreSeries"){
+  "The legendre series evaluation function will evaluate efficiently",
+  "[math], [LegendreSeries], [evaluation], [benchmark], [hide]"){
+  GIVEN("an LegendreSeries"){
     WHEN("queried for a function value"){
       double result;
       THEN("the values will match the reference"){
         std::vector<double> coef;
         coef.resize(65, 0);
         coef.back() = 1;
-        math::implementation::IteratorLegendreSeries< std::vector<double>::iterator  >
+        math::implementation::LegendreSeries
+          < math::implementation::ReferencePolicy,
+            std::vector<double>::iterator >
           bench(coef.begin(), coef.end());
         result = bench(0.5);
         REQUIRE(

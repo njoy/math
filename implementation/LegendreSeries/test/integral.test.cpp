@@ -2,19 +2,18 @@
 
 #include "catch.hpp"
 
-#include "math/implementation/IteratorLegendreSeries.hpp"
+#include "math/implementation/LegendreSeries.hpp"
 
 extern int testNumber;
 extern std::vector
-<math::implementation::IteratorLegendreSeries
- < std::vector<double>::iterator  > > ils;
+<math::implementation::LegendreSeries
+ < math::implementation::ReferencePolicy, std::vector<double>::iterator  > > ils;
 extern std::vector< std::function< double(double) > > integralReferences;
 
 SCENARIO(
-  "The iterator legendre series integral function"
-  " will return the correct value",
-  "[math], [IteratorLegendreSeries], [integral]"){
-  GIVEN("an IteratorLegendreSeries and a reference function"){
+  "The legendre series integral function will return the correct value",
+  "[math], [LegendreSeries], [integral]"){
+  GIVEN("an LegendreSeries and a reference function"){
     WHEN("queried for a function integral value"){
       THEN("the values will match"){
         double dx = 2.0/100.0;

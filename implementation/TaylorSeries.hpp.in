@@ -38,7 +38,7 @@ namespace implementation{
  * For more information, see http://mathworld.wolfram.com/HornersRule.html
  */
 template< typename OwnershipPolicy, typename T >
-class TaylorSeries : public math::API::SeriesExpansion {
+class TaylorSeries final : public math::API::SeriesExpansion {
 public:
   /* fields */
   using SelfAccessAbstraction = AccessAbstraction< OwnershipPolicy, T >;
