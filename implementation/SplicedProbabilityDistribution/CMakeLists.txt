@@ -1,29 +1,28 @@
 if(${verbose_traversal})
-  message(STATUS "Entered BivariateProbabilityDistribution directory")
+  message(STATUS "Entered SplicedProbabilityDistribution directory")
 endif(${verbose_traversal})
 
-set(long_path "${math_HEADER_DIR}/implementation/BivariateProbabilityDistribution/")
+set(long_path "${math_HEADER_DIR}/implementation/SplicedProbabilityDistribution/src")
 
-if(NOT(EXISTS "${long_path}/src"))
-  file(MAKE_DIRECTORY "${long_path}/src")
-endif(NOT(EXISTS "${long_path}/src"))
+if(NOT(EXISTS "${long_path}"))
+  file(MAKE_DIRECTORY "${long_path}")
+endif(NOT(EXISTS "${long_path}"))
 
 set(headers "")
 list(APPEND headers
-  "src/BivariateProbabilityDistribution"
-  "src/conditionalProbabilityDensity"
-  "src/conditionalCumulativeProbability"
-  "src/givenCondition"
+  "SplicedProbabilityDistribution"
+  "probabilityDensity"
+  "cumulativeProbability"
   )
 
 foreach(header ${headers})
   configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/${header}.hpp.in" 
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/${header}.hpp.in"
     "${long_path}/${header}.hpp"
     COPYONLY
     )
   list(APPEND math_src_headers
-    "${CMAKE_CURRENT_SOURCE_DIR}/${header}.hpp.in" 
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/${header}.hpp.in"
     )
   list(APPEND math_bin_headers
     "${long_path}/${header}.hpp"
@@ -32,7 +31,7 @@ endforeach(header)
 
 # traverse subdirectories
 if(${local_testing})
-  list(APPEND testLabels BivariateProbabilityDistribution)
+  list(APPEND testLabels SplicedProbabilityDistribution)
   add_subdirectory( "${CMAKE_CURRENT_SOURCE_DIR}/test" )
 endif(${local_testing})
 
@@ -41,5 +40,5 @@ set(math_src_headers "${math_src_headers}" PARENT_SCOPE)
 set(math_bin_headers "${math_bin_headers}" PARENT_SCOPE)
 
 if(${verbose_traversal})
-  message(STATUS "Exiting BivariateProbabilityDistribution directory")
+  message(STATUS "Exiting SplicedProbabilityDistribution directory")
 endif(${verbose_traversal})

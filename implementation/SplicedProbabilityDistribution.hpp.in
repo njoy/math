@@ -1,0 +1,57 @@
+#ifndef MATH_IMPLEMENTATION_SPLICEDPROBABILITYDISTRIBUTION_HPP
+#define MATH_IMPLEMENTATION_SPLICEDPROBABILITYDISTRIBUTION_HPP
+
+#include <array>
+
+#include "math/API/ProbabilityDistribution.hpp"
+#include "math/implementation.hpp"
+
+namespace math{
+namespace implementation{
+
+template< double pdfInterp( const double x,
+                            const double x1, const double x2,
+                            const double y1, const double y2 ),
+          double cdfInterp( const double x,
+                            const double x1, const double x2,
+                            const double y1, const double y2 ) >
+class SplicedProbabilityDistribution final :
+  public math::API::ProbabilityDistribution {
+public:
+  /* constructor and destructor */
+  SplicedProbabilityDistribution
+  ( const double condition,
+    const math::API::ProbabilityDistribution* pd0,
+    const math::API::ProbabilityDistribution* pd1,
+    const std::array<double, 2>& associatedConditions );
+
+  SplicedProbabilityDistribution
+  ( const SplicedProbabilityDistribution& ) = default;
+  SplicedProbabilityDistribution( SplicedProbabilityDistribution&& ) = default;
+
+  ~SplicedProbabilityDistribution() = default;
+
+  /* method */
+  /** @return The probability density at the @p event value */
+  double
+  probabilityDensity( const double event ) const;
+
+  /** @return The cumulative probability at the @p event value*/
+  double
+  cumulativeProbability( const double event ) const;
+
+  /* fields */
+  const double condition;
+  const math::API::ProbabilityDistribution* const pd0;
+  const math::API::ProbabilityDistribution* const pd1;
+  const std::array<double, 2> associatedConditions;
+};
+
+}
+}
+
+#include "math/implementation/SplicedProbabilityDistribution/src/SplicedProbabilityDistribution.hpp"
+#include "math/implementation/SplicedProbabilityDistribution/src/probabilityDensity.hpp"
+#include "math/implementation/SplicedProbabilityDistribution/src/cumulativeProbability.hpp"
+
+#endif

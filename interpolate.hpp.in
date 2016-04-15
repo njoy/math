@@ -73,9 +73,9 @@ histogram( const double x,                   // assumed x1 <= x < x2
 inline double
 linLin( const double x,                   // assumed x1 <= x <= x2
         const double x1, const double x2, // assumed x1 < x2
-        const double y1, const double y2 ){ 
+        const double y1, const double y2 ){
   return (y1 + (y2 - y1)*(x - x1)/(x2 - x1));
-}
+} 
 
 /**
  * @brief Evaluate a linear-logarithmic interpolant given two grid points.
@@ -116,7 +116,7 @@ linLog( const double x,                   // assumed x1 <= x <= x2
 inline double
 logLin( const double x,                   // assumed x1 <= x <= x2
         const double x1, const double x2, // assumed x1 < x2
-        const double y1, const double y2 ){ 
+        const double y1, const double y2 ){
   return y1 * std::pow((y2 / y1), (x - x1) / (x2 - x1));
 }
 

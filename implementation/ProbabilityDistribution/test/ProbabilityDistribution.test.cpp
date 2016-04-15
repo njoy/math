@@ -25,7 +25,6 @@ probabilityDistribution
 ( std::move(PDF_), std::move(CDF_) );
 
 int main( int argc, const char* argv[]){
-  LOG(INFO) << probabilityDistribution.probabilityDensity(1);
   LOG(INFO) << "ProbabilityDistribution Tests";
   LOG(INFO) << "=================================";
   int result = Catch::Session().run( argc, argv );

@@ -2,11 +2,9 @@ if(${verbose_traversal})
   message(STATUS "Entered ProbabilityDistribution directory")
 endif(${verbose_traversal})
 
-# setup test labels
-list(APPEND testLabels ProbabilityDistribution)
-
 # traverse subdirectories
 if(${local_testing})
+  list(APPEND testLabels ProbabilityDistribution)
   add_subdirectory( "${CMAKE_CURRENT_SOURCE_DIR}/test" )
 endif(${local_testing})
 

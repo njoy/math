@@ -1,0 +1,49 @@
+#ifndef MATH_IMPLEMENTATION_SPLICEDPROBABILITYDISTRIBUTION_SRC_SPLICEDPROBABILITYDISTRIBUTION_HPP
+#define MATH_IMPLEMENTATION_SPLICEDPROBABILITYDISTRIBUTION_SRC_SPLICEDPROBABILITYDISTRIBUTION_HPP
+
+#include <algorithm>
+
+#include "math/implementation/SplicedProbabilityDistribution.hpp"
+
+namespace math{
+namespace implementation{
+template< double pdfInterp( const double x,
+                            const double x1, const double x2,
+                            const double y1, const double y2 ),
+          double cdfInterp( const double x,
+                            const double x1, const double x2,
+                            const double y1, const double y2 ) >
+SplicedProbabilityDistribution
+< pdfInterp, cdfInterp >::SplicedProbabilityDistribution
+( const double queriedCondition,
+  const math::API::ProbabilityDistribution* pd0,
+  const math::API::ProbabilityDistribution* pd1,
+  const std::array<double, 2>& associatedConditions ) :
+  condition( queriedCondition ),
+  pd0( pd0 ),
+  pd1( pd1 ),
+  associatedConditions( associatedConditions ){
+  if ( not std::is_sorted( this->associatedConditions.begin(),
+                           this->associatedConditions.end() )){
+    LOG(ERROR) << "Specified probability conditions are not sorted";
+    LOG(INFO) << "Left Condition: " << this->associatedConditions.front();
+    LOG(INFO) << "Right Condition: " << this->associatedConditions.back();
+    LOG(INFO) << "Error while constructing spliced probability distribution";
+    throw std::exception();
+  }
+  if ( this->condition < this->associatedConditions.front() ||
+       this->condition > this->associatedConditions.back() ){
+    LOG(ERROR) <<
+      "Queried condition is outside the bounds of the specified conditions";
+    LOG(INFO) << "Queried Condition: " << this->condition;
+    LOG(INFO) << "Left Condition: " << this->associatedConditions.front();
+    LOG(INFO) << "Right Condition: " << this->associatedConditions.back();
+    LOG(INFO) << "Error while constructing spliced probability distribution";
+    throw std::exception();
+  }
+}
+
+}
+}
+
+#endif

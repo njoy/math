@@ -7,11 +7,14 @@ class math::API::BivariateProbabilityDistribution{
 public:
 
   virtual double 
-  conditionalProbabilityDensity(const double event, 
-                                const double condition) const = 0;
+  conditionalProbabilityDensity( const double event, 
+                                 const double condition ) const = 0;
   virtual double 
-  conditionalCumulativeProbability(const double event, 
-                                   const double condition) const = 0;
+  conditionalCumulativeProbability( const double event,
+                                    const double condition ) const = 0;
+
+  virtual std::unique_ptr< math::API::ProbabilityDistribution >
+  givenCondition( const double condition ) const = 0;
 };
 
 #endif  // MATH_API_BIVARIATEPROBABILITYDISTRIBUTION

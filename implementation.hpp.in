@@ -33,6 +33,14 @@ class HeterogeneousInterpolationRegionIntegral;
 template<typename PDFFunctor, typename CDFFunctor>
 class ProbabilityDistribution;
 
+template< double pdfInterp( const double x,
+                            const double x1, const double x2,
+                            const double y1, const double y2 ),
+          double cdfInterp( const double x,
+                            const double x1, const double x2,
+                            const double y1, const double y2 ) >
+class SplicedProbabilityDistribution;
+
 /* class BivariateProbabilityDistribution */
 template< double pdfInterp( const double x,
                             const double x1, const double x2,
@@ -65,6 +73,7 @@ typedef VectorSeries< IteratorLegendreSeries > VectorLegendreSeries;
 #include "math/implementation/IteratorTaylorSeries.hpp"
 #include "math/implementation/IteratorLegendreSeries.hpp"
 #include "math/implementation/ProbabilityDistribution.hpp"
+#include "math/implementation/SplicedProbabilityDistribution.hpp"
 #include "math/implementation/BivariateProbabilityDistribution.hpp"
 
 #endif
