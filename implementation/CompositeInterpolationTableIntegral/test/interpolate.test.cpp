@@ -22,11 +22,14 @@ SCENARIO("The composite interpolation table integral's interpolate functions cor
       THEN("the returned value will match the generating function "){
         LOG(INFO) << "Test " << ++testNumber
                   << ": [interpolate] No Errors Expected";
+        auto& Cit = *cit;
         for (auto xVal : x00){
           REQUIRE(f_(xVal) == Approx(cit->interpolate(xVal)));
+          REQUIRE( f_(xVal) == Approx(Cit(xVal)) );
         }
         for (auto xVal : x01){
           REQUIRE(f_(xVal) == Approx(cit->interpolate(xVal)));
+          REQUIRE( f_(xVal) == Approx(Cit(xVal)) );
         }
         REQUIRE_THROWS( cit->interpolate(10) );
       }

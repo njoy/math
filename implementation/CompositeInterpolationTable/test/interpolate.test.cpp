@@ -29,13 +29,16 @@ SCENARIO("The composite interpolation table's interpolate functions correctly",
         LOG(INFO) << "Test " << ++testNumber
                   << ": [interpolate] No Errors Expected";
         double xVal;
+        auto& Cit = *cit;
         for ( auto it = x00.begin() + 1, end = x00.end(); it != end; ++it ){
           xVal = 0.5 * ( it[0] + it[-1] );
           REQUIRE( f(xVal) == Approx(cit->interpolate(xVal)) );
+          REQUIRE( f(xVal) == Approx(Cit(xVal)) );
         }
         for ( auto it = x01.begin() + 1, end = x01.end(); it != end; ++it ){
           xVal = 0.5 * ( it[0] + it[-1] );
           REQUIRE( f(xVal) == Approx(cit->interpolate(xVal)) );
+          REQUIRE( f(xVal) == Approx(Cit(xVal)) );
         }
         REQUIRE_THROWS( cit->interpolate(10) );
       }

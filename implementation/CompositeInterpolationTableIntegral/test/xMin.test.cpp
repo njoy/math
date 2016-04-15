@@ -6,7 +6,7 @@
 
 extern int testNumber;
 extern std::vector<double> x00;
-extern std::unique_ptr<math::implementation::CompositeInterpolationTable> cit;
+extern std::unique_ptr<math::implementation::CompositeInterpolationTableIntegral> cit;
 
 SCENARIO("The composite interpolation table integral's xMin functions correctly",
          "[math], [CompositeInterpolationTable], [xMin]"){
