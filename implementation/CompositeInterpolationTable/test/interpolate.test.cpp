@@ -37,6 +37,7 @@ SCENARIO("The composite interpolation table's interpolate functions correctly",
           xVal = 0.5 * ( it[0] + it[-1] );
           REQUIRE( f(xVal) == Approx(cit->interpolate(xVal)) );
         }
+        REQUIRE_THROWS( cit->interpolate(10) );
       }
     }
   }

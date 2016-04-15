@@ -22,8 +22,8 @@ SCENARIO("The composite interpolation table integral's dyGrid functions correctl
                                    dy00.begin(), dy00.end()));
         REQUIRE(true == std::equal(grids[1].begin(), grids[1].end(),
                                    dy01.begin(), dy01.end()));
-        const auto& ccit = cit;
-        auto cGrids = ccit->dyGrid();
+        const auto& ccit = *cit;
+        auto cGrids = ccit.dyGrid();
         REQUIRE(true == std::equal(cGrids[0].begin(), cGrids[0].end(),
                                    dy00.begin(), dy00.end()));
         REQUIRE(true == std::equal(cGrids[1].begin(), cGrids[1].end(),

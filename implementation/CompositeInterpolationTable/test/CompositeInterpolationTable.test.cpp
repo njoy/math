@@ -10,7 +10,6 @@
 namespace {
 
 template<typename T>
-
 T clone(const T& t){return t;}
 
 auto F = []( const double x ){ return x < 5 ? pow(x, 2.0) : x + 20.0; };
@@ -69,3 +68,5 @@ int main( int argc, const char* argv[] ){
   LOG(INFO) << "CompositeInterpolationTable Tests Complete!";
   return result;
 }
+
+

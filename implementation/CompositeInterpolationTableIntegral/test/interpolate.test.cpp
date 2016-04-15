@@ -28,6 +28,7 @@ SCENARIO("The composite interpolation table integral's interpolate functions cor
         for (auto xVal : x01){
           REQUIRE(f_(xVal) == Approx(cit->interpolate(xVal)));
         }
+        REQUIRE_THROWS( cit->interpolate(10) );
       }
     }
   }

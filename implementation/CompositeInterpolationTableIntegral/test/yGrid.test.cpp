@@ -17,9 +17,9 @@ SCENARIO("The composite interpolation table integral's yGrid functions correctly
     WHEN("queried for the yGrid"){
       THEN("the returned value will return be equal to the vector"){
         LOG(INFO) << "Test " << ++testNumber << ": [yGrid] No Errors Expected";
-        const auto& ccit = cit; 
+        const auto& ccit = *cit; 
         auto grids = cit->yGrid();
-        auto cGrids = ccit->yGrid();
+        auto cGrids = ccit.yGrid();
         REQUIRE(grids[0].size() == y00.size());
         REQUIRE(cGrids[0].size() == y00.size());
         auto gridIt = grids[0].begin();
