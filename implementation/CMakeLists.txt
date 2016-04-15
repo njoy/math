@@ -17,6 +17,7 @@ set(subdirs "")
 list(APPEND subdirs
   ${header_only_subdirs}
   "CompositeInterpolationTable"
+  "CompositeInterpolationTableIntegral"
   )
   
 foreach (subdir ${header_only_subdirs})

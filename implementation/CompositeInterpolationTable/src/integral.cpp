@@ -1,17 +1,16 @@
-/*
-#include "math/implementation/HeterogeneousInterpolationRegion.hpp"
+#include "math/implementation/CompositeInterpolationTable.hpp"
 
-std::vector< std::vector<double> >
-math::implementation::HeterogeneousInterpolationRegion::integralGrid() const {
-  std::vector< std::vector<double> > grid;
-  grid.reserve(this->subregions.size());
-  for (auto& subregionPtr : this->subregions){
-    auto subGrid = subregionPtr->integralGrid();
-    for (auto& subGridComponent : subGrid){
-      grid.push_back( std::move(subGridComponent) );
-    }
+math::implementation::CompositeInterpolationTableIntegral
+math::implementation::CompositeInterpolationTable::integral_
+( const double y0 ) const {
+  std::vector< std::unique_ptr< math::API::InterpolationTableIntegral > > grid;
+  grid.reserve( this->subtables.size() );
+  auto boundaryCondition = y0;
+  for (auto& subtablePointer : this->subtables ){
+    grid.push_back( subtablePointer->integral( boundaryCondition ) );
+    auto& tail = *(grid.back());
+    boundaryCondition = tail( tail.xMax() );
   }
-  return grid;
+  return math::implementation::CompositeInterpolationTableIntegral
+    ( std::move(grid) );
 }
-
-*/

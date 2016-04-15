@@ -2,7 +2,7 @@
 #define MATH_IMPLEMENTATION_COMPOSITEINTERPOLATIONTABLE_HPP
 
 #include "math/API/InterpolationTable.hpp"
-#include "math/implementation.hpp"
+#include "math/implementation/CompositeInterpolationTableIntegral.hpp"
 
 class math::implementation::CompositeInterpolationTable final :
   public math::API::InterpolationTable {
@@ -44,10 +44,17 @@ public:
   yGrid();
 
   std::unique_ptr< math::API::InterpolationTableIntegral >
-  integral(const double y0) const;
+  integral( const double y0 ) const {
+    return std::make_unique
+      < math::implementation::CompositeInterpolationTableIntegral >
+      ( this->integral_(y0) );
+  }
+
+  math::implementation::CompositeInterpolationTableIntegral
+  integral_( const double y0 ) const;
   
   double
-  interpolate(const double x) const;
+  interpolate( const double x ) const;
 
   static std::vector<double>
   buildBoundaries

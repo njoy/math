@@ -72,7 +72,7 @@ class CompositeInterpolationTable;
 template< typename Iterator, Interpolant interpolant >
 class InterpolationTableIntegral;
 
-// class CompositeInterpolationTableIntegral;
+class CompositeInterpolationTableIntegral;
 
 /*~~~~~~~~~~~~~~~~~~~~~~~*/
 /* class SeriesExpansion */
