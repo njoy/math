@@ -21,7 +21,12 @@ SCENARIO("The composite interpolation table's xGrid functions correctly",
                                    x00.begin(), x00.end()));
         REQUIRE(true == std::equal(grids[1].begin(), grids[1].end(),
                                    x01.begin(), x01.end()));
-   
+        const auto & ccit = cit;
+        grids = ccit->xGrid();
+        REQUIRE(true == std::equal(grids[0].begin(), grids[0].end(),
+                                   x00.begin(), x00.end()));
+        REQUIRE(true == std::equal(grids[1].begin(), grids[1].end(),
+                                   x01.begin(), x01.end()));
       }
     }
   }
