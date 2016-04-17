@@ -10,7 +10,7 @@
 namespace {
 
 template<typename T>
-T clone(const T& t){return t;}
+T clone(const T t){return t;}
 
 auto F = []( const double x ){ return x < 5 ? pow(x, 2.0) : x + 20.0; };
 
@@ -38,9 +38,9 @@ int main( int argc, const char* argv[] ){
   double boundaryCondition = 0;
   
   irv.push_back( std::make_unique
-                 < math::implementation::DataOwningInterpolationTable
-                 < math::interpolate::logLog > >
-                 ( clone(x00), clone(y00), false ) );
+                 < math::implementation::DataReferencingInterpolationTable
+                 < std::vector<double>::iterator, math::interpolate::logLog > >
+                 ( x00.begin(), x00.end(), y00.begin(), y00.end(), false ) );
 
   auto temp = irv.back()->integral(boundaryCondition);
   referenceIntegrals.push_back( std::move(temp) );
@@ -48,9 +48,9 @@ int main( int argc, const char* argv[] ){
     referenceIntegrals.back()->interpolate( referenceIntegrals.back()->xMax() ); 
         
   irv.push_back( std::make_unique
-                 < math::implementation::DataOwningInterpolationTable
-                  < math::interpolate::linLin > >
-                 ( clone(x01), clone(y01), false )  );
+                 < math::implementation::DataReferencingInterpolationTable
+                 < std::vector<double>::iterator, math::interpolate::linLin > >
+                 ( x01.begin(), x01.end(), y01.begin(), y01.end(), false )  );
 
   temp = irv.back()->integral(boundaryCondition);
   referenceIntegrals.push_back( std::move(temp) );
@@ -69,4 +69,61 @@ int main( int argc, const char* argv[] ){
   return result;
 }
 
+SCENARIO("Gaps in the x-grid will cause the ctor to throw"){
+  GIVEN("An overlapping pair of x-grids"){
+    std::vector<double> x010 = {4.0, 5.0, 6.0, 7.0, 8.0};
+    std::vector< std::unique_ptr< math::API::InterpolationTable > > irv0;
+    
+    double boundaryCondition = 0;
+    
+    irv0.push_back( std::make_unique
+                   < math::implementation::DataReferencingInterpolationTable
+                   < std::vector<double>::iterator, math::interpolate::logLog > >
+                   ( x00.begin(), x00.end(), y00.begin(), y00.end(), false ) );
+    
+    auto temp = irv0.back()->integral(boundaryCondition);
+    boundaryCondition = temp->interpolate( temp->xMax() ); 
+    
+    irv0.push_back( std::make_unique
+                   < math::implementation::DataReferencingInterpolationTable
+                   < std::vector<double>::iterator, math::interpolate::linLin > >
+                   ( x010.begin(), x010.end(), y01.begin(), y01.end(), false ) );
+    
+    temp = irv0.back()->integral(boundaryCondition);
+    boundaryCondition = temp->interpolate( temp->xMax() ); 
+    WHEN("used to construct a composite interpolation table"){
+      THEN("the ctor will throw"){
+        REQUIRE_THROWS( math::implementation::CompositeInterpolationTable( std::move(irv0) ) );
+      }
+    }
+  }
 
+  GIVEN("An pair of x-grids with a gap"){
+    std::vector<double> x011 = {6.0, 7.0, 8.0, 9.0, 10.0};
+
+    std::vector< std::unique_ptr< math::API::InterpolationTable > > irv1;
+    
+    double boundaryCondition = 0;
+
+    irv1.push_back( std::make_unique
+                    < math::implementation::DataReferencingInterpolationTable
+                    < std::vector<double>::iterator, math::interpolate::logLog > >
+                    ( x011.begin(), x011.end(), y00.begin(), y00.end(), false ) );
+
+    
+    auto temp = irv1.back()->integral(boundaryCondition);
+    boundaryCondition = temp->interpolate( temp->xMax() ); 
+    irv1.push_back( std::make_unique
+                   < math::implementation::DataReferencingInterpolationTable
+                   < std::vector<double>::iterator, math::interpolate::linLin > >
+                   ( x011.begin(), x011.end(), y01.begin(), y01.end(), false ) );
+    
+    temp = irv1.back()->integral(boundaryCondition);
+    boundaryCondition = temp->interpolate( temp->xMax() ); 
+    WHEN("used to construct a composite interpolation table"){
+      THEN("the ctor will throw"){
+        REQUIRE_THROWS( math::implementation::CompositeInterpolationTable( std::move(irv1) ) );
+      }
+    }
+  }
+}
