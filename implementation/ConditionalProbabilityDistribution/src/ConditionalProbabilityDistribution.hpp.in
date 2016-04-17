@@ -1,14 +1,14 @@
-#ifndef MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_CTOR_HPP
-#define MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_CTOR_HPP
+#ifndef MATH_IMPLEMENTATION_CONDITIONALPROBABILITYDISTRIBUTION_CTOR_HPP
+#define MATH_IMPLEMENTATION_CONDITIONALPROBABILITYDISTRIBUTION_CTOR_HPP
 
-#include "math/implementation/BivariateProbabilityDistribution.hpp"
+#include "math/implementation/ConditionalProbabilityDistribution.hpp"
 
 namespace math {
 namespace implementation {
 
 template< Interpolant pdfInterpolant, Interpolant cdfInterpolant>
-BivariateProbabilityDistribution
-< pdfInterpolant, cdfInterpolant >::BivariateProbabilityDistribution
+ConditionalProbabilityDistribution
+< pdfInterpolant, cdfInterpolant >::ConditionalProbabilityDistribution
 ( std::vector<double>&& conditions,
   std::vector< std::unique_ptr<math::API::ProbabilityDistribution> >&&
   conditionedProbabilityDistributions,
@@ -46,7 +46,7 @@ BivariateProbabilityDistribution
       }
     } catch (std::exception& e){
       LOG(INFO) <<
-        "Error while constructing BivariateProbabilityDistribution object";
+        "Error while constructing ConditionalProbabilityDistribution object";
       throw e;
     }
   }

@@ -1,5 +1,5 @@
-#ifndef MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_SRC_CUMULATIVEPROBABILITYDENSITY
-#define MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_SRC_CUMULATIVEPROBABILITYDENSITY
+#ifndef MATH_IMPLEMENTATION_CONDITIONALPROBABILITYDISTRIBUTION_SRC_CUMULATIVEPROBABILITYDENSITY
+#define MATH_IMPLEMENTATION_CONDITIONALPROBABILITYDISTRIBUTION_SRC_CUMULATIVEPROBABILITYDENSITY
 
 namespace math{
 namespace implementation{
@@ -14,8 +14,8 @@ namespace implementation{
  */
 template< Interpolant pdfInterpolant, Interpolant cdfInterpolant >
 double 
-BivariateProbabilityDistribution
-< pdfInterpolant, cdfInterpolant >::conditionalCumulativeProbability
+ConditionalProbabilityDistribution
+< pdfInterpolant, cdfInterpolant >::cumulativeProbability
 ( const double event, const double condition ) const {
   const auto conditionIter = std::lower_bound
     ( this->conditions.begin(), this->conditions.end(), condition );
@@ -54,8 +54,7 @@ BivariateProbabilityDistribution
                            leftDistribution.cumulativeProbability( event ),
                            rightDistribution.cumulativeProbability( event ) );
   } catch ( std::exception& e ){
-    LOG(INFO) << "Error while computing conditional cumulative probability"
-              << " in BivariateProbabilityDistribution.";
+    LOG(INFO) << "Error while computing conditional cumulative probability";
     throw e;
   }
 }

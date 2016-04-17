@@ -1,5 +1,5 @@
-#ifndef MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_SRC_CONDITIONALPROBABILITYDISTRIBUTION_HPP
-#define MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_SRC_CONDITIONALPROBABILITYDISTRIBUTION_HPP
+#ifndef MATH_IMPLEMENTATION_CONDITIONALPROBABILITYDISTRIBUTION_SRC_CONDITIONALPROBABILITYDISTRIBUTION_HPP
+#define MATH_IMPLEMENTATION_CONDITIONALPROBABILITYDISTRIBUTION_SRC_CONDITIONALPROBABILITYDISTRIBUTION_HPP
 
 #include <memory>
 
@@ -19,8 +19,8 @@ namespace implementation{
  */
 template< Interpolant pdfInterpolant, Interpolant cdfInterpolant >
 std::unique_ptr< math::API::ProbabilityDistribution >
-BivariateProbabilityDistribution
-< pdfInterpolant, cdfInterpolant >::conditionalProbabilityDistribution
+ConditionalProbabilityDistribution
+< pdfInterpolant, cdfInterpolant >::probabilityDistribution
 ( const double condition ) const {
 
   const auto conditionIter = std::lower_bound( this->conditions.begin(),
@@ -74,8 +74,9 @@ BivariateProbabilityDistribution
 
 
   } catch (std::exception& e){
-    LOG(INFO) << "Error while generating probability distribution "
-              << "in BivariateProbabilityDistribution givenCondition method.";
+    LOG(INFO) << "Error while generating probability distribution in"
+              << " ConditionalProbabilityDistribution probabilityDistribution"
+              << " method.";
     throw e;
   }
 }

@@ -14,7 +14,7 @@ class SeriesExpansion;
 
 class ProbabilityDistribution;
 
-class BivariateProbabilityDistribution;
+class ConditionalProbabilityDistribution;
 
 }
 }

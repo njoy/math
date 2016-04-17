@@ -1,19 +1,19 @@
 #include "catch.hpp"
 
-#include "math/implementation/BivariateProbabilityDistribution.hpp"
+#include "math/implementation/ConditionalProbabilityDistribution.hpp"
 
 extern int testNumber;
 
 extern std::vector<double> conditions;
 
 extern std::unique_ptr
-  < math::implementation::BivariateProbabilityDistribution
+  < math::implementation::ConditionalProbabilityDistribution
   < math::interpolate::linLin, math::interpolate::linLin > > bvpd;
 
 SCENARIO(
   "The upperConditionLimit method returns a value consisent with the conditions"
   " used in construction", 
-  "[math], [BivariateProbabilityDistribution], [upperConditionLimit]"){
+  "[math], [ConditionalProbabilityDistribution], [upperConditionLimit]"){
   GIVEN( "a bivariate distribution" ){
     WHEN( "queried for the upper limit on condition values" ){
       THEN( "the value will match the value used in construction" ){

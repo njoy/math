@@ -1,7 +1,7 @@
-#ifndef MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_HPP
-#define MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_HPP
+#ifndef MATH_IMPLEMENTATION_CONDITIONALPROBABILITYDISTRIBUTION_HPP
+#define MATH_IMPLEMENTATION_CONDITIONALPROBABILITYDISTRIBUTION_HPP
 
-#include "math/API/BivariateProbabilityDistribution.hpp"
+#include "math/API/ConditionalProbabilityDistribution.hpp"
 #include "math/API/ProbabilityDistribution.hpp"
 #include "math/implementation.hpp"
 
@@ -20,31 +20,29 @@ namespace implementation{
  * cumulative probability functions
  */
 template< Interpolant pdfInterpolant, Interpolant cdfInterpolant >
-class BivariateProbabilityDistribution final :
-  public math::API::BivariateProbabilityDistribution {
-  
+class ConditionalProbabilityDistribution final :
+  public math::API::ConditionalProbabilityDistribution {
 public:
-
   /* constructor and destructor */
-  BivariateProbabilityDistribution
+  ConditionalProbabilityDistribution
   ( std::vector<double>&& specifiedVariates,
     std::vector< std::unique_ptr<math::API::ProbabilityDistribution> >&&
     conditionedProbabilityDistributions,
     const bool trust = true );
 
-  ~BivariateProbabilityDistribution() = default;
+  ~ConditionalProbabilityDistribution() = default;
   
   /* methods */
   double 
-  conditionalProbabilityDensity( const double event, 
+  probabilityDensity( const double event, 
                                  const double condition ) const;
 
   double 
-  conditionalCumulativeProbability( const double event, 
+  cumulativeProbability( const double event, 
                                     const double condition ) const;
 
   std::unique_ptr< math::API::ProbabilityDistribution >
-  conditionalProbabilityDistribution( const double condition ) const;
+  probabilityDistribution( const double condition ) const;
 
   double
   lowerConditionLimit(){ return this->conditions.front(); }
@@ -67,16 +65,15 @@ public:
    */
   std::vector< std::unique_ptr< math::API::ProbabilityDistribution > > 
   conditionedProbabilityDistributions;
-
 };
 
 }
 }
 
-#include "math/implementation/BivariateProbabilityDistribution/src/BivariateProbabilityDistribution.hpp"
-#include "math/implementation/BivariateProbabilityDistribution/src/conditionalProbabilityDensity.hpp"
-#include "math/implementation/BivariateProbabilityDistribution/src/conditionalCumulativeProbability.hpp"
-#include "math/implementation/BivariateProbabilityDistribution/src/conditionalProbabilityDistribution.hpp"
+#include "math/implementation/ConditionalProbabilityDistribution/src/ConditionalProbabilityDistribution.hpp"
+#include "math/implementation/ConditionalProbabilityDistribution/src/probabilityDensity.hpp"
+#include "math/implementation/ConditionalProbabilityDistribution/src/cumulativeProbability.hpp"
+#include "math/implementation/ConditionalProbabilityDistribution/src/probabilityDistribution.hpp"
 
 #endif
 

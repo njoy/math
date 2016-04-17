@@ -1,5 +1,5 @@
-#ifndef MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_SRC_CONDITIONALPROBABILITYDENSITY_HPP
-#define MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_SRC_CONDITIONALPROBABILITYDENSITY_HPP
+#ifndef MATH_IMPLEMENTATION_CONDITIONALPROBABILITYDISTRIBUTION_SRC_PROBABILITYDENSITY
+#define MATH_IMPLEMENTATION_CONDITIONALPROBABILITYDISTRIBUTION_SRC_PROBABILITYDENSITY
 
 namespace math{
 namespace implementation{
@@ -12,13 +12,11 @@ namespace implementation{
  */
 template< Interpolant pdfInterpolant, Interpolant cdfInterpolant >
 double 
-BivariateProbabilityDistribution
-< pdfInterpolant, cdfInterpolant >::conditionalProbabilityDensity
+ConditionalProbabilityDistribution
+< pdfInterpolant, cdfInterpolant >::probabilityDensity
 ( const double event, const double condition ) const {
-  
   const auto conditionIter = std::lower_bound
     ( this->conditions.begin(), this->conditions.end(), condition );
-  
   try{
     if( conditionIter == this->conditions.end() ){
       LOG(ERROR) <<
@@ -37,14 +35,14 @@ BivariateProbabilityDistribution
                 << this->conditions.front();
       throw std::exception();
     }
-      
+
     const auto conditionIterDistance = conditionIter - this->conditions.begin();
     const auto& distributionIter =
       this->conditionedProbabilityDistributions.begin() + conditionIterDistance;
     const auto& rightDistribution = *(distributionIter[0]);
 
     if( conditionIter == this->conditions.begin() ){
-      return rightDistribution.probabilityDensity(event);
+      return rightDistribution.probabilityDensity( event );
     }
     
     const auto& leftDistribution = *(distributionIter[-1]);
@@ -54,8 +52,7 @@ BivariateProbabilityDistribution
                            leftDistribution.probabilityDensity( event ),
                            rightDistribution.probabilityDensity( event ) );
   } catch ( std::exception& e ){
-    LOG(INFO) << "Error while computing conditional probability density "
-              << "in BivariateProbabilityDistribution.";
+    LOG(INFO) << "Error while computing conditional probability density";
     throw e;
   }
 }
@@ -63,5 +60,5 @@ BivariateProbabilityDistribution
 } // namespace implementation
 } // namespace math
 
-#endif 
+#endif
 

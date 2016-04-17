@@ -7,7 +7,7 @@
 
 #include "math/interpolate.hpp"
 #include "math/implementation/ParametricProbabilityDistribution.hpp"
-#include "math/implementation/BivariateProbabilityDistribution.hpp"
+#include "math/implementation/ConditionalProbabilityDistribution.hpp"
 
 namespace ma = math::API;
 namespace mi = math::implementation;
@@ -37,7 +37,7 @@ std::function<double(double)> cdf1 = cdf1_;
 std::function<double(double)> cdf2 = cdf2_;  
 
 std::unique_ptr
-< math::implementation::BivariateProbabilityDistribution
+< math::implementation::ConditionalProbabilityDistribution
 < math::interpolate::linLin, math::interpolate::linLin > >
 bvpd;
 
@@ -74,20 +74,20 @@ int main( int argc, const char* argv[] ){
   conditionedProbDist.push_back(std::move(probDist2));
 
   bvpd = std::make_unique
-    < math::implementation::BivariateProbabilityDistribution
+    < math::implementation::ConditionalProbabilityDistribution
       < math::interpolate::linLin, math::interpolate::linLin > >
     ( clone(conditions), std::move(conditionedProbDist) );
   
   LOG(INFO) << "";
-  LOG(INFO) << "BivariateProbabilityDistribution Tests";
+  LOG(INFO) << "ConditionalProbabilityDistribution Tests";
   LOG(INFO) << "=================================";
   int result = Catch::Session().run( argc, argv );
-  LOG(INFO) << "BivariateProbabilityDistribution Tests Complete!";
+  LOG(INFO) << "ConditionalProbabilityDistribution Tests Complete!";
   return result;
 }
 
 typedef
-math::implementation::BivariateProbabilityDistribution
+math::implementation::ConditionalProbabilityDistribution
 < math::interpolate::linLin,
   math::interpolate::linLin >
 bvpdll;

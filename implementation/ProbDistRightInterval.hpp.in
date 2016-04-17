@@ -1,0 +1,48 @@
+#ifndef MATH_IMPLEMENTATION_PROBADISTRIGHTINTERVAL_HPP
+#define MATH_IMPLEMENTATION_PROBADISTRIGHTINTERVAL_HPP
+
+#include "math/API/ProbabilityDistribution.hpp"
+#include "math/implementation.hpp"
+
+namespace math {
+namespace implementation {
+
+template< typename CoreProbabilityDistribution >
+class ProbDistRightInterval final :
+    public math::API::ProbabilityDistribution {
+public:
+  /* constructor and destructor */
+  ProbDistRightInterval
+  ( CoreProbabilityDistribution&& core, const double leftEndPoint ) :
+    core( std::move(core) ), leftEndPoint( leftEndPoint ){}
+
+  ProbDistRightInterval
+  ( const ProbDistRightInterval& ) = default;
+
+  ProbDistRightInterval
+  ( ProbDistRightInterval&& ) = default;
+
+  ~ProbDistRightInterval() = default;
+
+  /* methods */
+  double
+  probabilityDensity( const double event ) const {
+    return event > this->leftEndPoint ?
+      0.0 : this->core.probabilityDensity(event);
+  }
+
+  double
+  cumulativeProbability( const double event ) const {
+    return event > this->leftEndPoint ?
+      1.0 : this->core.cumulativeProbability(event);
+  }
+  
+  /* fields */
+  CoreProbabilityDistribution core;
+  double leftEndPoint;
+};
+
+}
+}
+
+#endif

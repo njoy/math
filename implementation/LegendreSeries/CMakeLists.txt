@@ -23,12 +23,6 @@ foreach(header ${headers})
     "${long_path}/${header}.hpp"
     COPYONLY
     )
-  list(APPEND math_src_headers
-    "${CMAKE_CURRENT_SOURCE_DIR}/${header}.hpp.in" 
-    )
-  list(APPEND math_bin_headers
-    "${long_path}/${header}.hpp"
-    )
 endforeach(header)
 
 # traverse subdirectories
