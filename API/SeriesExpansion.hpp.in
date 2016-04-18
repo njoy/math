@@ -12,18 +12,29 @@ public:
   /* constructor and destructor */
   virtual ~SeriesExpansion(){}
 
+  /* operator overloads */
+  /** @brief An alias to the evaluate method */
+  virtual double
+  operator()( const double x ) const = 0;
+
   /* methods */
+  /** @result The series evaluated at independent variable value @p x */
   virtual double
-  operator()(const double x) const = 0;
-  
-  virtual double
-  eval(const double x) const = 0;
+  evaluate( const double x ) const = 0;
 
+  /**
+   * @result 
+   * The series definite integral evaluated from @p lowerBound to @p upperBound 
+   */
   virtual double
-  integral(const double lowerBound, const double upperBound) const = 0;
+  integral( const double lowerBound, const double upperBound ) const = 0;
 
+  /** 
+   * @result 
+   * The series derivative evaluated at independent variable value @p x 
+   */
   virtual double
-  derivative(const double x) const = 0;
+  derivative( const double x ) const = 0;
 };
 
 #endif

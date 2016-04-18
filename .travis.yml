@@ -49,8 +49,7 @@ env:
     - secure: "RoRamqA2dOX0DUDGOlHpNEw6rm6QpftdKQ/5ZwgF87yYrWIqS8B+9aMpyIjpOX0QZE5GvLuHFSiPEoAI7AkjERP0ZrPJ9Ot7dZ2DGVjiEFQlv8QJk8BnOiEmRo/OFFcZSYwEkw/Py5gQ3sKNbCHH8Vuyd1k0h940DHvHWQLcaTMbdu957uAUd7JteCWqgFbUeLhoWVa+7rpWM80e4cGv5l5S5RvuzZECUcpHSwOOGZXNGbGP5VXveQM4/pItne6MVQBWGVp75w+saxlF3e/jwbewxPLmq4aCpjnEe5DgfNvgzuiWkjO/YF4aLJeUwL+W+feZotW4OVrRIpTBHgDAvdepgrsgJrbOu7frfBm4sdwl9UV64Zqdbirf5jq1jv2wmabAfdCfRGEm+zMddHtrzmRqbTnqXuRhy+IvY7VqPbfxG1WwUTTeibH37xYpPBZ/6njWD3MHp+fymGyJxa8VCkjcGGsu3799l25HBfiXU8/+WBcWpB7EwReUyut6Mc72K466m/96/VKLKJ20eEjLDq6EJwzm27oobimUtv4+F9RYuyXBZRENUw6ArMNqK1Y28etXfp3h/+JxYDXwyLyG2tu70RFywap0diEdcKQsC5i+IZfOtF6TGlw0tRmKpvwaiKvYGuy6UUYXrwGiSgv0iSFm0YAmzlfiYnDoH1SOLf4="
 
 before_install:
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then wget https://cmake.org/files/v3.5/cmake-3.5.0-Darwin-x86_64.tar.gz && tar xfz cmake-3.5.0-Darwin-x86_64.tar.gz; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export PATH="`pwd`/cmake-3.5.0-Darwin-x86_64/CMake.app/Contents/bin":$PATH ; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; brew outdated cmake || brew upgrade cmake; fi
 
 script:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-5 90; sudo update-alternatives --auto gcov; fi

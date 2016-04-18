@@ -1,0 +1,25 @@
+#include "math/implementation/TaylorSeries.hpp"
+
+namespace math {
+namespace implementation {
+
+template< typename OwnershipPolicy, typename T>
+TaylorSeries< OwnershipPolicy, T >::TaylorSeries
+( SelfAccessAbstraction&& coefficientData, const bool trust ) :
+  coefficientData( std::move(coefficientData) ){
+  
+  if (not trust){
+    if ((coefficientData.end - coefficientData.begin) < 1){
+      LOG(ERROR) << "Ill-defined series";
+      LOG(INFO)  << "A Taylor series must specify one or more coefficient";
+      LOG(INFO)  << "Difference between beginning iterator and "
+                 << "ending iterator is less than one";
+      LOG(INFO) << "Difference: "
+                << (coefficientData.end - coefficientData.begin);
+      throw std::exception();
+    }
+  }
+}
+
+} // implementation
+} // math

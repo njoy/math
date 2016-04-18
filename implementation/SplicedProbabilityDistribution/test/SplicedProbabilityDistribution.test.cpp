@@ -3,7 +3,7 @@
 #include "catch.hpp"
 
 #include "math/interpolate.hpp"
-#include "math/implementation/ProbabilityDistribution.hpp"
+#include "math/implementation/ParametricProbabilityDistribution.hpp"
 #include "math/implementation/SplicedProbabilityDistribution.hpp"
 
 namespace {
@@ -12,7 +12,7 @@ auto cdf0 = [](double x){return 0.25*std::pow(x,2) + 0.5 * x + 0.25;};
 std::function<double(double)> PDF0_ = pdf0;
 std::function<double(double)> CDF0_ = cdf0;
 
-math::implementation::ProbabilityDistribution
+math::implementation::ParametricProbabilityDistribution
 < std::function<double(double)>, std::function<double(double)> >
 probabilityDistribution0
 ( std::move(PDF0_), std::move(CDF0_) );
@@ -26,7 +26,7 @@ auto cdf1 = [](double x){
 std::function<double(double)> PDF1_ = pdf1;
 std::function<double(double)> CDF1_ = cdf1;
 
-math::implementation::ProbabilityDistribution
+math::implementation::ParametricProbabilityDistribution
 < std::function<double(double)>, std::function<double(double)> >
 probabilityDistribution1
 ( std::move(PDF1_), std::move(CDF1_) );
@@ -80,7 +80,7 @@ SCENARIO("Illegal condition combinations will cause the ctor to throw",
         REQUIRE_THROWS( spliced ( 0.375,
                                   &probabilityDistribution0,
                                   &probabilityDistribution1,
-                                  conditions ) );
+                                  conditions, false ) );
       }   
     }
   }
@@ -95,7 +95,7 @@ SCENARIO("Illegal condition combinations will cause the ctor to throw",
         REQUIRE_THROWS( spliced ( condition,
                                   &probabilityDistribution0,
                                   &probabilityDistribution1,
-                                  conditions ) );
+                                  conditions, false ) );
 
       }   
     }

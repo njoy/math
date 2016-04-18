@@ -1,0 +1,67 @@
+#ifndef MATH_IMPLEMENTATION_COMPOSITEINTERPOLATIONTABLEINTEGRAL_HPP
+#define MATH_IMPLEMENTATION_COMPOSITEINTERPOLATIONTABLEINTEGRAL_HPP
+
+#include "math/API/InterpolationTableIntegral.hpp"
+#include "math/implementation.hpp"
+
+class math::implementation::CompositeInterpolationTableIntegral final :
+  public math::API::InterpolationTableIntegral {
+public:
+  /* constructors and destructors */
+  CompositeInterpolationTableIntegral
+  ( std::vector
+    < std::unique_ptr<math::API::InterpolationTableIntegral> >&& subregions,
+    const double boundaryTolerance = 1E-8 );
+
+  CompositeInterpolationTableIntegral
+  ( CompositeInterpolationTableIntegral&& ) = default;
+  
+  ~CompositeInterpolationTableIntegral() = default;
+
+  /* operator overloads */
+  CompositeInterpolationTableIntegral&
+  operator=( CompositeInterpolationTableIntegral&& ) = default;
+  
+  double
+  operator()( const double x ) const { return this->interpolate(x); }
+  
+  /* methods */
+  double
+  xMin() const { return this->subtables.front()->xMin(); }
+
+  double
+  xMax() const { return this->subtables.back()->xMax(); }
+
+  std::vector< utility::View<const double> >
+  xGrid() const;
+
+  std::vector< utility::View<double> >
+  xGrid();
+
+  std::vector< utility::View<const double> >
+  yGrid() const;
+
+  std::vector< utility::View<double> >
+  yGrid();
+
+  std::vector< utility::View<const double> >
+  dyGrid() const;
+
+  std::vector< utility::View<double> >
+  dyGrid();
+
+  double
+  interpolate(const double x) const;
+
+  static std::vector<double>
+  buildBoundaries
+  ( const std::vector
+    < std::unique_ptr<math::API::InterpolationTableIntegral> >& subregions );
+  
+  /* fields */
+  std::vector
+  < std::unique_ptr<math::API::InterpolationTableIntegral> > subtables;
+  std::vector<double> subtableBoundaries;
+};
+
+#endif

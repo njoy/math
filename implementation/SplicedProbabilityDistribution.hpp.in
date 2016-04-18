@@ -9,34 +9,30 @@
 namespace math{
 namespace implementation{
 
-template< double pdfInterp( const double x,
-                            const double x1, const double x2,
-                            const double y1, const double y2 ),
-          double cdfInterp( const double x,
-                            const double x1, const double x2,
-                            const double y1, const double y2 ) >
+template< Interpolant pdfInterpolant, Interpolant cdfInterpolant >
 class SplicedProbabilityDistribution final :
   public math::API::ProbabilityDistribution {
 public:
   /* constructor and destructor */
   SplicedProbabilityDistribution
-  ( const double condition,
+  ( const double queriedCondition,
     const math::API::ProbabilityDistribution* pd0,
     const math::API::ProbabilityDistribution* pd1,
-    const std::array<double, 2>& associatedConditions );
+    const std::array<double, 2>& associatedConditions,
+    const bool trust = true );
 
   SplicedProbabilityDistribution
   ( const SplicedProbabilityDistribution& ) = default;
-  SplicedProbabilityDistribution( SplicedProbabilityDistribution&& ) = default;
+  
+  SplicedProbabilityDistribution
+  ( SplicedProbabilityDistribution&& ) = default;
 
   ~SplicedProbabilityDistribution() = default;
 
   /* method */
-  /** @return The probability density at the @p event value */
   double
   probabilityDensity( const double event ) const;
 
-  /** @return The cumulative probability at the @p event value*/
   double
   cumulativeProbability( const double event ) const;
 

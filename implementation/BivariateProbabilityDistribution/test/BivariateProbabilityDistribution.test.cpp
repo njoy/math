@@ -6,7 +6,7 @@
 #include "catch.hpp"
 
 #include "math/interpolate.hpp"
-#include "math/implementation/ProbabilityDistribution.hpp"
+#include "math/implementation/ParametricProbabilityDistribution.hpp"
 #include "math/implementation/BivariateProbabilityDistribution.hpp"
 
 namespace ma = math::API;
@@ -46,7 +46,7 @@ int main( int argc, const char* argv[] ){
   std::function<double(double)> cdf0 = cdf0_;  
   std::unique_ptr<ma::ProbabilityDistribution> probDist0 =
     std::make_unique
-    < mi::ProbabilityDistribution
+    < mi::ParametricProbabilityDistribution
       < std::function<double(double)>, std::function<double(double) > > >
     ( std::move(pdf0), std::move(cdf0) );
 
@@ -54,7 +54,7 @@ int main( int argc, const char* argv[] ){
   std::function<double(double)> cdf1 = cdf1_;  
   std::unique_ptr<ma::ProbabilityDistribution> probDist1 =
     std::make_unique
-    < mi::ProbabilityDistribution
+    < mi::ParametricProbabilityDistribution
       < std::function<double(double)>, std::function<double(double) > > >
     ( std::move(pdf1), std::move(cdf1) );
 
@@ -62,7 +62,7 @@ int main( int argc, const char* argv[] ){
   std::function<double(double)> cdf2 = cdf2_;  
   std::unique_ptr<ma::ProbabilityDistribution> probDist2 =
     std::make_unique
-    < mi::ProbabilityDistribution
+    < mi::ParametricProbabilityDistribution
       < std::function<double(double)>, std::function<double(double) > > >
     ( std::move(pdf2), std::move(cdf2) );
 
@@ -112,19 +112,19 @@ SCENARIO("Invalid specified variate sequences will cause the constructor to"
     
     std::unique_ptr<ma::ProbabilityDistribution> probDist0 =
       std::make_unique
-      < mi::ProbabilityDistribution
+      < mi::ParametricProbabilityDistribution
         < std::function<double(double)>, std::function<double(double) > > >
       ( std::move(pdf0), std::move(cdf0) );
     
     std::unique_ptr<ma::ProbabilityDistribution> probDist1 =
       std::make_unique
-      < mi::ProbabilityDistribution
+      < mi::ParametricProbabilityDistribution
         < std::function<double(double)>, std::function<double(double) > > >
       ( std::move(pdf1), std::move(cdf1) );
     
     std::unique_ptr<ma::ProbabilityDistribution> probDist2 =
       std::make_unique
-      < mi::ProbabilityDistribution
+      < mi::ParametricProbabilityDistribution
         < std::function<double(double)>, std::function<double(double) > > >
       ( std::move(pdf2), std::move(cdf2) );
     
@@ -160,19 +160,19 @@ SCENARIO("Invalid specified variate sequences will cause the constructor to"
     
     std::unique_ptr<ma::ProbabilityDistribution> probDist0 =
       std::make_unique
-      < mi::ProbabilityDistribution
+      < mi::ParametricProbabilityDistribution
         < std::function<double(double)>, std::function<double(double) > > >
       ( std::move(pdf0), std::move(cdf0) );
     
     std::unique_ptr<ma::ProbabilityDistribution> probDist1 =
       std::make_unique
-      < mi::ProbabilityDistribution
+      < mi::ParametricProbabilityDistribution
         < std::function<double(double)>, std::function<double(double) > > >
       ( std::move(pdf1), std::move(cdf1) );
     
     std::unique_ptr<ma::ProbabilityDistribution> probDist2 =
       std::make_unique
-      < mi::ProbabilityDistribution
+      < mi::ParametricProbabilityDistribution
         < std::function<double(double)>, std::function<double(double) > > >
       ( std::move(pdf2), std::move(cdf2) );
     
@@ -207,19 +207,19 @@ SCENARIO("Invalid specified variate sequences will cause the constructor to"
     
     std::unique_ptr<ma::ProbabilityDistribution> probDist0 =
       std::make_unique
-      < mi::ProbabilityDistribution
+      < mi::ParametricProbabilityDistribution
         < std::function<double(double)>, std::function<double(double) > > >
       ( std::move(pdf0), std::move(cdf0) );
     
     std::unique_ptr<ma::ProbabilityDistribution> probDist1 =
       std::make_unique
-      < mi::ProbabilityDistribution
+      < mi::ParametricProbabilityDistribution
         < std::function<double(double)>, std::function<double(double) > > >
       ( std::move(pdf1), std::move(cdf1) );
     
     std::unique_ptr<ma::ProbabilityDistribution> probDist2 =
       std::make_unique
-      < mi::ProbabilityDistribution
+      < mi::ParametricProbabilityDistribution
         < std::function<double(double)>, std::function<double(double) > > >
       ( std::move(pdf2), std::move(cdf2) );
     

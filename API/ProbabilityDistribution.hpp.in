@@ -5,8 +5,14 @@
 
 class math::API::ProbabilityDistribution{
 public:
+  /* constructor and destructor */
+  virtual ~ProbabilityDistribution(){};
 
+  /* method */
+  /** @return The probability density at the @p event value */
   virtual double probabilityDensity(const double event) const = 0;
+
+  /** @return The cumulative probability at the @p event value*/
   virtual double cumulativeProbability(const double event)  const = 0;
 };
 

@@ -1,13 +1,14 @@
 cmake_minimum_required( VERSION 3.2 )
 
 set(projectName "math")
-set(projectVersion "0.5.0")
+set(projectVersion "1.0.0")
 
 if(NOT DEFINED commonCMakeScripts_path)
   set(commonCMakeScripts_path "${CMAKE_SOURCE_DIR}/commonCMakeScripts")
 endif(NOT DEFINED commonCMakeScripts_path)
 
 include(subprojects.cmake)
+#include(${commonCMakeScripts_path}/base.cmake)
 include(${commonCMakeScripts_path}/objectOriented.cmake)
 include(${commonCMakeScripts_path}/doxygen.cmake)
 

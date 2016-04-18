@@ -1,0 +1,55 @@
+#ifndef MATH_IMPLEMENTATION_PARAMETRICPROBABILITYDISTRIBUTION_HPP
+#define MATH_IMPLEMENTATION_PARAMETRICPROBABILITYDISTRIBUTION_HPP
+
+#include "math/API/ProbabilityDistribution.hpp"
+#include "math/implementation.hpp"
+
+namespace math{
+namespace implementation{
+
+/**
+ * @tparam PDFFunctor 
+ * A univariate functor that describes the probability density function
+ * @tparam CDFFunctor 
+ * A univariate functor that describes the cumulative distribution function
+ */
+template<typename PDFFunctor, typename CDFFunctor>
+class ParametricProbabilityDistribution final :
+    public math::API::ProbabilityDistribution {
+public:
+  /* constructor and destructor*/
+  ParametricProbabilityDistribution
+  ( PDFFunctor&& PDF, CDFFunctor&& CDF ) : pdf( std::move(PDF) ),
+                                           cdf( std::move(CDF) ){}
+  ParametricProbabilityDistribution
+  ( PDFFunctor&& PDF, CDFFunctor&& CDF, const bool trust );
+
+  ParametricProbabilityDistribution
+  ( const ParametricProbabilityDistribution& ) = default;
+
+  ParametricProbabilityDistribution
+  ( ParametricProbabilityDistribution&& ) = default;
+
+  ~ParametricProbabilityDistribution() = default;
+
+  /* methods */
+  double
+  probabilityDensity( const double event ) const final {
+    return this->pdf(event);
+  }
+
+  double
+  cumulativeProbability( const double event ) const final {
+    return this->cdf(event);
+  }
+
+  /* fields */
+  PDFFunctor pdf;
+  CDFFunctor cdf;
+};
+
+}
+}
+
+//#include "math/implementation/ParametricProbabilityDistribution/src/ParametricProbabilityDistribution.hpp"
+#endif

@@ -1,0 +1,116 @@
+#ifndef MATH_IMPLEMENTATION_INTERPOLATIONTABLEINTEGRAL_HPP
+#define MATH_IMPLEMENTATION_INTERPOLATIONTABLEINTEGRAL_HPP
+
+#include "math/API/InterpolationTableIntegral.hpp"
+
+#include "math/implementation.hpp"
+
+namespace math{
+namespace implementation{
+
+template< typename Iterator, Interpolant interpolant >
+class InterpolationTableIntegral final :
+    public math::API::InterpolationTableIntegral {
+public:
+  /* field */
+  using ITAccessAbstraction =
+    AccessAbstraction
+    < ReferencePolicy, Iterator >;
+  ITAccessAbstraction xData;
+
+  using SelfAccessAbstraction =
+    AccessAbstraction
+    < TransferPolicy, std::vector<double> >;
+  SelfAccessAbstraction yData;
+  
+  ITAccessAbstraction dyData;
+  using SelfIterator = decltype( yData.begin );
+  
+  /* constructor and destructor */
+  InterpolationTableIntegral
+  ( const Iterator xBegin, const Iterator xEnd,
+    const Iterator dyBegin, const Iterator dyEnd,
+    const double y0, const bool trust = true );
+
+  InterpolationTableIntegral( InterpolationTableIntegral&& ) = default;
+  
+  InterpolationTableIntegral( const InterpolationTableIntegral& ) = default;
+  
+  ~InterpolationTableIntegral() = default;
+
+  /* operator */
+  InterpolationTableIntegral&
+  operator=( InterpolationTableIntegral&& ) = default;
+  
+  InterpolationTableIntegral&
+  operator=( const InterpolationTableIntegral& ) = default;
+
+  double
+  operator()( const double x ) const { return this->interpolate(x); }
+
+  /* methods */
+  double
+  xMin() const { return *(this->xData.begin); }
+
+  double
+  xMax() const { return this->xData.end[-1]; }
+
+  std::vector< utility::View<double> >
+  xGrid() {
+    return std::vector< utility::View<double> >
+    { utility::View<double>( this->xData.begin, this->xData.end ) };
+  }
+
+  std::vector< utility::View<const double> >
+  xGrid() const {
+    return std::vector< utility::View<const double> >
+    { utility::View<const double>( this->xData.begin, this->xData.end ) };
+  }
+
+  std::vector< utility::View<double> >
+  yGrid() {
+    return std::vector< utility::View<double> >
+    { utility::View<double>( this->yData.begin, this->yData.end ) };
+  }
+
+  std::vector< utility::View<const double> >
+  yGrid() const {
+    return std::vector< utility::View<const double> >
+    { utility::View<const double>( this->yData.begin, this->yData.end ) };
+  }
+
+  std::vector< utility::View<double> >
+  dyGrid() {
+    return std::vector< utility::View<double> >
+    { utility::View<double>( this->dyData.begin, this->dyData.end ) };
+  }
+
+  std::vector< utility::View<const double> >
+  dyGrid() const {
+    return std::vector< utility::View<const double> >
+    { utility::View<const double>( this->dyData.begin, this->dyData.end ) };
+  }
+
+  double
+  interpolate( const double x ) const {
+    return math::interpolate::withIterators
+      < Iterator,
+        SelfIterator,
+        math::interpolate::integralInterpolate< interpolant > >
+      ( x, this->xData.begin, this->xData.end,
+           this->yData.begin, this->dyData.begin );
+  }
+
+  static std::vector<double>
+  assembleYGrid( typename std::remove_const<Iterator>::type xit,
+                 typename std::remove_const<Iterator>::type dyit,
+                 std::size_t length, const double y0 );
+};
+
+} // namespace implementation
+} // namespace math
+
+#include "math/implementation/InterpolationTableIntegral/src/InterpolationTableIntegral.hpp"
+#include "math/implementation/InterpolationTableIntegral/src/assembleYGrid.hpp"
+
+#endif

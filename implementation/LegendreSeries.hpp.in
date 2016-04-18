@@ -1,0 +1,114 @@
+#ifndef MATH_IMPLEMENTATION_LEGENDRESERIES_HPP
+#define MATH_IMPLEMENTATION_LEGENDRESERIES_HPP
+
+#include <array>
+
+#include "math/API/SeriesExpansion.hpp"
+
+#include "math/implementation.hpp"
+
+namespace math{
+namespace implementation{
+
+/**
+ * @brief 
+ * A class representing a Legendre expansion without owning the coefficient data
+ * @details
+ * This class provides efficient evaluation of Legendre series expansions by way
+ * of various recursion relationships. The Bonnet Recusion is used extensively
+ \f[
+       (n+1) P_{n+1} = (2n + 1) x P_n - n P_{n-1}
+ \f]
+ * or equivalently
+ \f[
+       n P_n = (2n - 1) x P_{n-1} - (n - 1) P_{n-2}
+ \f]
+ * \n
+ * Evaluating via recusion this way has the advantages of 
+ * 1. generality\n legendre polynomials of order greater than 1 need not be coded
+ * 2. efficiency\n the operation count goes as N rather than N^2 where N is the 
+ *                 order of the series
+ */
+template< typename OwnershipPolicy, typename T > 
+class LegendreSeries final : public math::API::SeriesExpansion {
+public:
+  /* fields */
+  using SelfAccessAbstraction = AccessAbstraction< OwnershipPolicy, T >;
+  SelfAccessAbstraction coefficientData;
+  
+  /* constructor and destructor */
+  LegendreSeries( SelfAccessAbstraction&& coefficientData, const bool trust );
+
+  /**
+   * @brief  The transfer policy ctor. 
+   *
+   * @details
+   * This template can only be instantiated when the function template parameter
+   * `U` and the class template `T` are matching types and the OwnershipPolicy 
+   * class template parameter is set to TransferPolicy.
+   */ 
+  template< typename U >
+  LegendreSeries( U&& container, const bool trust = true ) :
+  LegendreSeries( SelfAccessAbstraction( std::move(container) ), trust ) {}
+
+  /**
+   * @brief  The reference policy ctor. 
+   *
+   * @details
+   * This template can only be instantiated when the function template parameter
+   * `U` and the class template `T` are matching types and the OwnershipPolicy 
+   * class template parameter is set to ReferencePolicy.
+   */ 
+  template< typename U >
+  LegendreSeries( const U begin, const U end,
+                const bool trust = true ) :
+  LegendreSeries( SelfAccessAbstraction( begin, end ), trust ) {}
+
+  LegendreSeries( const LegendreSeries& ) = default;
+
+  LegendreSeries( LegendreSeries&& ) = default;
+
+  ~LegendreSeries() = default;
+  
+  /* operator overloads */
+  LegendreSeries&
+  operator=( LegendreSeries&& ) = default;
+
+  LegendreSeries&
+  operator=( const LegendreSeries& ) = default;
+
+  double
+  operator()( const double x ) const { return this->evaluate(x); }
+
+  /* methods */
+  double
+  evaluate(const double x) const;
+  
+  double
+  integral(const double lowerBound, const double upperBound) const;
+
+  LegendreSeries< TransferPolicy, std::vector<double> >
+  integrate_( const double boundary, const double boundaryValue ) const;
+  
+  std::unique_ptr< math::API::SeriesExpansion >
+  integrate( const double boundary, const double boundaryValue ) const {
+    return
+      std::make_unique
+      < LegendreSeries< TransferPolicy, std::vector<double> > >
+      ( this->integrate_(boundary, boundaryValue) );
+  }
+  
+  double
+  derivative( const double x ) const;
+};
+
+}
+}
+
+#include "math/implementation/LegendreSeries/src/LegendreSeries.hpp"
+#include "math/implementation/LegendreSeries/src/evaluate.hpp"
+#include "math/implementation/LegendreSeries/src/integral.hpp"
+#include "math/implementation/LegendreSeries/src/integrate.hpp"
+#include "math/implementation/LegendreSeries/src/derivative.hpp"
+
+#endif

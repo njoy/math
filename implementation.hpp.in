@@ -6,74 +6,129 @@
 namespace math{
 namespace implementation{
 
-/* class InterpolationRegion */
-template<typename randomAccessIter,
-         double interpolation( const double x,
-                               const double x1, const double x2,
-                               const double y1, const double y2 ) >
-class IteratorInterpolationRegion;
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/* Convenience definitions to reduce template verbosity */
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+using Interpolant = double (*)( const double,
+                                const double, const double,
+                                const double, const double );
 
-template<double interpolation( const double x,
-                               const double x1, const double x2,
-                               const double y1, const double y2 ) >
-class VectorInterpolationRegion;
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/* data ownership policy tags */
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/**
+ * @brief 
+ * A struct used as a tag parameter in template class specification to indicate 
+ * ownership of data should be expected to be transfered during object 
+ * construction
+ *
+ * @details
+ * Because data resides with the class instance, the object is independent; which
+ * is to say the scope of the objects validity is not limited to the lifetime of 
+ * the data source 
+ */
+struct TransferPolicy{};
 
-class HeterogeneousInterpolationRegion;
+/**
+ * @brief 
+ * A struct used as a tag parameter in template class specification to indicate 
+ * ownership of data should not be expected to be transfered during object 
+ * construction
+ *
+ * @details
+ * Because data is accessed by way of reference and resides outside the class 
+ * instance, the object is dependent; which is to say the scope of the objects 
+ * validity is limited to the lifetime of the data. 
+ */
+struct ReferencePolicy{};
 
-/* class InterpolationRegionIntegral */
-template<typename randomAccessIter,
-         double interpolation( const double x,
-                               const double x1, const double x2,
-                               const double y1, const double y2 ) >
-class InterpolationRegionIntegral;
+/**
+ * @brief
+ * A helper struct which permits class field definitions to remain unspecialized
+ * with repect to their data ownership policy
+ */
+template< typename OwnershipPolicy, typename T >
+struct AccessAbstraction;
 
-class HeterogeneousInterpolationRegionIntegral;
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/* class InterpolationTable */
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+template< Interpolant interpolant, typename OwnershipPolicy, typename T >
+class InterpolationTable;
 
+template< Interpolant interpolant >
+using DataOwningInterpolationTable =
+  InterpolationTable< interpolant, TransferPolicy, std::vector<double> >;
+
+template< typename Iterator, Interpolant interpolant >
+using DataReferencingInterpolationTable =
+    InterpolationTable< interpolant, ReferencePolicy, Iterator >;
+
+class CompositeInterpolationTable;
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/* class InterpolationTableIntegral */
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+template< typename Iterator, Interpolant interpolant >
+class InterpolationTableIntegral;
+
+class CompositeInterpolationTableIntegral;
+
+/*~~~~~~~~~~~~~~~~~~~~~~~*/
+/* class SeriesExpansion */
+/*~~~~~~~~~~~~~~~~~~~~~~~*/
+template< typename OwnershipPolicy, typename T >
+class TaylorSeries;
+
+using DataOwningTaylorSeries =
+   TaylorSeries< TransferPolicy, std::vector<double> >;
+
+template< typename Iterator >
+using DataReferencingTaylorSeries = 
+   TaylorSeries< ReferencePolicy, Iterator >;
+
+template< typename OwnershipPolicy, typename T >
+class LegendreSeries;
+
+using DataOwningLegendreSeries =
+  LegendreSeries< TransferPolicy, std::vector<double> >;
+
+template< typename Iterator >
+using DataReferencingLegendreSeries = 
+  LegendreSeries< ReferencePolicy, Iterator >;
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /* class ProbabilityDistribution */
-template<typename PDFFunctor, typename CDFFunctor>
-class ProbabilityDistribution;
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+template< typename pdfFunctor, typename cdfFunctor >
+class ParametricProbabilityDistribution;
 
-template< double pdfInterp( const double x,
-                            const double x1, const double x2,
-                            const double y1, const double y2 ),
-          double cdfInterp( const double x,
-                            const double x1, const double x2,
-                            const double y1, const double y2 ) >
+template< Interpolant pdfInterpolant, Interpolant cdfInterpolant >
 class SplicedProbabilityDistribution;
 
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /* class BivariateProbabilityDistribution */
-template< double pdfInterp( const double x,
-                            const double x1, const double x2,
-                            const double y1, const double y2 ),
-          double cdfInterp( const double x,
-                            const double x1, const double x2,
-                            const double y1, const double y2 ) >
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+template< Interpolant pdfInterpolant, Interpolant cdfInterpolant >
 class BivariateProbabilityDistribution;
-
-/* class SeriesExpansion */
-template< typename iterator >
-class IteratorTaylorSeries;
-
-template< typename iterator >
-class IteratorLegendreSeries;
-
-template< template<typename> class iteratorSeries >
-class VectorSeries;
-
-typedef VectorSeries< IteratorTaylorSeries > VectorTaylorSeries;
-typedef VectorSeries< IteratorLegendreSeries > VectorLegendreSeries;
 
 }   // namespace implementation
 }   // namespace math
 
-#include "math/implementation/IteratorInterpolationRegion.hpp"
-#include "math/implementation/InterpolationRegionIntegral.hpp"
-#include "math/implementation/VectorInterpolationRegion.hpp"
-#include "math/implementation/VectorSeries.hpp"
-#include "math/implementation/IteratorTaylorSeries.hpp"
-#include "math/implementation/IteratorLegendreSeries.hpp"
-#include "math/implementation/ProbabilityDistribution.hpp"
+#include "math/implementation/AccessAbstraction.hpp"
+
+#include "math/implementation/InterpolationTableIntegral.hpp"
+
+#include "math/implementation/InterpolationTable.hpp"
+
+#include "math/implementation/TaylorSeries.hpp"
+
+#include "math/implementation/LegendreSeries.hpp"
+
+#include "math/implementation/ParametricProbabilityDistribution.hpp"
+
 #include "math/implementation/SplicedProbabilityDistribution.hpp"
+
 #include "math/implementation/BivariateProbabilityDistribution.hpp"
 
 #endif

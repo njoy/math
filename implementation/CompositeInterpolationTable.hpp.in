@@ -1,0 +1,69 @@
+#ifndef MATH_IMPLEMENTATION_COMPOSITEINTERPOLATIONTABLE_HPP
+#define MATH_IMPLEMENTATION_COMPOSITEINTERPOLATIONTABLE_HPP
+
+#include "math/API/InterpolationTable.hpp"
+#include "math/implementation/CompositeInterpolationTableIntegral.hpp"
+
+class math::implementation::CompositeInterpolationTable final :
+  public math::API::InterpolationTable {
+public:
+  /* constructors and destructors */
+  CompositeInterpolationTable
+  ( std::vector< std::unique_ptr<math::API::InterpolationTable> >&& subregions,
+    const double boundaryTolerance = 1E-8 );
+
+  CompositeInterpolationTable
+  ( CompositeInterpolationTable&& ) = default;
+  
+  ~CompositeInterpolationTable() = default;
+
+  /* operator overloads */
+  CompositeInterpolationTable&
+  operator=( CompositeInterpolationTable&& ) = default;
+  
+  double
+  operator()( const double x ) const { return this->interpolate(x); }
+  
+  /* methods */
+  double
+  xMin() const { return this->subtables.front()->xMin(); }
+
+  double
+  xMax() const { return this->subtables.back()->xMax(); }
+
+  std::vector< utility::View<const double> >
+  xGrid() const;
+
+  std::vector< utility::View<double> >
+  xGrid();
+
+  std::vector< utility::View<const double> >
+  yGrid() const;
+
+  std::vector< utility::View<double> >
+  yGrid();
+
+  std::unique_ptr< math::API::InterpolationTableIntegral >
+  integral( const double y0 ) const {
+    return std::make_unique
+      < math::implementation::CompositeInterpolationTableIntegral >
+      ( this->integral_(y0) );
+  }
+
+  math::implementation::CompositeInterpolationTableIntegral
+  integral_( const double y0 ) const;
+  
+  double
+  interpolate( const double x ) const;
+
+  static std::vector<double>
+  buildBoundaries
+  ( const std::vector
+    < std::unique_ptr<math::API::InterpolationTable> >& subregions );
+  
+  /* fields */
+  std::vector< std::unique_ptr<math::API::InterpolationTable> > subtables;
+  std::vector<double> subtableBoundaries;
+};
+
+#endif

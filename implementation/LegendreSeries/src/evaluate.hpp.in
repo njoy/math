@@ -1,0 +1,68 @@
+#ifndef MATH_IMPLEMENTATION_LEGENDRESERIES_EVALUATE_HPP
+#define MATH_IMPLEMENTATION_LEGENDRESERIES_EVALUATE_HPP
+
+#include "math/implementation/LegendreSeries.hpp"
+
+namespace math {
+namespace implementation {
+
+/**
+ * @brief Evaluated via Bonnet's recursion relation
+ * @result The value of the Legendre series at @p x
+ * @details 
+ * This routine eschews evaluation of Legendre polynomials of order greater than
+ * one. To accomplish this without compromising generality, Bonnet's recursion
+ * relation is employed to express each Legendre polynomial in terms of a
+ * weighted sum of lower order Legendre polynomials. Applied recusively, this
+ * relation can be used to reduce a Legendre series evaluation to a monomial
+ * evaluation.
+ */
+template< typename OwnershipPolicy, typename T >
+double
+LegendreSeries< OwnershipPolicy, T >::evaluate( const double x ) const {
+  auto n = (this->coefficientData.end - this->coefficientData.begin);
+  if (n == 1) {return this->coefficientData.begin[0];}
+  --n;
+  
+  /* As the series coefficients are collapsed, only two coefficients need be 
+   * to carried forward between recursion applications. This is done using a
+   * 2-array, which represents the n-th coefficient and (n-1)th coefficient.
+   *
+   * Over a given iteration, one coefficient is eliminated, one coefficient is
+   * modified, and one new coefficient is generated. Rather than than shift the 
+   * data between variables to ensure the nth and (n-1)th coefficient remain
+   * in the same order, a switch is used to indicate the ordering. Two helper
+   * lambdas are defined to improve readability of the array accesses. 
+   */
+  std::array<double,2> collapsedCoefs = {{ this->coefficientData.end[-2],
+                                           this->coefficientData.end[-1] }};
+  bool currentCoef = true;
+  /* returns the index associated with the (n-1)th coefficient */
+  auto firstPredecessorCoef = [&currentCoef](){return !currentCoef;};
+  /* returns the index associated with the (n-2)th coefficient */
+  auto secondPredecessorCoef = [&currentCoef](){return currentCoef;};
+
+  /* variable storing repeatedly used division intermediate calculation. */
+  double inverseN;
+  
+  for ( std::reverse_iterator
+          < typename std::remove_const
+          < decltype( this->coefficientData.begin ) >::type >
+          it( this->coefficientData.end ),        
+          L1( this->coefficientData.begin + 2 ); it != L1; ++it ){
+    inverseN = 1.0 / double(n--);
+    collapsedCoefs[ firstPredecessorCoef() ] +=
+      collapsedCoefs[currentCoef] * (2.0 - inverseN) * x;
+    collapsedCoefs[ secondPredecessorCoef() ] =
+      it[2] - collapsedCoefs[ currentCoef ] * (1.0 - inverseN);
+    currentCoef = !currentCoef;
+  }
+
+  return
+    collapsedCoefs[ firstPredecessorCoef() ] + collapsedCoefs[ currentCoef ] * x;
+}
+
+} // implementation
+} // math
+
+#endif

@@ -1,0 +1,94 @@
+#ifndef MATH_IMPLEMENTATION_ACCESSABSTRACTION_HPP_XYZ
+#define MATH_IMPLEMENTATION_ACCESSABSTRACTION_HPP_XYZ
+
+#include "math/implementation.hpp"
+
+namespace math {
+namespace implementation {
+
+template< typename Container >
+struct AccessAbstraction
+< math::implementation::TransferPolicy, Container > {
+  /* fields */
+  mutable Container container;
+
+  using Iterator = decltype( container.begin() );
+  const Iterator begin;
+  const Iterator end;  
+
+  /* constructor and destructor */
+  AccessAbstraction() = delete;
+  
+  AccessAbstraction
+  ( Container&& container ) : container( std::move(container) ),
+                              begin( this->container.begin() ),
+                              end( this->container.end() ){}
+
+  AccessAbstraction( AccessAbstraction&& other ) :
+    AccessAbstraction( std::move(other.container) ){}
+
+  AccessAbstraction( const AccessAbstraction& other) :
+    container( other.container ),
+    begin( this->container.begin() ),
+    end( this->container.end() ){}
+  
+  template< typename... Types >
+  AccessAbstraction( Types... ){
+    static_assert
+      ( sizeof...(Types) == std::size_t(-1),
+        "Transfer policy access must be initialized with"
+        " a container rvalue reference" );
+  }
+
+  ~AccessAbstraction() = default;
+
+  /* operator */
+  AccessAbstraction&
+  operator=( AccessAbstraction&& ) = default;
+
+  AccessAbstraction&
+  operator=( const AccessAbstraction& ) = default;
+
+};
+
+template< typename Iterator >
+struct AccessAbstraction
+< math::implementation::ReferencePolicy, Iterator > {
+  /* constructor and destructor */
+  AccessAbstraction() = delete;
+  
+  AccessAbstraction
+  ( const Iterator begin,
+    const Iterator end ) : begin( begin ),
+                           end( end ){}
+  
+  AccessAbstraction( AccessAbstraction&& ) = default;
+
+  AccessAbstraction( const AccessAbstraction& ) = default;
+
+  template< typename... Types >
+  AccessAbstraction( Types... ){
+    static_assert
+      ( sizeof...(Types) == std::size_t(-1),
+        "Transfer policy access must be initialized with"
+        " a container rvalue reference" );
+  }
+
+  ~AccessAbstraction() = default;
+
+  /* operator */
+  AccessAbstraction&
+  operator=( AccessAbstraction&& ) = default;
+
+  AccessAbstraction&
+  operator=( const AccessAbstraction& ) = default;  
+
+  /* fields */
+  const Iterator begin;
+  const Iterator end;  
+};
+
+}
+}
+
+#endif

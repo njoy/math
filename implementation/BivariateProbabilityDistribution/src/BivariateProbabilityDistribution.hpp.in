@@ -1,19 +1,14 @@
-#ifndef MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_SRC_BIVARIATEPROBABILITYDISTRIBUTION_HPP
-#define MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_SRC_BIVARIATEPROBABILITYDISTRIBUTION_HPP
+#ifndef MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_CTOR_HPP
+#define MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_CTOR_HPP
 
 #include "math/implementation/BivariateProbabilityDistribution.hpp"
 
 namespace math {
 namespace implementation {
 
-template< double pdfInterp( const double x,
-                            const double x1, const double x2,
-                            const double y1, const double y2 ),
-          double cdfInterp( const double x,
-                            const double x1, const double x2,
-                            const double y1, const double y2 ) >
-inline BivariateProbabilityDistribution
-< pdfInterp, cdfInterp >::BivariateProbabilityDistribution
+template< Interpolant pdfInterpolant, Interpolant cdfInterpolant>
+BivariateProbabilityDistribution
+< pdfInterpolant, cdfInterpolant >::BivariateProbabilityDistribution
 ( std::vector<double>&& conditions,
   std::vector< std::unique_ptr<math::API::ProbabilityDistribution> >&&
   conditionedProbabilityDistributions,
@@ -26,9 +21,8 @@ inline BivariateProbabilityDistribution
     try {
       if ( this->conditions.size() !=
            this->conditionedProbabilityDistributions.size() ){
-        LOG(ERROR) <<
-          "conditions and conditionedProbabilityDistributions vectors"
-          " are not equal length";
+        LOG(ERROR) << "conditions and conditionedProbabilityDistributions"
+                   << " vectors are not equal length";
         LOG(INFO) << "conditions length: "
                   << this->conditions.size();
         LOG(INFO) << "conditionedProbabilityDistributions length: "
@@ -60,4 +54,5 @@ inline BivariateProbabilityDistribution
 
 }
 }
-#endif  // MATH_IMPLEMENTATION_BIVARIATEPROBABILITYDISTRIBUTION_SRC_BIVARIATEPROBABILITYDISTRIBUTION_HPP
+
+#endif

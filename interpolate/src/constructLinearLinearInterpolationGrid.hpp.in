@@ -50,13 +50,16 @@ namespace interpolate {
  * points in the region of interest
  *
  */
-template<typename functor, typename convergenceCriterion,
-         typename xIterator, typename yIterator>
+template< typename functor, typename convergenceCriterion,
+          typename xIterator, typename yIterator >
 void constructLinearLinearInterpolationGrid
-( const functor& f, const convergenceCriterion& hasConverged,
-  xIterator referenceXGridIterator, xIterator referenceXGridEnd,
+( const functor& f,
+  const convergenceCriterion& hasConverged,
+  xIterator referenceXGridIterator,
+  const xIterator referenceXGridEnd,
   yIterator referenceYGridIterator,
-  std::vector<double>& linearizedXGrid, std::vector<double>& linearizedYGrid ){
+  std::vector<double>& linearizedXGrid,
+  std::vector<double>& linearizedYGrid ){
   
   static_assert(
     std::is_same
@@ -178,13 +181,15 @@ void constructLinearLinearInterpolationGrid
  * @param linearizedYGrid
  * A vector which the y-values of the linearized grid ought to be appended to.
  */
-template<double f(const double), typename convergenceCriterion,
-         typename xIterator, typename yIterator>
+template< double f(const double), typename convergenceCriterion,
+          typename xIterator, typename yIterator >
 void constructLinearLinearInterpolationGrid
 ( const convergenceCriterion& hasConverged,
-  xIterator referenceXGridIterator, xIterator referenceXGridEnd,
+  xIterator referenceXGridIterator,
+  const xIterator referenceXGridEnd,
   yIterator referenceYGridIterator,
-  std::vector<double>& linearizedXGrid, std::vector<double>& linearizedYGrid ){
+  std::vector<double>& linearizedXGrid,
+  std::vector<double>& linearizedYGrid ){
   constructLinearLinearInterpolationGrid
     ( [](const double x){return f(x);}, hasConverged,
       referenceXGridIterator, referenceXGridEnd,

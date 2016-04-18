@@ -1,0 +1,60 @@
+#ifndef MATH_API_INTERPOLATIONTABLE_HPP
+#define MATH_API_INTERPOLATIONTABLE_HPP
+
+#include "utility/View.hpp"
+
+#include "math/API.hpp"
+#include "math/interpolate.hpp"
+
+class math::API::InterpolationTable {
+public:
+  /* constructor and destructor */
+  virtual ~InterpolationTable(){}
+
+  /* operator overloads */
+  /** @brief An alias to the interpolate method */
+  virtual double
+  operator()( const double x ) const = 0;
+
+  /* methods */
+  /**
+   * @result 
+   * The left-most independent variable value represented in the interpolation 
+   * table 
+   */
+  virtual double
+  xMin() const = 0;
+
+  /**
+   * @result 
+   * The right-most independent variable value represented in the interpolation 
+   * table 
+   */
+  virtual double
+  xMax() const = 0;
+
+  /** @result The grid of independent variable values */
+  virtual std::vector< utility::View<double> >
+  xGrid() = 0;
+
+  /** @result The immutable grid of independent variable values */
+  virtual std::vector< utility::View<const double> >
+  xGrid() const = 0;
+
+  /** @result The grid of dependent variable values */
+  virtual std::vector< utility::View<double> >
+  yGrid() = 0;
+
+  /** @result The immutable grid of dependent variable values */
+  virtual std::vector< utility::View<const double> >
+  yGrid() const = 0;
+
+  /** @result The interpolant value corresponding to @p x */
+  virtual double
+  interpolate( const double x ) const = 0;
+
+  virtual std::unique_ptr< math::API::InterpolationTableIntegral >
+  integral(const double y0) const = 0;
+};
+
+#endif
