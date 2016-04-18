@@ -1,0 +1,77 @@
+#ifndef MATH_IMPLEMENTATION_EQUIPROBABLEBINPROBABILITYDISTRIBUTION_HPP
+#define MATH_IMPLEMENTATION_EQUIPROBABLEBINPROBABILITYDISTRIBUTION_HPP
+
+#include "math/API/ProbabilityDistribution.hpp"
+
+#include "math/implementation.hpp"
+
+namespace math{
+namespace implementation{
+
+template< typename OwnershipPolicy, typename T >
+class EquiprobableBinProbabilityDistribution final :
+    public math::API::ProbabilityDistribution {
+public:
+  /* fields */
+  using SelfAccessAbstraction = AccessAbstraction< OwnershipPolicy, T >;
+  SelfAccessAbstraction binBoundaries;
+
+  double binProbability;
+
+  /* constructor and destructor */
+  EquiprobableBinProbabilityDistribution
+  ( SelfAccessAbstraction&& binBoundaries, const bool trust );
+
+  /**
+   * @brief  The transfer policy ctor. 
+   *
+   * @details
+   * This template can only be instantiated when the function template parameter
+   * `U` and the class template `T` are matching types and the OwnershipPolicy 
+   * class template parameter is set to TransferPolicy.
+   */ 
+  template< typename U >
+  EquiprobableBinProbabilityDistribution( U&& binContainer, const bool trust = true ) :
+  EquiprobableBinProbabilityDistribution
+  ( SelfAccessAbstraction( std::move(binContainer) ),
+    trust ) {}
+
+  /**
+   * @brief  The reference policy ctor. 
+   *
+   * @details
+   * This template can only be instantiated when the function template parameter
+   * `U` and the class template `T` are matching types and the OwnershipPolicy 
+   * class template parameter is set to ReferencePolicy.
+   */ 
+  template< typename U >
+  EquiprobableBinProbabilityDistribution( const U binBegin, const U binEnd,
+                                          const bool trust = true ) :
+  EquiprobableBinProbabilityDistribution
+  ( SelfAccessAbstraction( binBegin, binEnd ),
+    trust ) {}
+  
+  EquiprobableBinProbabilityDistribution
+  ( EquiprobableBinProbabilityDistribution&& ) = default;
+
+  EquiprobableBinProbabilityDistribution
+  ( const EquiprobableBinProbabilityDistribution& ) = default;
+
+  ~EquiprobableBinProbabilityDistribution( ) = default;
+
+  /* methods */
+  double
+  probabilityDensity( const double event ) const;
+
+  double
+  cumulativeProbability( const double event ) const;
+};
+
+}
+}
+
+#include "math/implementation/EquiprobableBinProbabilityDistribution/src/EquiprobableBinProbabilityDistribution.hpp"
+#include "math/implementation/EquiprobableBinProbabilityDistribution/src/probabilityDensity.hpp"
+#include "math/implementation/EquiprobableBinProbabilityDistribution/src/cumulativeProbability.hpp"
+
+#endif

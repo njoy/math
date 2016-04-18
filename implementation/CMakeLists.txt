@@ -10,6 +10,7 @@ list(APPEND header_only_subdirs
   "LegendreSeries"
   "SplicedProbabilityDistribution"
   "ParametricProbabilityDistribution"
+  "EquiprobableBinProbabilityDistribution"
   "ProbDistLeftDomainBoundary"
   "ProbDistRightDomainBoundary"
   "ProbDistLeftInterval"

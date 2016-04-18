@@ -9,8 +9,6 @@ if(${local_testing})
 endif(${local_testing})
 
 set(math_src "${math_src}" PARENT_SCOPE)
-set(math_src_headers "${math_src_headers}" PARENT_SCOPE)
-set(math_bin_headers "${math_bin_headers}" PARENT_SCOPE)
 
 if(${verbose_traversal})
   message(STATUS "Exiting ParametricProbabilityDistribution directory")

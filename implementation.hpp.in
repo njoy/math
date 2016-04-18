@@ -167,6 +167,8 @@ class ConditionalProbabilityDistribution;
 
 #include "math/implementation/ParametricProbabilityDistribution.hpp"
 
+#include "math/implementation/EquiprobableBinProbabilityDistribution.hpp"
+
 #include "math/implementation/ProbDistLeftDomainBoundary.hpp"
 
 #include "math/implementation/ProbDistRightDomainBoundary.hpp"

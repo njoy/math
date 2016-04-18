@@ -1,0 +1,33 @@
+#ifndef MATH_IMPLEMENTATION_EQUIPROBABLEBINPROBABILITYDISTRIBUTION_PROBABILITYDENSITY_HPP
+#define MATH_IMPLEMENTATION_EQUIPROBABLEBINPROBABILITYDISTRIBUTION_PROBABILITYDENSITY_HPP
+
+#include "math/implementation/EquiprobableBinProbabilityDistribution.hpp"
+
+namespace math{
+namespace implementation{
+
+template< typename OwnershipPolicy, typename T >
+double
+EquiprobableBinProbabilityDistribution
+< OwnershipPolicy, T >::probabilityDensity( const double event ) const {
+  const auto it =
+    std::lower_bound(this->binBoundaries.begin, this->binBoundaries.end, event);
+  return
+    /* event lies outside the bin range */
+    (( it == this->binBoundaries.end ) ||
+     ( event < *(this->binBoundaries.begin) )) ? 0.0 :
+    /* event lies within a bin or on the right-most bin boundary */
+    (( *it != event ) || ( it == (this->binBoundaries.end - 1) ) ) ?
+      this->binProbability / (it[0] - it[-1]) :
+    /* event lies on the left-most bin boundary */
+    (it == this->binBoundaries.begin) ?
+      this->binProbability / (it[1] - it[0]) :
+    /* event lies on an interior bin boundary */
+    this->binProbability *
+    (it[1] - it[-1]) / (2.0 * (it[1] - it[0]) * (it[0] - it[-1]));
+}
+
+}
+}
+
+#endif
