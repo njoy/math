@@ -71,7 +71,7 @@ struct AccessAbstraction
     static_assert
       ( sizeof...(Types) == std::size_t(-1),
         "Transfer policy access must be initialized with"
-        " a container rvalue reference" );
+        " a pair of iterators" );
   }
 
   ~AccessAbstraction() = default;
