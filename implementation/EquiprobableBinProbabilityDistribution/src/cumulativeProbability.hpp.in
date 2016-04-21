@@ -1,0 +1,27 @@
+#ifndef MATH_IMPLEMENTATION_EQUIPROBABLEBINPROBABILITYDISTRIBUTION_CUMULATIVEPROBABILITY_HPP
+#define MATH_IMPLEMENTATION_EQUIPROBABLEBINPROBABILITYDISTRIBUTION_CUMULATIVEPROBABILITY_HPP
+
+#include "math/implementation/EquiprobableBinProbabilityDistribution.hpp"
+
+namespace math{
+namespace implementation{
+
+template< typename OwnershipPolicy, typename T >
+double
+EquiprobableBinProbabilityDistribution
+< OwnershipPolicy, T >::cumulativeProbability( const double event ) const {
+  auto it =
+    std::lower_bound(this->binBoundaries.begin, this->binBoundaries.end, event);
+  if ( it == this->binBoundaries.begin ) { return 0.0; }
+  const auto partialBin =
+    (it == this->binBoundaries.end || it == this->binBoundaries.begin ) ?
+    0.0 : ( event - it[-1] ) / ( it[0] - it[-1] );
+  --it;
+  const auto fullBins = it - this->binBoundaries.begin;
+  return (fullBins + partialBin) * this->binProbability;
+}
+
+}
+}
+
+#endif

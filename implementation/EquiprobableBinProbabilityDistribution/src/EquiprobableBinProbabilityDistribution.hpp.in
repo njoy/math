@@ -1,0 +1,48 @@
+#ifndef MATH_IMPLEMENTATION_EQUIPROBABLEBINPROBABILITYDISTRIBUTION_CTOR_HPP
+#define MATH_IMPLEMENTATION_EQUIPROBABLEBINPROBABILITYDISTRIBUTION_CTOR_HPP
+
+#include "math/implementation/EquiprobableBinProbabilityDistribution.hpp"
+
+namespace math{
+namespace implementation{
+
+template< typename OwnershipPolicy, typename T >
+EquiprobableBinProbabilityDistribution
+< OwnershipPolicy, T >::EquiprobableBinProbabilityDistribution
+( SelfAccessAbstraction&& binBoundaries, const bool trust ) :
+  binBoundaries( std::move(binBoundaries) ),
+  binProbability
+  ( 1.0 / double(this->binBoundaries.end - this->binBoundaries.begin - 1) ){
+  if ( this->binBoundaries.end - this->binBoundaries.begin < 2 ){
+    LOG(ERROR) << "Insufficient number of bins";
+    LOG(INFO)  << "Two or more bin boundaries are necessary to define an "
+               << "equiprobable bin angular distribution";
+    LOG(INFO)  << "Number of bin boundaries: "
+               << this->binBoundaries.end - this->binBoundaries.begin;
+    throw std::exception();
+  }
+  if (not trust){
+    auto strictOrdering =
+      [](const double left, const double right) {
+      return left <= right;      
+    };
+    const auto it =
+      std::is_sorted_until( this->binBoundaries.begin,
+                            this->binBoundaries.end,
+                            strictOrdering );
+    if (it != this->binBoundaries.end){
+      LOG(ERROR) << "Unsorted bin boundaries";
+      LOG(INFO)  << "Bin boundaries are not strictly monotonically increasing";
+      const auto leftPosition = it - this->binBoundaries.begin - 1;
+      const auto rightPosition = leftPosition + 1;
+      LOG(INFO) << "Boundary " << leftPosition << ": " << it[-1];
+      LOG(INFO) << "Boundary " << rightPosition << ": " << it[0];
+      throw std::exception();
+    }
+  }
+}
+
+}
+}
+
+#endif

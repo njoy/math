@@ -29,6 +29,13 @@ public:
   virtual double
   integral( const double lowerBound, const double upperBound ) const = 0;
 
+  /**
+   * @result 
+   * The series integral given a @p boundaryValue specified at @p boundary
+   */
+  virtual std::unique_ptr< math::API::SeriesExpansion >
+  integrate( const double boundary, const double boundaryValue ) const = 0;
+  
   /** 
    * @result 
    * The series derivative evaluated at independent variable value @p x 

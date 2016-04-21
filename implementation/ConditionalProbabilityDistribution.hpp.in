@@ -1,0 +1,79 @@
+#ifndef MATH_IMPLEMENTATION_CONDITIONALPROBABILITYDISTRIBUTION_HPP
+#define MATH_IMPLEMENTATION_CONDITIONALPROBABILITYDISTRIBUTION_HPP
+
+#include "math/API/ConditionalProbabilityDistribution.hpp"
+#include "math/API/ProbabilityDistribution.hpp"
+#include "math/implementation.hpp"
+
+namespace math{
+namespace implementation{
+
+/**
+ * @tparam pdfInterpolant
+ * The interpolation scheme used to determine probability density values given 
+ * a condition lying between the conditions of two specified probability density 
+ * functions
+ * 
+ * @tparam cdfInterpolant
+ * The interpolation scheme used to determine cumulative probability values (in 
+ * event space) given a condition lying between the conditions of two specified 
+ * cumulative probability functions
+ */
+template< Interpolant pdfInterpolant, Interpolant cdfInterpolant >
+class ConditionalProbabilityDistribution final :
+  public math::API::ConditionalProbabilityDistribution {
+public:
+  /* constructor and destructor */
+  ConditionalProbabilityDistribution
+  ( std::vector<double>&& specifiedVariates,
+    std::vector< std::unique_ptr<math::API::ProbabilityDistribution> >&&
+    conditionedProbabilityDistributions,
+    const bool trust = true );
+
+  ~ConditionalProbabilityDistribution() = default;
+  
+  /* methods */
+  double 
+  probabilityDensity( const double event, 
+                                 const double condition ) const;
+
+  double 
+  cumulativeProbability( const double event, 
+                                    const double condition ) const;
+
+  std::unique_ptr< math::API::ProbabilityDistribution >
+  probabilityDistribution( const double condition ) const;
+
+  double
+  lowerConditionLimit(){ return this->conditions.front(); }
+
+  double
+  upperConditionLimit(){ return this->conditions.back(); }
+  
+  /* fields */
+  /** 
+   * @brief 
+   * Variant values (conditions) for which the conditional probability 
+   * distribution is explicitly specified
+   */
+  std::vector<double> conditions;
+
+  /** 
+   * @brief 
+   * The probability distributions given a condition value in the conditions
+   * vector.
+   */
+  std::vector< std::unique_ptr< math::API::ProbabilityDistribution > > 
+  conditionedProbabilityDistributions;
+};
+
+}
+}
+
+#include "math/implementation/ConditionalProbabilityDistribution/src/ConditionalProbabilityDistribution.hpp"
+#include "math/implementation/ConditionalProbabilityDistribution/src/probabilityDensity.hpp"
+#include "math/implementation/ConditionalProbabilityDistribution/src/cumulativeProbability.hpp"
+#include "math/implementation/ConditionalProbabilityDistribution/src/probabilityDistribution.hpp"
+
+#endif
+

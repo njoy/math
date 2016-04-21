@@ -62,9 +62,22 @@ using DataOwningInterpolationTable =
 
 template< typename Iterator, Interpolant interpolant >
 using DataReferencingInterpolationTable =
-    InterpolationTable< interpolant, ReferencePolicy, Iterator >;
+  InterpolationTable< interpolant, ReferencePolicy, Iterator >;
 
 class CompositeInterpolationTable;
+
+/* InterpolationTable compile-time decorators */
+template< typename CoreInterpolationTable >
+class InterpTabLeftDomainBoundary;
+
+template< typename CoreInterpolationTable >
+class InterpTabRightDomainBoundary;
+
+template< typename CoreInterpolationTable >
+class InterpTabLeftInterval;
+
+template< typename CoreInterpolationTable >
+class InterpTabRightInterval;
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 /* class InterpolationTableIntegral */
@@ -81,11 +94,11 @@ template< typename OwnershipPolicy, typename T >
 class TaylorSeries;
 
 using DataOwningTaylorSeries =
-   TaylorSeries< TransferPolicy, std::vector<double> >;
+  TaylorSeries< TransferPolicy, std::vector<double> >;
 
 template< typename Iterator >
 using DataReferencingTaylorSeries = 
-   TaylorSeries< ReferencePolicy, Iterator >;
+  TaylorSeries< ReferencePolicy, Iterator >;
 
 template< typename OwnershipPolicy, typename T >
 class LegendreSeries;
@@ -103,23 +116,50 @@ using DataReferencingLegendreSeries =
 template< typename pdfFunctor, typename cdfFunctor >
 class ParametricProbabilityDistribution;
 
+template< typename OwnershipPolicy, typename T >
+class EquiprobableBinProbabilityDistribution;
+
+using DataOwningEquiprobableBinProbabilityDistribution =
+  EquiprobableBinProbabilityDistribution< TransferPolicy, std::vector<double> >;
+
+template< typename Iterator >
+using DataReferencingEquiprobableBinProbabilityDistribution =
+  EquiprobableBinProbabilityDistribution< ReferencePolicy, Iterator >; 
+
 template< Interpolant pdfInterpolant, Interpolant cdfInterpolant >
 class SplicedProbabilityDistribution;
 
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-/* class BivariateProbabilityDistribution */
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/* ProbabilityDistribution compile-time decorators */
+template< typename CoreProbabilityDistribution >
+class ProbDistLeftDomainBoundary;
+
+template< typename CoreProbabilityDistribution >
+class ProbDistRightDomainBoundary;
+
+template< typename CoreProbabilityDistribution >
+class ProbDistLeftInterval;
+
+template< typename CoreProbabilityDistribution >
+class ProbDistRightInterval;
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/* class ConditionalProbabilityDistribution */
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 template< Interpolant pdfInterpolant, Interpolant cdfInterpolant >
-class BivariateProbabilityDistribution;
+class ConditionalProbabilityDistribution;
 
 }   // namespace implementation
 }   // namespace math
 
 #include "math/implementation/AccessAbstraction.hpp"
 
-#include "math/implementation/InterpolationTableIntegral.hpp"
-
 #include "math/implementation/InterpolationTable.hpp"
+
+//#include "math/implementation/InterpTabLeftDomainBoundary.hpp"
+
+//#include "math/implementation/InterpTabRightDomainBoundary.hpp"
+
+#include "math/implementation/InterpolationTableIntegral.hpp"
 
 #include "math/implementation/TaylorSeries.hpp"
 
@@ -127,8 +167,18 @@ class BivariateProbabilityDistribution;
 
 #include "math/implementation/ParametricProbabilityDistribution.hpp"
 
+#include "math/implementation/EquiprobableBinProbabilityDistribution.hpp"
+
+#include "math/implementation/ProbDistLeftDomainBoundary.hpp"
+
+#include "math/implementation/ProbDistRightDomainBoundary.hpp"
+
+#include "math/implementation/ProbDistLeftInterval.hpp"
+
+#include "math/implementation/ProbDistRightInterval.hpp"
+
 #include "math/implementation/SplicedProbabilityDistribution.hpp"
 
-#include "math/implementation/BivariateProbabilityDistribution.hpp"
+#include "math/implementation/ConditionalProbabilityDistribution.hpp"
 
 #endif

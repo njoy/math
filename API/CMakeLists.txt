@@ -8,7 +8,7 @@ list(APPEND headers
   "InterpolationTableIntegral"
   "SeriesExpansion"
   "ProbabilityDistribution"
-  "BivariateProbabilityDistribution"
+  "ConditionalProbabilityDistribution"
   )
 
 foreach(header ${headers})

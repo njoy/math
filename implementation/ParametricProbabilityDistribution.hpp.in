@@ -34,12 +34,12 @@ public:
 
   /* methods */
   double
-  probabilityDensity( const double event ) const final {
+  probabilityDensity( const double event ) const {
     return this->pdf(event);
   }
 
   double
-  cumulativeProbability( const double event ) const final {
+  cumulativeProbability( const double event ) const {
     return this->cdf(event);
   }
 

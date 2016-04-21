@@ -1,0 +1,73 @@
+#ifndef MATH_IMPLEMENTATION_PROBABILITYDISTRIBUTIONRIGHTDOMAINBOUNDARY_HPP
+#define MATH_IMPLEMENTATION_PROBABILITYDISTRIBUTIONRIGHTDOMAINBOUNDARY_HPP
+
+#include "math/API/ProbabilityDistribution.hpp"
+#include "math/implementation.hpp"
+
+namespace math {
+namespace implementation {
+
+/**
+ * @brief
+ * A compile time probability distribution decoration which adds enforcement
+ * of a right limit to the event domain.
+ *
+ * @details
+ * Querying the probability density or cumulative probability of events to the 
+ * right of the value specified during construction cause the method to throw.
+ */
+template< typename CoreProbabilityDistribution >
+class ProbDistRightDomainBoundary final :
+    public math::API::ProbabilityDistribution {
+public:
+  /* constructor and destructor */
+  ProbDistRightDomainBoundary
+  ( CoreProbabilityDistribution&& core, const double rightBoundary ) :
+    core( std::move(core) ), rightBoundary( rightBoundary ){}
+
+  ProbDistRightDomainBoundary
+  ( const ProbDistRightDomainBoundary& ) = default;
+
+  ProbDistRightDomainBoundary
+  ( ProbDistRightDomainBoundary&& ) = default;
+
+  ~ProbDistRightDomainBoundary() = default;
+
+  /* methods */
+  void
+  verify( const double event ) const {
+    if (event > this->rightBoundary){
+      LOG(ERROR) << "Requested event value is outside event domain";
+      LOG(INFO)  << "Requested event value: " << event;
+      LOG(INFO)  << "Domain right boundary: " << this->rightBoundary;
+      throw std::exception();
+    }
+  }
+  
+  double
+  probabilityDensity( const double event ) const {
+    try { this->verify(event); } catch ( std::exception& e ) {
+      LOG(INFO)  << "Error computing probability density";
+      throw e;
+    }
+    return this->core.probabilityDensity(event);
+  }
+
+  double
+  cumulativeProbability( const double event ) const {
+    try { this->verify(event); } catch ( std::exception& e ) {
+      LOG(INFO)  << "Error computing cumulative probability";
+      throw e;
+    }
+    return this->core.cumulativeProbability(event);
+  }
+  
+  /* fields */
+  CoreProbabilityDistribution core;
+  double rightBoundary;
+};
+
+}
+}
+
+#endif

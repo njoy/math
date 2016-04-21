@@ -1,0 +1,58 @@
+#ifndef MATH_IMPLEMENTATION_CONDITIONALPROBABILITYDISTRIBUTION_CTOR_HPP
+#define MATH_IMPLEMENTATION_CONDITIONALPROBABILITYDISTRIBUTION_CTOR_HPP
+
+#include "math/implementation/ConditionalProbabilityDistribution.hpp"
+
+namespace math {
+namespace implementation {
+
+template< Interpolant pdfInterpolant, Interpolant cdfInterpolant>
+ConditionalProbabilityDistribution
+< pdfInterpolant, cdfInterpolant >::ConditionalProbabilityDistribution
+( std::vector<double>&& conditions,
+  std::vector< std::unique_ptr<math::API::ProbabilityDistribution> >&&
+  conditionedProbabilityDistributions,
+  const bool trust ) :
+    conditions( std::move(conditions) ),
+    conditionedProbabilityDistributions
+      ( std::move(conditionedProbabilityDistributions) )
+{
+   if (!trust){
+    try {
+      if ( this->conditions.size() !=
+           this->conditionedProbabilityDistributions.size() ){
+        LOG(ERROR) << "conditions and conditionedProbabilityDistributions"
+                   << " vectors are not equal length";
+        LOG(INFO) << "conditions length: "
+                  << this->conditions.size();
+        LOG(INFO) << "conditionedProbabilityDistributions length: "
+                  << this->conditionedProbabilityDistributions.size();
+        LOG(INFO) <<
+          "conditions store the variate value at which each conditioned"
+          " probability distribution applies and must be the same length";
+        throw std::exception();
+      }
+      const auto it = std::is_sorted_until( this->conditions.begin(),
+                                            this->conditions.end() );
+      if (it != this->conditions.end()){
+        LOG(ERROR) << "conditions vector is not sorted";
+        auto entryNo = it - this->conditions.begin();
+        LOG(INFO) << "Entry " << (entryNo - 1) << ": " << it[-1];
+        LOG(INFO) << "Entry " << entryNo << ": " << it[0];
+        LOG(INFO) << "Appropriate variate bin are determined by binary search.";
+        LOG(INFO) <<
+          "As a result, the specified variates vector is required to be sorted";
+        throw std::exception();
+      }
+    } catch (std::exception& e){
+      LOG(INFO) <<
+        "Error while constructing ConditionalProbabilityDistribution object";
+      throw e;
+    }
+  }
+}
+
+}
+}
+
+#endif

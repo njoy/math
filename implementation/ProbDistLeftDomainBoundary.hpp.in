@@ -1,0 +1,73 @@
+#ifndef MATH_IMPLEMENTATION_PROBABILITYDISTRIBUTIONLEFTDOMAINBOUNDARY_HPP
+#define MATH_IMPLEMENTATION_PROBABILITYDISTRIBUTIONLEFTDOMAINBOUNDARY_HPP
+
+#include "math/API/ProbabilityDistribution.hpp"
+#include "math/implementation.hpp"
+
+namespace math {
+namespace implementation {
+
+/**
+ * @brief
+ * A compile time probability distribution decoration which adds enforcement
+ * of a left limit to the event domain.
+ *
+ * @details
+ * Querying the probability density or cumulative probability of events to the 
+ * left of the value specified during construction cause the method to throw.
+ */
+template< typename CoreProbabilityDistribution >
+class ProbDistLeftDomainBoundary final :
+    public math::API::ProbabilityDistribution {
+public:
+  /* constructor and destructor */
+  ProbDistLeftDomainBoundary
+  ( CoreProbabilityDistribution&& core, const double leftBoundary ) :
+    core( std::move(core) ), leftBoundary( leftBoundary ){}
+
+  ProbDistLeftDomainBoundary
+  ( const ProbDistLeftDomainBoundary& ) = default;
+
+  ProbDistLeftDomainBoundary
+  ( ProbDistLeftDomainBoundary&& ) = default;
+
+  ~ProbDistLeftDomainBoundary() = default;
+
+  /* methods */
+  void
+  verify( const double event ) const {
+    if (event < this->leftBoundary){
+      LOG(ERROR) << "Requested event value is outside event domain";
+      LOG(INFO)  << "Requested event value: " << event;
+      LOG(INFO)  << "Domain left boundary: " << this->leftBoundary;
+      throw std::exception();
+    }
+  }
+  
+  double
+  probabilityDensity( const double event ) const {
+    try { this->verify(event); } catch ( std::exception& e ) {
+      LOG(INFO)  << "Error computing probability density";
+      throw e;
+    }
+    return this->core.probabilityDensity(event);
+  }
+
+  double
+  cumulativeProbability( const double event ) const {
+    try { this->verify(event); } catch ( std::exception& e ) {
+      LOG(INFO)  << "Error computing cumulative probability";
+      throw e;
+    }
+    return this->core.cumulativeProbability(event);
+  }
+  
+  /* fields */
+  CoreProbabilityDistribution core;
+  double leftBoundary;
+};
+
+}
+}
+
+#endif

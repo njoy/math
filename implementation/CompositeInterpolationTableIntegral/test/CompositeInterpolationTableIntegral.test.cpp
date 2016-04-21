@@ -72,3 +72,55 @@ int main( int argc, const char* argv[] ){
   LOG(INFO) << "CompositeInterpolationTableIntegral Tests Complete!";
   return result;
 }
+
+SCENARIO("Gaps in the x-grid will cause the ctor to throw"){
+  GIVEN("An overlapping pair of x-grids"){
+    std::vector<double> x01 = {4.0, 5.0, 6.0, 7.0, 8.0};
+    std::vector< std::unique_ptr< math::API::InterpolationTableIntegral > > irv;
+    
+    auto t0 =
+      math::implementation::DataOwningInterpolationTable
+      < math::interpolate::logLog >
+      ( clone(x00), clone(dy00), false );
+  
+    irv.push_back( t0.integral( 1.0 / 3.0 ) );
+
+    auto t1 =
+      math::implementation::DataOwningInterpolationTable
+      < math::interpolate::linLin >
+      ( clone(x01), clone(dy01), false );
+ 
+    irv.push_back( t1.integral( 41.66666666667 ) );
+    WHEN("used to construct a composite interpolation table"){
+      THEN("the ctor will throw"){
+        REQUIRE_THROWS( math::implementation::CompositeInterpolationTableIntegral
+                        ( std::move(irv) ));
+      }
+    }
+  }
+  
+  GIVEN("An overlapping pair of x-grids"){
+    std::vector<double> x01 = { 6.0, 7.0, 8.0, 9.0, 10.0 };
+    std::vector< std::unique_ptr< math::API::InterpolationTableIntegral > > irv;
+    
+    auto t0 =
+      math::implementation::DataOwningInterpolationTable
+      < math::interpolate::logLog >
+      ( clone(x00), clone(dy00), false );
+  
+    irv.push_back( t0.integral( 1.0 / 3.0 ) );
+
+    auto t1 =
+      math::implementation::DataOwningInterpolationTable
+      < math::interpolate::linLin >
+      ( clone(x01), clone(dy01), false );
+ 
+    irv.push_back( t1.integral( 41.66666666667 ) );
+    WHEN("used to construct a composite interpolation table"){
+      THEN("the ctor will throw"){
+        REQUIRE_THROWS( math::implementation::CompositeInterpolationTableIntegral
+                        ( std::move(irv) ));
+      }
+    }
+  }
+}
