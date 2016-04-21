@@ -7,6 +7,21 @@
 namespace math {
 namespace implementation {
 
+/**
+ * @brief
+ * A compile time probability distribution decoration which overrides the default
+ * behaviour of the probabilityDensity and cumulativeDensity methods over the
+ * left-most interval of the event domain.
+ *
+ * @details
+ * A probability distribution delegates probabilityDensity and cumulative 
+ * probability to composed objects by default. This isn't always desirable.
+ * Take a composed interpolation table describing a probability density 
+ * distribution for example: queries to the table are only meaningful for
+ * event values between the table's xMin and xMax values. This decorator defines
+ * a edge such that cdf and pdf queries for event values to the left of the edge
+ * will return zero without querying the composed objects 
+ */
 template< typename CoreProbabilityDistribution >
 class ProbDistLeftInterval final :
     public math::API::ProbabilityDistribution {

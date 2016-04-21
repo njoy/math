@@ -8,6 +8,15 @@
 namespace math{
 namespace implementation{
 
+/**
+ * @brief 
+ * A probability distribution described in terms of a number of equiprobable bins
+ *
+ * @details
+ * This is a a special case of a histogrammed probability distribution such that
+ * within each bin, the probability density is constant, and the cumulative 
+ * probability over each bin is equal.
+ */
 template< typename OwnershipPolicy, typename T >
 class EquiprobableBinProbabilityDistribution final :
     public math::API::ProbabilityDistribution {

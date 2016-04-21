@@ -7,6 +7,15 @@
 namespace math {
 namespace implementation {
 
+/**
+ * @brief
+ * A compile time probability distribution decoration which adds enforcement
+ * of a right limit to the event domain.
+ *
+ * @details
+ * Querying the probability density or cumulative probability of events to the 
+ * right of the value specified during construction cause the method to throw.
+ */
 template< typename CoreProbabilityDistribution >
 class ProbDistRightDomainBoundary final :
     public math::API::ProbabilityDistribution {
