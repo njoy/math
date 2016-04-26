@@ -1,6 +1,7 @@
 set(subprojects "")
 list(APPEND subprojects
-  "utility"
+  "Eigen"
   "easyloggingpp"
   "Catch"
+  "utility"
   )

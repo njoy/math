@@ -10,3 +10,6 @@
 [submodule "utility"]
 	path = utility
 	url = https://github.com/njoy/utility.git
+[submodule "Eigen"]
+	path = Eigen
+	url = https://github.com/njoy/Eigen.git
