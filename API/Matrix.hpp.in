@@ -1,0 +1,30 @@
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#ifndef MATH_MATRIX_HPP
+#define MATH_MATRIX_HPP
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// system includes
+
+// other includes
+#include "math/API.hpp"
+#include "Eigen/Eigen.hpp"
+
+namespace math {
+
+  namespace API {
+
+    /** @typedef Matrix
+     *  @brief A dense matrix based on the Eigen3 library
+     *
+     *  This matrix class implements the common dense matrix interface using the
+     *  Eigen3 library. The Matrix is column major matrix.
+     */
+    template <typename T> using Matrix =
+            Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>;
+  } // API namespace
+} // math namespace
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#endif
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+

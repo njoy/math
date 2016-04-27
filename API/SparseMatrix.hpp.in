@@ -1,0 +1,51 @@
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#ifndef MATH_SPARSEMATRIX_HPP
+#define MATH_SPARSEMATRIX_HPP
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// system includes
+
+// other includes
+#include "math/API.hpp"
+#include "Eigen/Eigen.hpp"
+
+namespace math {
+
+  namespace API {
+
+    /** @typedef SparseMatrix
+     *  @brief A sparse matrix based on the Eigen3 library
+     *
+     *  This sparse matrix class implements the common sparse matrix interface
+     *  using the Eigen3 library. The SparseMatrix is a compressed matrix.
+     */
+    template <typename T> using SparseMatrix = Eigen::SparseMatrix<T>;
+
+    /** @{
+     *  @name Operator functions
+     */
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // Operator functions
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    /** @brief Multiplication assignment operator
+     *
+     *  @param[in] left    the matrix on the left hand side of the operator
+     *  @param[in] right   the matrix on the right hand side of the operator
+     *
+     *  @return The resulting matrix
+     */
+    template <typename T> void operator*=(SparseMatrix<T>& left,
+            const SparseMatrix<T>& right) noexcept {
+
+      left = left * right;
+    }
+    /** @}
+     */
+  } // API namespace
+} // math namespace
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#endif
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+

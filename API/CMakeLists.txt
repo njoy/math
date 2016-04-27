@@ -4,11 +4,14 @@ endif(${verbose_traversal})
 
 set(headers "")
 list(APPEND headers
+  "ConditionalProbabilityDistribution"
+  "Matrix"
+  "ProbabilityDistribution"
+  "SeriesExpansion"
+  "SparseMatrix"
   "InterpolationTable"
   "InterpolationTableIntegral"
-  "SeriesExpansion"
-  "ProbabilityDistribution"
-  "ConditionalProbabilityDistribution"
+  "Vector"
   )
 
 foreach(header ${headers})
@@ -18,6 +21,10 @@ foreach(header ${headers})
     COPYONLY
     )
 endforeach(header)
+
+add_subdirectory( Matrix )
+add_subdirectory( SparseMatrix )
+add_subdirectory( Vector )
 
 set(math_src "${math_src}" PARENT_SCOPE)
 

@@ -19,4 +19,9 @@ class ConditionalProbabilityDistribution;
 }
 }
 
+// no need to forward declare the Vector class because it is an alias
+#include "math/API/Matrix.hpp"
+#include "math/API/SparseMatrix.hpp"
+#include "math/API/Vector.hpp"
+
 #endif

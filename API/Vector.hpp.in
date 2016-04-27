@@ -1,0 +1,29 @@
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#ifndef MATH_VECTOR_HPP
+#define MATH_VECTOR_HPP
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// system includes
+
+// other includes
+#include "math/API.hpp"
+#include "Eigen/Eigen.hpp"
+
+namespace math {
+    
+  namespace API {
+        
+  /** @typedef Vector
+   *  @brief A vector based on the Eigen3 library
+   *
+   *  This vector class implements the common vector interface using the Eigen3
+   *  library.
+   */
+  template <typename T> using Vector = Eigen::Matrix<T, Eigen::Dynamic, 1>;
+  } // API namespace
+} // math namespace
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#endif
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
