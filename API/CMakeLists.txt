@@ -4,13 +4,14 @@ endif(${verbose_traversal})
 
 set(headers "")
 list(APPEND headers
+  "Array"
   "ConditionalProbabilityDistribution"
+  "InterpolationTable"
+  "InterpolationTableIntegral"
   "Matrix"
   "ProbabilityDistribution"
   "SeriesExpansion"
   "SparseMatrix"
-  "InterpolationTable"
-  "InterpolationTableIntegral"
   "Vector"
   )
 
@@ -22,6 +23,7 @@ foreach(header ${headers})
     )
 endforeach(header)
 
+add_subdirectory( Array )
 add_subdirectory( Matrix )
 add_subdirectory( SparseMatrix )
 add_subdirectory( Vector )
