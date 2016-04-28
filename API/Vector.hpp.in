@@ -7,7 +7,7 @@
 
 // other includes
 #include "math/API.hpp"
-#include "Eigen/Eigen.hpp"
+#include "Eigen.hpp"
 
 namespace math {
     
