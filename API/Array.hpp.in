@@ -1,0 +1,29 @@
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#ifndef MATH_ARRAY_HPP
+#define MATH_ARRAY_HPP
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// system includes
+
+// other includes
+#include "math/API.hpp"
+#include "Eigen.hpp"
+
+namespace math {
+    
+  namespace API {
+        
+  /** @typedef Array
+   *  @brief An array based on the Eigen3 library
+   *
+   *  This array class implements the common array interface using the Eigen3
+   *  library. It functions much like the std::valarray class
+   */
+  template <typename T> using Array = Eigen::Array<T, Eigen::Dynamic, 1>;
+  } // API namespace
+} // math namespace
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#endif
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+

@@ -1,0 +1,29 @@
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#ifndef MATH_SPARSEMATRIX_HPP
+#define MATH_SPARSEMATRIX_HPP
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+// system includes
+
+// other includes
+#include "math/API.hpp"
+#include "Eigen.hpp"
+
+namespace math {
+
+  namespace API {
+
+    /** @typedef SparseMatrix
+     *  @brief A sparse matrix based on the Eigen3 library
+     *
+     *  This sparse matrix class implements the common sparse matrix interface
+     *  using the Eigen3 library. The SparseMatrix is a compressed matrix.
+     */
+    template <typename T> using SparseMatrix = Eigen::SparseMatrix<T>;
+  } // API namespace
+} // math namespace
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#endif
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
